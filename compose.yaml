@@ -1,0 +1,55 @@
+services:
+  auth-database:
+    image: postgres:16-alpine
+    container_name: ${AUTH_DATABASE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${AUTH_DATABASE_USER}
+      - POSTGRES_PASSWORD=${AUTH_DATABASE_PASS}
+      - POSTGRES_DB=${AUTH_DATABASE_NAME}
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DATABASE_USER} -d ${AUTH_DATABASE_NAME}"]
+      interval: 5s
+      retries: 5
+
+  auth-migrator:
+    image: apotekly-auth-migrator
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile.migrator
+    container_name: auth-migrator
+    networks:
+      - apotekly-net
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=${AUTH_DATABASE_HOST}
+      - DATABASE_PORT=${AUTH_DATABASE_PORT}
+      - DATABASE_USER=${AUTH_DATABASE_USER}
+      - DATABASE_PASS=${AUTH_DATABASE_PASS}
+      - DATABASE_NAME=${AUTH_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${AUTH_DATABASE_SSL_MODE}
+    depends_on:
+      auth-database:
+        condition: service_healthy
+    entrypoint: ["./bin/migrator"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "${AUTH_DATABASE_HOST}"]
+      interval: 10s
+      retries: 3
+
+networks:
+  apotekly-net:
+    name: apotekly-net
+    driver: bridge
+
+volumes:
+  auth_db_data:

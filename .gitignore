@@ -1,0 +1,8 @@
+.env
+
+# Go build cache
+/services/*/bin/
+/services/*/*.out
+
+# Misc.
+.vscode
