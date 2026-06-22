@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+service AuthService {
+  rpc SignUp (SignUpRequest) returns (SignUpResponse);
+}
+
+message Auth {
+  string email = 1;
+  string role = 2;
+  bool is_email_verified = 3;
+}
+
+message AccessToken {
+  string token = 1;
+  uint64 expires_in_seconds = 2;
+}
+
+message RefreshToken {
+  string token = 1;
+  uint64 expires_in_seconds = 2;
+}
+
+message AuthToken {
+  AccessToken access_token = 1;
+  RefreshToken refresh_token = 2;
+}
+
+message SignUpRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message SignUpResponse {
+  Auth auth = 1;
+  AuthToken auth_token = 2;
+}

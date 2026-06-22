@@ -1,4 +1,50 @@
 services:
+  auth-service:
+    image: apotekly-auth-service
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile.app
+    container_name: ${AUTH_SERVICE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - APP_NAME=${AUTH_SERVICE_HOST}
+      - SERVER_HOST=${AUTH_SERVICE_HOST}
+      - SERVER_PORT=${AUTH_SERVICE_PORT}
+      - SERVER_TIMEOUT_SHUTDOWN=${AUTH_SERVICE_TIMEOUT_SHUTDOWN}
+      - DATABASE_HOST=${AUTH_DATABASE_HOST}
+      - DATABASE_PORT=${AUTH_DATABASE_PORT}
+      - DATABASE_USER=${AUTH_DATABASE_USER}
+      - DATABASE_PASS=${AUTH_DATABASE_PASS}
+      - DATABASE_NAME=${AUTH_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${AUTH_DATABASE_SSL_MODE}
+      - DATABASE_MAX_CONNS=${AUTH_DATABASE_MAX_CONNS}
+      - DATABASE_MIN_CONNS=${AUTH_DATABASE_MIN_CONNS}
+      - DATABASE_MAX_CONN_LIFETIME=${AUTH_DATABASE_MAX_CONN_LIFETIME}
+      - DATABASE_MAX_CONN_IDLE_TIME=${AUTH_DATABASE_MAX_CONN_IDLE_TIME}
+      - CACHE_HOST=${AUTH_CACHE_HOST}
+      - CACHE_PORT=${AUTH_CACHE_PORT}
+      - CACHE_PASS=${AUTH_CACHE_PASS}
+      - CACHE_POOL_SIZE=${AUTH_CACHE_POOL_SIZE}
+      - CACHE_MIN_IDLE_CONNS=${AUTH_CACHE_MIN_IDLE_CONNS}
+      - CACHE_MAX_ACTIVE_CONNS=${AUTH_CACHE_MAX_ACTIVE_CONNS}
+      - CACHE_CONN_MAX_LIFETIME=${AUTH_CACHE_CONN_MAX_LIFETIME}
+      - CACHE_CONN_MAX_IDLE_TIME=${AUTH_CACHE_CONN_MAX_IDLE_TIME}
+      - CACHE_TIMEOUT_DIAL=${AUTH_CACHE_TIMEOUT_DIAL}
+      - CACHE_TIMEOUT_READ=${AUTH_CACHE_TIMEOUT_READ}
+      - CACHE_TIMEOUT_WRITE=${AUTH_CACHE_TIMEOUT_WRITE}
+    depends_on:
+      auth-database:
+        condition: service_healthy
+      auth-migrator:
+        condition: service_completed_successfully
+      auth-cache:
+        condition: service_healthy
+  
   auth-database:
     image: postgres:16-alpine
     container_name: ${AUTH_DATABASE_HOST}
@@ -46,6 +92,130 @@ services:
       interval: 10s
       retries: 3
 
+  auth-cache:
+    image: redis:7.4-alpine
+    container_name: ${AUTH_CACHE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: redis-server --requirepass "${AUTH_CACHE_PASS}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${AUTH_CACHE_PASS}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ---------- Kafka ----------
+  kafka-init:
+    image: apache/kafka:3.8.0
+    container_name: kafka-init
+    networks:
+      - apotekly-net
+    restart: "no"
+    volumes:
+      - ./scripts/create-kafka-topics.sh:/create-kafka-topics.sh
+    depends_on:
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
+    command: ["bash", "/create-kafka-topics.sh", "&&", "exit"]
+  
+  kafka1:
+    image: apache/kafka:3.8.0
+    container_name: ${BROKER_1_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${BROKER_1_HOST}:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@${BROKER_1_HOST}:9093,2@${BROKER_2_HOST}:9093,3@${BROKER_3_HOST}:9093
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_CLUSTER_ID: ${BROKER_RANDOM_STABLE_ID}
+    volumes:
+      - kafka1_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "${BROKER_1_HOST}", "9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  kafka2:
+    image: apache/kafka:3.8.0
+    container_name: ${BROKER_2_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${BROKER_2_HOST}:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@${BROKER_1_HOST}:9093,2@${BROKER_2_HOST}:9093,3@${BROKER_3_HOST}:9093
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_CLUSTER_ID: ${BROKER_RANDOM_STABLE_ID}
+    volumes:
+      - kafka2_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "${BROKER_2_HOST}", "9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  kafka3:
+    image: apache/kafka:3.8.0
+    container_name: ${BROKER_3_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${BROKER_3_HOST}:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@${BROKER_1_HOST}:9093,2@${BROKER_2_HOST}:9093,3@${BROKER_3_HOST}:9093
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_CLUSTER_ID: ${BROKER_RANDOM_STABLE_ID}
+    volumes:
+      - kafka3_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "${BROKER_3_HOST}", "9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------- Jaeger ----------
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    container_name: ${TRACER_HOST}
+    ports:
+      - ${TRACER_PORT}:${TRACER_PORT}
+      - ${TRACER_WEB_UI_PORT}:${TRACER_WEB_UI_PORT}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
 networks:
   apotekly-net:
     name: apotekly-net
@@ -53,3 +223,6 @@ networks:
 
 volumes:
   auth_db_data:
+  kafka1_data:
+  kafka2_data:
+  kafka3_data:

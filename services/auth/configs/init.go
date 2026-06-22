@@ -3,15 +3,39 @@ package configs
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	cfg "github.com/ritchieridanko/apotekly/services/shared/configs"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	App      cfg.App      `mapstructure:"app"`
-	Database cfg.Database `mapstructure:"database"`
+	App      cfg.App        `mapstructure:"app"`
+	Auth     Auth           `mapstructure:"auth"`
+	Server   cfg.GRPCServer `mapstructure:"server"`
+	Database cfg.Database   `mapstructure:"database"`
+	Cache    cfg.Cache      `mapstructure:"cache"`
+	Tracer   cfg.Tracer     `mapstructure:"tracer"`
+	Broker   Broker         `mapstructure:"broker"`
+}
+
+type Auth struct {
+	BCrypt cfg.BCrypt `mapstructure:"bcrypt"`
+	JWT    cfg.JWT    `mapstructure:"jwt"`
+
+	Duration struct {
+		Session      time.Duration `mapstructure:"session"`
+		Verification time.Duration `mapstructure:"verification"`
+	} `mapstructure:"duration"`
+}
+
+type Broker struct {
+	Brokers string `mapstructure:"brokers"`
+
+	// Publishers
+	AC cfg.Publisher `mapstructure:"ac"`
 }
 
 func Init(path string) (*Config, error) {
@@ -40,6 +64,9 @@ func Init(path string) (*Config, error) {
 	}
 
 	cfg.App.Env = env
+	cfg.Server.Addr = cfg.Server.Host + ":" + strconv.Itoa(cfg.Server.Port)
+	cfg.Cache.Addr = cfg.Cache.Host + ":" + strconv.Itoa(cfg.Cache.Port)
+	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
 	cfg.Database.DSN = fmt.Sprintf(
 		"postgresql://%s:%s@%s:%d/%s?sslmode=%s",
 		cfg.Database.User,

@@ -7,6 +7,11 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+type TransportContext struct {
+	IPAddress string
+	UserAgent string
+}
+
 // Get Request ID from Context
 func CtxRequestID(ctx context.Context) string {
 	if v, ok := ctx.Value(constants.CtxKeyRequestID).(string); ok {
@@ -21,4 +26,12 @@ func CtxTraceID(ctx context.Context) string {
 		return sp.SpanContext().TraceID().String()
 	}
 	return ""
+}
+
+// Get Transport Information from Context
+func CtxTransport(ctx context.Context) *TransportContext {
+	if v, ok := ctx.Value(constants.CtxKeyTransport).(*TransportContext); ok {
+		return v
+	}
+	return nil
 }

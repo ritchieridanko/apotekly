@@ -5,7 +5,7 @@ FROM golang:1.25.0-alpine3.22 AS builder
 RUN apk add --no-cache git
 
 # Set work directory
-WORKDIR /app/services/auth
+WORKDIR /app/auth
 
 # Copy and download app dependencies
 COPY services/shared/go.mod services/shared/go.sum ../shared/
@@ -32,9 +32,9 @@ FROM alpine:3.22
 WORKDIR /root
 
 # Copy from the Build Stage
-COPY --from=builder /app/services/auth/bin ./bin
-COPY --from=builder /app/services/auth/configs ./configs
-COPY --from=builder /app/services/auth/migrations ./migrations
+COPY --from=builder /app/auth/bin ./bin
+COPY --from=builder /app/auth/configs ./configs
+COPY --from=builder /app/auth/migrations ./migrations
 
 # Set entry point
 ENTRYPOINT ["./bin/migrator"]

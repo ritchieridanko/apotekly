@@ -1,0 +1,79 @@
+package handlers
+
+import (
+	"context"
+
+	"github.com/ritchieridanko/apotekly/services/auth/internal/models"
+	"github.com/ritchieridanko/apotekly/services/auth/internal/usecases"
+	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
+)
+
+type AuthHandler struct {
+	apis.UnimplementedAuthServiceServer
+	au usecases.AuthUsecase
+}
+
+func NewAuthHandler(au usecases.AuthUsecase) *AuthHandler {
+	return &AuthHandler{au: au}
+}
+
+func (h *AuthHandler) SignUp(ctx context.Context, req *apis.SignUpRequest) (*apis.SignUpResponse, error) {
+	a, at, err := h.au.SignUp(
+		ctx,
+		&models.SignUpReq{
+			Email:    req.GetEmail(),
+			Password: req.GetPassword(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	if at == nil {
+		a = nil
+	}
+	return &apis.SignUpResponse{
+		Auth:      h.toAuth(a),
+		AuthToken: h.toAuthToken(at),
+	}, nil
+}
+
+func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
+	if a == nil {
+		return nil
+	}
+	return &apis.Auth{
+		Email:           a.Email,
+		Role:            a.Role,
+		IsEmailVerified: a.IsEmailVerified(),
+	}
+}
+
+func (h *AuthHandler) toAuthToken(at *models.AuthToken) *apis.AuthToken {
+	if at == nil {
+		return nil
+	}
+	return &apis.AuthToken{
+		AccessToken:  h.toAccessToken(at.AccessToken),
+		RefreshToken: h.toRefreshToken(at.RefreshToken),
+	}
+}
+
+func (h *AuthHandler) toAccessToken(at *models.AccessToken) *apis.AccessToken {
+	if at == nil {
+		return nil
+	}
+	return &apis.AccessToken{
+		Token:            at.Token,
+		ExpiresInSeconds: at.ExpiresInSeconds,
+	}
+}
+
+func (h *AuthHandler) toRefreshToken(rt *models.RefreshToken) *apis.RefreshToken {
+	if rt == nil {
+		return nil
+	}
+	return &apis.RefreshToken{
+		Token:            rt.Token,
+		ExpiresInSeconds: rt.ExpiresInSeconds,
+	}
+}

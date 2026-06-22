@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/events/v1;events";
+
+message AuthCreated {
+  string id = 1;
+  uint64 auth_id = 2;
+  string email = 3;
+  string role = 4;
+  google.protobuf.Timestamp email_verified_at = 5;
+  optional string session = 6;
+  optional string verification_token = 7;
+  google.protobuf.Timestamp created_at = 8;
+}

@@ -59,10 +59,23 @@ func (e *Error) Bind(ctx *gin.Context) {
 
 func (e *Error) ToGRPCErr() error {
 	switch e.code {
+	case CodeInvalidPayload:
+		return status.Error(codes.InvalidArgument, e.message)
+	case CodeEmailNotAvailable:
+		return status.Error(codes.AlreadyExists, e.message)
 	case
+		CodeBCryptHashingFailed,
+		CodeCacheCommandExec,
+		CodeCacheScriptExec,
 		CodeDBQueryExec,
-		CodeDBTx:
+		CodeDBTx,
+		CodeEventPublishingFailed,
+		CodeJWTGenerationFailed,
+		CodeMissingContextValue,
+		CodeMissingMetadata:
 		return status.Error(codes.Internal, e.message)
+	case CodeUnknown:
+		return status.Error(codes.Unknown, e.message)
 	default:
 		return status.Error(codes.Unknown, e.message)
 	}
