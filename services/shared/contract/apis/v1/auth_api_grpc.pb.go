@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_SignUp_FullMethodName = "/auth.v1.AuthService/SignUp"
+	AuthService_SignUp_FullMethodName           = "/auth.v1.AuthService/SignUp"
+	AuthService_IsEmailAvailable_FullMethodName = "/auth.v1.AuthService/IsEmailAvailable"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
+	IsEmailAvailable(ctx context.Context, in *IsEmailAvailableRequest, opts ...grpc.CallOption) (*IsEmailAvailableResponse, error)
 }
 
 type authServiceClient struct {
@@ -47,11 +49,22 @@ func (c *authServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) IsEmailAvailable(ctx context.Context, in *IsEmailAvailableRequest, opts ...grpc.CallOption) (*IsEmailAvailableResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IsEmailAvailableResponse)
+	err := c.cc.Invoke(ctx, AuthService_IsEmailAvailable_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
+	IsEmailAvailable(context.Context, *IsEmailAvailableRequest) (*IsEmailAvailableResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedAuthServiceServer struct{}
 
 func (UnimplementedAuthServiceServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
+func (UnimplementedAuthServiceServer) IsEmailAvailable(context.Context, *IsEmailAvailableRequest) (*IsEmailAvailableResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsEmailAvailable not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -104,6 +120,24 @@ func _AuthService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_IsEmailAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsEmailAvailableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).IsEmailAvailable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_IsEmailAvailable_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).IsEmailAvailable(ctx, req.(*IsEmailAvailableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignUp",
 			Handler:    _AuthService_SignUp_Handler,
+		},
+		{
+			MethodName: "IsEmailAvailable",
+			Handler:    _AuthService_IsEmailAvailable_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,6 +6,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 
 service AuthService {
   rpc SignUp (SignUpRequest) returns (SignUpResponse);
+  rpc IsEmailAvailable (IsEmailAvailableRequest) returns (IsEmailAvailableResponse);
 }
 
 message Auth {
@@ -37,4 +38,12 @@ message SignUpRequest {
 message SignUpResponse {
   Auth auth = 1;
   AuthToken auth_token = 2;
+}
+
+message IsEmailAvailableRequest {
+  string email = 1;
+}
+
+message IsEmailAvailableResponse {
+  bool is_available = 1;
 }

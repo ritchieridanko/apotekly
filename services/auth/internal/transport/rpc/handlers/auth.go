@@ -37,6 +37,16 @@ func (h *AuthHandler) SignUp(ctx context.Context, req *apis.SignUpRequest) (*api
 	}, nil
 }
 
+func (h *AuthHandler) IsEmailAvailable(ctx context.Context, req *apis.IsEmailAvailableRequest) (*apis.IsEmailAvailableResponse, error) {
+	available, err := h.au.IsEmailAvailable(ctx, req.GetEmail())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.IsEmailAvailableResponse{
+		IsAvailable: available,
+	}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil
