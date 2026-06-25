@@ -13,6 +13,7 @@ var authServiceField logger.Field = logger.NewField("service", "auth")
 
 type AuthClient interface {
 	SignUp(ctx context.Context, req *models.SignUpReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 }
 
 type authClient struct {
@@ -39,6 +40,23 @@ func (c *authClient) SignUp(ctx context.Context, req *models.SignUpReq) (*models
 		)
 	}
 	return c.toAuth(resp.GetAuth()), c.toAuthToken(resp.GetAuthToken()), nil
+}
+
+func (c *authClient) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {
+	resp, err := c.client.IsEmailAvailable(
+		ctx,
+		&apis.IsEmailAvailableRequest{
+			Email: email,
+		},
+	)
+	if err != nil {
+		return false, ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return resp.GetIsAvailable(), nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

@@ -40,6 +40,13 @@ func Init(appName string, l *logger.Logger, ah *handlers.AuthHandler) *Router {
 	auth := v1.Group("/auth")
 	{
 		auth.POST("/signup", ah.SignUp)
+
+		// Emails
+		email := auth.Group("/email")
+		{
+			// Availability
+			email.GET("/available", ah.IsEmailAvailable)
+		}
 	}
 
 	return &Router{router: r}

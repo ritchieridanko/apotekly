@@ -84,6 +84,35 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) IsEmailAvailable(ctx *gin.Context) {
+	var params dtos.IsEmailAvailableRequest
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+
+	available, err := h.ac.IsEmailAvailable(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		params.Email,
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"OK",
+		dtos.IsEmailAvailableResponse{
+			IsAvailable: available,
+		},
+		nil,
+	)
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *dtos.Auth {
 	if a == nil {
 		return nil

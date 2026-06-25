@@ -23,6 +23,7 @@ const (
 	CodeEmailNotAvailable      errCode = "ERR_EMAIL_NOT_AVAILABLE"
 	CodeEventPublishingFailed  errCode = "ERR_EVENT_PUBLISHING_FAILED"
 	CodeInternal               errCode = "ERR_INTERNAL"
+	CodeInvalidParams          errCode = "ERR_INVALID_PARAMS"
 	CodeInvalidPayload         errCode = "ERR_INVALID_PAYLOAD"
 	CodeInvalidRequestMetadata errCode = "ERR_INVALID_REQUEST_METADATA"
 	CodeJWTGenerationFailed    errCode = "ERR_JWT_GENERATION_FAILED"
@@ -36,5 +37,6 @@ const (
 const (
 	MsgEmailAlreadyRegistered string = "Email is already registered"
 	MsgInternalServer         string = "Internal server error"
+	MsgInvalidParams          string = "Invalid params"
 	MsgInvalidPayload         string = "Invalid payload"
 )

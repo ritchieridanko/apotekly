@@ -62,6 +62,7 @@ func (e *Error) Bind(ctx *gin.Context) {
 func (e *Error) ToGRPCErr() error {
 	switch e.code {
 	case
+		CodeInvalidParams,
 		CodeInvalidPayload,
 		CodeInvalidRequestMetadata:
 		return status.Error(codes.InvalidArgument, e.message)
@@ -92,6 +93,7 @@ func (e *Error) ToGRPCErr() error {
 func (e *Error) ToHTTPErr() int {
 	switch e.code {
 	case
+		CodeInvalidParams,
 		CodeInvalidPayload,
 		CodeInvalidRequestMetadata:
 		return http.StatusBadRequest
