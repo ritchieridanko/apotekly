@@ -1,6 +1,9 @@
 package validator
 
-import "strconv"
+import (
+	"net"
+	"strconv"
+)
 
 type Validator struct{}
 
@@ -11,6 +14,13 @@ func Init() *Validator {
 func (v *Validator) Email(value string) (bool, string) {
 	if !rgxEmail.MatchString(value) {
 		return false, "Email is invalid: " + value
+	}
+	return true, ""
+}
+
+func (v *Validator) IPAddress(value string) (bool, string) {
+	if ip := net.ParseIP(value); ip == nil {
+		return false, "IP Address is invalid: " + value
 	}
 	return true, ""
 }
@@ -34,6 +44,13 @@ func (v *Validator) Password(value string) (bool, string) {
 	}
 	if !rgxSpecialChars.MatchString(value) {
 		return false, "Password must include at least one special character: " + specialChars
+	}
+	return true, ""
+}
+
+func (v *Validator) UserAgent(value string) (bool, string) {
+	if len(value) > userAgentMaxLength {
+		return false, "User Agent must not exceed " + strconv.Itoa(userAgentMaxLength) + " characters"
 	}
 	return true, ""
 }

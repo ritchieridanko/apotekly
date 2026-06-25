@@ -1,0 +1,65 @@
+package infra
+
+import (
+	"fmt"
+
+	"github.com/ritchieridanko/apotekly/services/gateway/configs"
+	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/services"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/tracer"
+	"go.uber.org/zap"
+)
+
+type Infra struct {
+	config *configs.Config
+	logger *zap.Logger
+	tracer *tracer.Tracer
+	as     *services.AuthService
+}
+
+func Init(cfg *configs.Config) (*Infra, error) {
+	l, err := logger.Init(cfg.App.Env)
+	if err != nil {
+		return nil, err
+	}
+
+	t, err := tracer.Init(cfg.App.Env, cfg.App.Name, cfg.Tracer.Addr, l)
+	if err != nil {
+		return nil, err
+	}
+
+	// Services
+	as, err := services.NewAuthService(&cfg.Service.Auth, l)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Infra{
+		config: cfg,
+		logger: l,
+		tracer: t,
+		as:     as,
+	}, nil
+}
+
+func (i *Infra) Logger() *zap.Logger {
+	return i.logger
+}
+
+func (i *Infra) AuthService() apis.AuthServiceClient {
+	return i.as.Client()
+}
+
+func (i *Infra) Close() error {
+	if err := i.logger.Sync(); err != nil {
+		return fmt.Errorf("failed to close logger: %w", err)
+	}
+	if err := i.tracer.Shutdown(); err != nil {
+		return fmt.Errorf("failed to close tracer: %w", err)
+	}
+	if err := i.as.Close(); err != nil {
+		return fmt.Errorf("failed to close auth service connection: %w", err)
+	}
+	return nil
+}

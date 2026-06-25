@@ -5,6 +5,7 @@ import (
 
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc/metadata"
 )
 
 type TransportContext struct {
@@ -34,4 +35,15 @@ func CtxTransport(ctx context.Context) *TransportContext {
 		return v
 	}
 	return nil
+}
+
+func CtxWithMetadata(ctx context.Context, kv ...string) context.Context {
+	return metadata.AppendToOutgoingContext(
+		ctx,
+		append(
+			kv,
+			constants.MDKeyRequestID,
+			CtxRequestID(ctx),
+		)...,
+	)
 }

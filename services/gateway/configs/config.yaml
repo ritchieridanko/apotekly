@@ -1,0 +1,23 @@
+app:
+  name: "gateway-service"
+
+server:
+  host: "localhost"
+  port: 8080
+  timeout:
+    read: "5s"
+    write: "5s"
+    shutdown: "10s"
+
+service:
+  auth:
+    name: "auth-service"
+    host: "localhost"
+    port: 50051
+
+tracer:
+  host: "localhost"
+  port: 4317
+
+jwt:
+  secret: ""

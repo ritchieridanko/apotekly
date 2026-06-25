@@ -11,8 +11,9 @@ var (
 )
 
 const (
-	passwordMaxLength int = 50
-	passwordMinLength int = 8
+	passwordMaxLength  int = 50
+	passwordMinLength  int = 8
+	userAgentMaxLength int = 512
 
 	specialChars string = `!@#$%^&*()_+\-={};:'"\\|,.<>/?`
 )

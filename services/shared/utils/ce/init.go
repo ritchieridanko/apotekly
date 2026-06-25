@@ -1,6 +1,8 @@
 package ce
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"google.golang.org/grpc/codes"
@@ -59,9 +61,13 @@ func (e *Error) Bind(ctx *gin.Context) {
 
 func (e *Error) ToGRPCErr() error {
 	switch e.code {
-	case CodeInvalidPayload:
+	case
+		CodeInvalidPayload,
+		CodeInvalidRequestMetadata:
 		return status.Error(codes.InvalidArgument, e.message)
-	case CodeEmailNotAvailable:
+	case
+		CodeAlreadyExists,
+		CodeEmailNotAvailable:
 		return status.Error(codes.AlreadyExists, e.message)
 	case
 		CodeBCryptHashingFailed,
@@ -70,13 +76,32 @@ func (e *Error) ToGRPCErr() error {
 		CodeDBQueryExec,
 		CodeDBTx,
 		CodeEventPublishingFailed,
+		CodeInternal,
 		CodeJWTGenerationFailed,
 		CodeMissingContextValue,
-		CodeMissingMetadata:
+		CodeMissingMetadata,
+		CodeUUIDGenerationFailed:
 		return status.Error(codes.Internal, e.message)
 	case CodeUnknown:
 		return status.Error(codes.Unknown, e.message)
 	default:
 		return status.Error(codes.Unknown, e.message)
+	}
+}
+
+func (e *Error) ToHTTPErr() int {
+	switch e.code {
+	case
+		CodeInvalidPayload,
+		CodeInvalidRequestMetadata:
+		return http.StatusBadRequest
+	case CodeAlreadyExists:
+		return http.StatusConflict
+	case
+		CodeInternal,
+		CodeUnknown:
+		return http.StatusInternalServerError
+	default:
+		return http.StatusInternalServerError
 	}
 }
