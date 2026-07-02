@@ -1,0 +1,9 @@
+.git
+bin/
+tmp/
+logs/
+coverage/
+*.md
+*.out
+Dockerfile.app
+Dockerfile.migrator

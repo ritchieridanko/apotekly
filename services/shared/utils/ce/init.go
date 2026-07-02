@@ -76,11 +76,23 @@ func (e *Error) ToGRPCErr() error {
 		CodeCacheScriptExec,
 		CodeDBQueryExec,
 		CodeDBTx,
+		CodeEmailDeliveryFailed,
+		CodeEmailTemplatingFailed,
+		CodeEventCommittingFailed,
+		CodeEventFetchingFailed,
 		CodeEventPublishingFailed,
+		CodeEventTopicNotRegistered,
 		CodeInternal,
+		CodeJSONRawEncodingFailed,
+		CodeJSONUnmarshallingFailed,
 		CodeJWTGenerationFailed,
 		CodeMissingContextValue,
 		CodeMissingMetadata,
+		CodeNoPendingEventInbox,
+		CodeOrphanedEventInbox,
+		CodePanicOccurred,
+		CodeProtobufParsingFailed,
+		CodeURLGenerationFailed,
 		CodeUUIDGenerationFailed:
 		return status.Error(codes.Internal, e.message)
 	case CodeUnknown:

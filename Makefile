@@ -22,9 +22,11 @@ docker-down:
 
 docker-migrator-up:
 	docker compose run --rm auth-migrator -up
+	docker compose run --rm notification-migrator -up
 
 docker-migrator-down:
 	docker compose run --rm auth-migrator -down 0
+	docker compose run --rm notification-migrator -down 0
 
 docker-start:
 	make docker-build

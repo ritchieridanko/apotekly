@@ -141,6 +141,84 @@ services:
       retries: 5
       start_period: 5s
 
+  # ---------- Notification ----------
+  notification-service:
+    image: apotekly-notification-service
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/notification/Dockerfile.app
+    container_name: ${NOTIFICATION_SERVICE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - APP_NAME=${NOTIFICATION_SERVICE_HOST}
+      - DATABASE_HOST=${NOTIFICATION_DATABASE_HOST}
+      - DATABASE_PORT=${NOTIFICATION_DATABASE_PORT}
+      - DATABASE_USER=${NOTIFICATION_DATABASE_USER}
+      - DATABASE_PASS=${NOTIFICATION_DATABASE_PASS}
+      - DATABASE_NAME=${NOTIFICATION_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${NOTIFICATION_DATABASE_SSL_MODE}
+      - DATABASE_MAX_CONNS=${NOTIFICATION_DATABASE_MAX_CONNS}
+      - DATABASE_MIN_CONNS=${NOTIFICATION_DATABASE_MIN_CONNS}
+      - DATABASE_MAX_CONN_LIFETIME=${NOTIFICATION_DATABASE_MAX_CONN_LIFETIME}
+      - DATABASE_MAX_CONN_IDLE_TIME=${NOTIFICATION_DATABASE_MAX_CONN_IDLE_TIME}
+    depends_on:
+      notification-database:
+        condition: service_healthy
+      notification-migrator:
+        condition: service_completed_successfully
+
+  notification-database:
+    image: postgres:16-alpine
+    container_name: ${NOTIFICATION_DATABASE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${NOTIFICATION_DATABASE_USER}
+      - POSTGRES_PASSWORD=${NOTIFICATION_DATABASE_PASS}
+      - POSTGRES_DB=${NOTIFICATION_DATABASE_NAME}
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${NOTIFICATION_DATABASE_USER} -d ${NOTIFICATION_DATABASE_NAME}"]
+      interval: 5s
+      retries: 5
+
+  notification-migrator:
+    image: apotekly-notification-migrator
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/notification/Dockerfile.migrator
+    container_name: notification-migrator
+    networks:
+      - apotekly-net
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=${NOTIFICATION_DATABASE_HOST}
+      - DATABASE_PORT=${NOTIFICATION_DATABASE_PORT}
+      - DATABASE_USER=${NOTIFICATION_DATABASE_USER}
+      - DATABASE_PASS=${NOTIFICATION_DATABASE_PASS}
+      - DATABASE_NAME=${NOTIFICATION_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${NOTIFICATION_DATABASE_SSL_MODE}
+    depends_on:
+      notification-database:
+        condition: service_healthy
+    entrypoint: ["./bin/migrator"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "${NOTIFICATION_DATABASE_HOST}"]
+      interval: 10s
+      retries: 3
+
   # ---------- Kafka ----------
   kafka-init:
     image: apache/kafka:3.8.0
@@ -256,6 +334,7 @@ networks:
 
 volumes:
   auth_db_data:
+  notification_db_data:
   kafka1_data:
   kafka2_data:
   kafka3_data:

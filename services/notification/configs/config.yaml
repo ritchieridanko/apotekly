@@ -1,0 +1,38 @@
+app:
+  name: "notification-service"
+  logo_url: ""
+
+client:
+  host: "localhost"
+  port: 3000
+
+database:
+  host: "localhost"
+  port: 5432
+  user: ""
+  pass: ""
+  name: "apotekly_notification_db"
+  ssl_mode: "disable"
+  max_conns: 5
+  min_conns: 1
+  max_conn_lifetime: "1h"
+  max_conn_idle_time: "30m"
+
+mailer:
+  host: "smtp.gmail.com"
+  port: 587
+  user: ""
+  pass: ""
+  from: ""
+
+tracer:
+  host: "localhost"
+  port: 4317
+
+broker:
+  brokers: "localhost:9092,localhost:9093,localhost:9094"
+  ac:
+    name: "auth.created"
+    max_bytes: 1000000
+    max_wait: "1s"
+    commit_interval: "500ms"
