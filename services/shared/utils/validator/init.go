@@ -3,6 +3,7 @@ package validator
 import (
 	"net"
 	"strconv"
+	"unicode/utf8"
 )
 
 type Validator struct{}
@@ -26,7 +27,7 @@ func (v *Validator) IPAddress(value string) (bool, string) {
 }
 
 func (v *Validator) Password(value string) (bool, string) {
-	length := len(value)
+	length := utf8.RuneCountInString(value)
 	if length < passwordMinLength {
 		return false, "Password must be at least " + strconv.Itoa(passwordMinLength) + " characters"
 	}
@@ -43,7 +44,10 @@ func (v *Validator) Password(value string) (bool, string) {
 		return false, "Password must include at least one number"
 	}
 	if !rgxSpecialChars.MatchString(value) {
-		return false, "Password must include at least one special character: " + specialChars
+		return false, "Password must include at least one special character: " + rgxSpecialChars.String()
+	}
+	if len([]byte(value)) > bcryptMaxBytes {
+		return false, "Password too long"
 	}
 	return true, ""
 }

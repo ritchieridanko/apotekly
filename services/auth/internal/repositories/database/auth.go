@@ -12,6 +12,7 @@ import (
 
 type AuthDatabase interface {
 	Create(ctx context.Context, data *models.CreateAuth) (a *models.Auth, err *ce.Error)
+	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	EmailExists(ctx context.Context, email string) (exists bool, err *ce.Error)
 }
 
@@ -48,6 +49,50 @@ func (d *authDatabase) Create(ctx context.Context, data *models.CreateAuth) (*mo
 			ce.CodeDBQueryExec,
 			ce.MsgInternalServer,
 			fmt.Errorf("failed to create auth: %w", err),
+		)
+	}
+
+	return &a, nil
+}
+
+func (d *authDatabase) GetByEmail(ctx context.Context, email string) (*models.Auth, *ce.Error) {
+	query := `
+		SELECT
+			id, email, password, role, email_verified_at
+		FROM
+			auth
+		WHERE
+			email = $1
+			AND deleted_at IS NULL
+	`
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var a models.Auth
+	err := d.database.Query(
+		ctx, query,
+		email,
+	).Scan(
+		&a.ID,
+		&a.Email,
+		&a.Password,
+		&a.Role,
+		&a.EmailVerifiedAt,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get auth by email: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeAuthNotFound,
+				ce.MsgAuthNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
 		)
 	}
 

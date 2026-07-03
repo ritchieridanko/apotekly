@@ -7,6 +7,11 @@ type (
 		IsEmailVerified bool
 	}
 
+	SignInReq struct {
+		Email    string
+		Password string
+	}
+
 	SignUpReq struct {
 		Email    string
 		Password string

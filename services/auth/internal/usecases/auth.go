@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +24,7 @@ import (
 
 type AuthUsecase interface {
 	SignUp(ctx context.Context, req *models.SignUpReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	SignIn(ctx context.Context, req *models.SignInReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 }
 
@@ -201,6 +203,65 @@ func (u *authUsecase) SignUp(ctx context.Context, req *models.SignUpReq) (*model
 	)
 
 	return a, at, nil
+}
+
+func (u *authUsecase) SignIn(ctx context.Context, req *models.SignInReq) (*models.Auth, *models.AuthToken, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.SignIn")
+	defer span.End()
+
+	// Data Normalization
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+
+	// Data Validation
+	if ok, why := u.validator.Email(email); !ok {
+		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil)
+	}
+
+	// Auth Fetching
+	a, err := u.ar.GetByEmail(ctx, email)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		return nil, nil, ce.NewError(
+			ce.CodeEmailNotRegistered,
+			ce.MsgInvalidCredentials,
+			err.Unwrap(),
+			err.Fields()...,
+		)
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+
+	authIDField := logger.NewField("auth_id", a.ID)
+
+	// Password Validation
+	if a.Password == nil {
+		return nil, nil, ce.NewError(
+			ce.CodeOAuthRegularSignIn,
+			ce.MsgInvalidCredentials,
+			errors.New("auth has no password"),
+			authIDField,
+		)
+	}
+	if err := u.bcrypt.Validate(*a.Password, req.Password); err != nil {
+		return nil, nil, ce.NewError(
+			ce.CodeWrongPassword,
+			ce.MsgInvalidCredentials,
+			err,
+			authIDField,
+		)
+	}
+
+	// Session Creation
+	at, err := u.su.CreateSession(
+		ctx,
+		&models.CreateSessionReq{
+			AuthID:          a.ID,
+			Role:            a.Role,
+			IsEmailVerified: a.IsEmailVerified(),
+		},
+	)
+
+	return a, at, err
 }
 
 func (u *authUsecase) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {

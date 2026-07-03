@@ -11,6 +11,7 @@ import (
 
 type AuthRepository interface {
 	Create(ctx context.Context, data *models.CreateAuth) (a *models.Auth, err *ce.Error)
+	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 }
 
@@ -25,6 +26,10 @@ func NewAuthRepository(cc cache.AuthCache, db database.AuthDatabase) AuthReposit
 
 func (r *authRepository) Create(ctx context.Context, data *models.CreateAuth) (*models.Auth, *ce.Error) {
 	return r.database.Create(ctx, data)
+}
+
+func (r *authRepository) GetByEmail(ctx context.Context, email string) (*models.Auth, *ce.Error) {
+	return r.database.GetByEmail(ctx, email)
 }
 
 func (r *authRepository) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {

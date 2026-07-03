@@ -67,9 +67,19 @@ func (e *Error) ToGRPCErr() error {
 		CodeInvalidRequestMetadata:
 		return status.Error(codes.InvalidArgument, e.message)
 	case
+		CodeAuthNotFound,
+		CodeNotFound:
+		return status.Error(codes.NotFound, e.message)
+	case
 		CodeAlreadyExists,
 		CodeEmailNotAvailable:
 		return status.Error(codes.AlreadyExists, e.message)
+	case
+		CodeEmailNotRegistered,
+		CodeOAuthRegularSignIn,
+		CodeUnauthenticated,
+		CodeWrongPassword:
+		return status.Error(codes.Unauthenticated, e.message)
 	case
 		CodeBCryptHashingFailed,
 		CodeCacheCommandExec,
@@ -109,6 +119,10 @@ func (e *Error) ToHTTPErr() int {
 		CodeInvalidPayload,
 		CodeInvalidRequestMetadata:
 		return http.StatusBadRequest
+	case CodeUnauthenticated:
+		return http.StatusUnauthorized
+	case CodeNotFound:
+		return http.StatusNotFound
 	case CodeAlreadyExists:
 		return http.StatusConflict
 	case

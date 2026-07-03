@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	AuthService_SignUp_FullMethodName           = "/auth.v1.AuthService/SignUp"
+	AuthService_SignIn_FullMethodName           = "/auth.v1.AuthService/SignIn"
 	AuthService_IsEmailAvailable_FullMethodName = "/auth.v1.AuthService/IsEmailAvailable"
 )
 
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
+	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
 	IsEmailAvailable(ctx context.Context, in *IsEmailAvailableRequest, opts ...grpc.CallOption) (*IsEmailAvailableResponse, error)
 }
 
@@ -49,6 +51,16 @@ func (c *authServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SignInResponse)
+	err := c.cc.Invoke(ctx, AuthService_SignIn_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) IsEmailAvailable(ctx context.Context, in *IsEmailAvailableRequest, opts ...grpc.CallOption) (*IsEmailAvailableResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IsEmailAvailableResponse)
@@ -64,6 +76,7 @@ func (c *authServiceClient) IsEmailAvailable(ctx context.Context, in *IsEmailAva
 // for forward compatibility.
 type AuthServiceServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
+	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
 	IsEmailAvailable(context.Context, *IsEmailAvailableRequest) (*IsEmailAvailableResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -77,6 +90,9 @@ type UnimplementedAuthServiceServer struct{}
 
 func (UnimplementedAuthServiceServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
+func (UnimplementedAuthServiceServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
 func (UnimplementedAuthServiceServer) IsEmailAvailable(context.Context, *IsEmailAvailableRequest) (*IsEmailAvailableResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsEmailAvailable not implemented")
@@ -120,6 +136,24 @@ func _AuthService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignInRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SignIn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_SignIn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SignIn(ctx, req.(*SignInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_IsEmailAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IsEmailAvailableRequest)
 	if err := dec(in); err != nil {
@@ -148,6 +182,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignUp",
 			Handler:    _AuthService_SignUp_Handler,
+		},
+		{
+			MethodName: "SignIn",
+			Handler:    _AuthService_SignIn_Handler,
 		},
 		{
 			MethodName: "IsEmailAvailable",

@@ -14,8 +14,12 @@ func ToError(err error) *Error {
 	switch st.Code() {
 	case codes.InvalidArgument:
 		return NewError(CodeInvalidPayload, st.Message(), err)
+	case codes.NotFound:
+		return NewError(CodeNotFound, st.Message(), err)
 	case codes.AlreadyExists:
 		return NewError(CodeAlreadyExists, st.Message(), err)
+	case codes.Unauthenticated:
+		return NewError(CodeUnauthenticated, st.Message(), err)
 	case codes.Internal:
 		return NewError(CodeInternal, st.Message(), err)
 	case codes.Unknown:

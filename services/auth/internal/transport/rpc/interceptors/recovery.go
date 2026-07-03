@@ -26,7 +26,7 @@ func Recovery(l *logger.Logger) grpc.UnaryServerInterceptor {
 					"PANIC RECOVERED",
 					logger.NewField("method", info.FullMethod),
 					logger.NewField("panic", fmt.Sprintf("%v", r)),
-					logger.NewField("stack_trace", debug.Stack()),
+					logger.NewField("stack_trace", string(debug.Stack())),
 				)
 				err = status.Error(codes.Internal, ce.MsgInternalServer)
 			}

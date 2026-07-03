@@ -15,6 +15,7 @@ var (
 // Internal Error Codes
 const (
 	CodeAlreadyExists           errCode = "ERR_ALREADY_EXISTS"
+	CodeAuthNotFound            errCode = "ERR_AUTH_NOT_FOUND"
 	CodeBCryptHashingFailed     errCode = "ERR_BCRYPT_HASHING_FAILED"
 	CodeCacheCommandExec        errCode = "ERR_CACHE_COMMAND_EXECUTION"
 	CodeCacheScriptExec         errCode = "ERR_CACHE_SCRIPT_EXECUTION"
@@ -22,6 +23,7 @@ const (
 	CodeDBTx                    errCode = "ERR_DB_TX"
 	CodeEmailDeliveryFailed     errCode = "ERR_EMAIL_DELIVERY_FAILED"
 	CodeEmailNotAvailable       errCode = "ERR_EMAIL_NOT_AVAILABLE"
+	CodeEmailNotRegistered      errCode = "ERR_EMAIL_NOT_REGISTERED"
 	CodeEmailTemplatingFailed   errCode = "ERR_EMAIL_TEMPLATING_FAILED"
 	CodeEventCommittingFailed   errCode = "ERR_EVENT_COMMITTING_FAILED"
 	CodeEventFetchingFailed     errCode = "ERR_EVENT_FETCHING_FAILED"
@@ -37,18 +39,24 @@ const (
 	CodeMissingContextValue     errCode = "ERR_MISSING_CONTEXT_VALUE"
 	CodeMissingMetadata         errCode = "ERR_MISSING_METADATA"
 	CodeNoPendingEventInbox     errCode = "ERR_NO_PENDING_EVENT_INBOX"
+	CodeNotFound                errCode = "ERR_NOT_FOUND"
+	CodeOAuthRegularSignIn      errCode = "ERR_OAUTH_REGULAR_SIGN_IN"
 	CodeOrphanedEventInbox      errCode = "ERR_ORPHANED_EVENT_INBOX"
 	CodePanicOccurred           errCode = "ERR_PANIC_OCCURRED"
 	CodeProtobufParsingFailed   errCode = "ERR_PROTOBUF_PARSING_FAILED"
+	CodeUnauthenticated         errCode = "ERR_UNAUTHENTICATED"
 	CodeUnknown                 errCode = "ERR_UNKNOWN"
 	CodeURLGenerationFailed     errCode = "ERR_URL_GENERATION_FAILED"
 	CodeUUIDGenerationFailed    errCode = "ERR_UUID_GENERATION_FAILED"
+	CodeWrongPassword           errCode = "ERR_WRONG_PASSWORD"
 )
 
 // External Error Messages
 const (
+	MsgAuthNotFound           string = "Auth not found"
 	MsgEmailAlreadyRegistered string = "Email is already registered"
 	MsgInternalServer         string = "Internal server error"
+	MsgInvalidCredentials     string = "Invalid credentials"
 	MsgInvalidParams          string = "Invalid params"
 	MsgInvalidPayload         string = "Invalid payload"
 	MsgNoPendingEventInbox    string = "No pending event inbox"
