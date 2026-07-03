@@ -14,6 +14,7 @@ var authServiceField logger.Field = logger.NewField("service", "auth")
 type AuthClient interface {
 	SignUp(ctx context.Context, req *models.SignUpReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	SignIn(ctx context.Context, req *models.SignInReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	SignOut(ctx context.Context, refreshToken string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 }
@@ -60,6 +61,23 @@ func (c *authClient) SignIn(ctx context.Context, req *models.SignInReq) (*models
 		)
 	}
 	return c.toAuth(resp.GetAuth()), c.toAuthToken(resp.GetAuthToken()), nil
+}
+
+func (c *authClient) SignOut(ctx context.Context, refreshToken string) *ce.Error {
+	_, err := c.client.SignOut(
+		ctx,
+		&apis.SignOutRequest{
+			RefreshToken: refreshToken,
+		},
+	)
+	if err != nil {
+		return ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return nil
 }
 
 func (c *authClient) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {

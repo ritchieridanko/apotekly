@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -142,6 +143,63 @@ func (h *AuthHandler) SignIn(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) SignOut(ctx *gin.Context) {
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	refreshToken, err := ctx.Cookie(constants.CookieKeyRefreshToken)
+	if errors.Is(err, ce.ErrCookieNotFound) {
+		ce.NewError(ce.CodeRefreshTokenNotFound, ce.MsgInvalidSession, err).Bind(ctx)
+		return
+	}
+	if err != nil {
+		ce.NewError(ce.CodeInternal, ce.MsgInternalServer, err).Bind(ctx)
+		return
+	}
+
+	token := strings.TrimSpace(refreshToken)
+	if token == "" {
+		ce.NewError(
+			ce.CodeRefreshTokenNotFound,
+			ce.MsgInvalidSession,
+			errors.New("refresh token is empty"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	signOutErr := h.ac.SignOut(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		token,
+	)
+	if signOutErr != nil {
+		signOutErr.Bind(ctx)
+		return
+	}
+
+	h.cookie.Unset(
+		ctx,
+		constants.CookieKeyRefreshToken,
+		"/",
+	)
+
+	utils.SetHTTPResponse[any](ctx, http.StatusNoContent, "", nil, nil)
+}
+
 func (h *AuthHandler) IsEmailAvailable(ctx *gin.Context) {
 	var params dtos.IsEmailAvailableRequest
 	if err := ctx.ShouldBindQuery(&params); err != nil {
@@ -198,7 +256,7 @@ func (h *AuthHandler) RotateAuthToken(ctx *gin.Context) {
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
 		),
-		refreshToken,
+		token,
 	)
 	if rotateErr != nil {
 		rotateErr.Bind(ctx)

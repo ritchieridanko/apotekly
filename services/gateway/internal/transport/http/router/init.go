@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/handlers"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/middlewares"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
+	"github.com/ritchieridanko/apotekly/services/shared/utils/jwt"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
@@ -14,7 +15,7 @@ type Router struct {
 	router *gin.Engine
 }
 
-func Init(appName string, l *logger.Logger, ah *handlers.AuthHandler) *Router {
+func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler) *Router {
 	r := gin.New()
 	r.ContextWithFallback = true
 
@@ -41,6 +42,7 @@ func Init(appName string, l *logger.Logger, ah *handlers.AuthHandler) *Router {
 	{
 		auth.POST("/signup", ah.SignUp)
 		auth.POST("/signin", ah.SignIn)
+		auth.POST("/signout", middlewares.Auth(j), ah.SignOut)
 		auth.POST("/refresh", ah.RotateAuthToken)
 
 		// Emails

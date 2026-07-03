@@ -9,6 +9,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/server"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/cookie"
+	"github.com/ritchieridanko/apotekly/services/shared/utils/jwt"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/validator"
 )
 
@@ -19,6 +20,7 @@ type Container struct {
 	ac clients.AuthClient
 
 	cookie    *cookie.Cookie
+	jwt       *jwt.JWT
 	validator *validator.Validator
 
 	ah *handlers.AuthHandler
@@ -36,13 +38,14 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Utils
 	c := cookie.Init(cfg.App.Env, "")
+	j := jwt.Init(cfg.JWT.Secret, cfg.JWT.Secret, cfg.JWT.Duration)
 	v := validator.Init()
 
 	// Handlers
 	ah := handlers.NewAuthHandler(ac, v, c)
 
 	// Router
-	r := router.Init(cfg.App.Name, l, ah)
+	r := router.Init(cfg.App.Name, j, l, ah)
 
 	// Server
 	srv := server.Init(&cfg.Server, r, l)
@@ -52,6 +55,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		logger:    l,
 		ac:        ac,
 		cookie:    c,
+		jwt:       j,
 		validator: v,
 		ah:        ah,
 		router:    r,
