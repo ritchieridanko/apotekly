@@ -25,6 +25,7 @@ import (
 type AuthUsecase interface {
 	SignUp(ctx context.Context, req *models.SignUpReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	SignIn(ctx context.Context, req *models.SignInReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	SignOut(ctx context.Context, refreshToken string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 }
@@ -262,6 +263,24 @@ func (u *authUsecase) SignIn(ctx context.Context, req *models.SignInReq) (*model
 	)
 
 	return a, at, err
+}
+
+func (u *authUsecase) SignOut(ctx context.Context, refreshToken string) *ce.Error {
+	// Data Normalization
+	token := strings.TrimSpace(refreshToken)
+
+	// Data Validation
+	// NOTE: Empty token does not fail SignOut usecase
+	if token == "" {
+		return nil
+	}
+
+	// Session Revocation
+	// NOTE: Invalid session does not fail SignOut usecase
+	if err := u.su.RevokeSession(ctx, token); err != nil && err.Code() != ce.CodeSessionNotFound {
+		return err
+	}
+	return nil
 }
 
 func (u *authUsecase) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {

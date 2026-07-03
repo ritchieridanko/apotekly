@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
 )
 
 type JWT struct {
@@ -42,4 +43,23 @@ func (j *JWT) Generate(authID uint64, role string, isEmailVerified bool, now *ti
 	).SignedString(
 		[]byte(j.secret),
 	)
+}
+
+func (j *JWT) Parse(token string) (*Claim, error) {
+	t, err := jwt.ParseWithClaims(
+		token,
+		&Claim{},
+		func(t *jwt.Token) (any, error) {
+			return []byte(j.secret), nil
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	claim, ok := t.Claims.(*Claim)
+	if !ok {
+		return nil, ce.ErrInvalidJWTClaim
+	}
+	return claim, nil
 }

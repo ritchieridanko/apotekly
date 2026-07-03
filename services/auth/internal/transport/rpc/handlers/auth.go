@@ -6,6 +6,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/auth/internal/models"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/usecases"
 	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AuthHandler struct {
@@ -52,6 +53,13 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *apis.SignInRequest) (*api
 		Auth:      h.toAuth(a),
 		AuthToken: h.toAuthToken(at),
 	}, nil
+}
+
+func (h *AuthHandler) SignOut(ctx context.Context, req *apis.SignOutRequest) (*emptypb.Empty, error) {
+	if err := h.au.SignOut(ctx, req.GetRefreshToken()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (h *AuthHandler) IsEmailAvailable(ctx context.Context, req *apis.IsEmailAvailableRequest) (*apis.IsEmailAvailableResponse, error) {

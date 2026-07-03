@@ -76,6 +76,14 @@ func (e *Error) ToGRPCErr() error {
 		CodeEmailNotAvailable:
 		return status.Error(codes.AlreadyExists, e.message)
 	case
+		CodePermissionDenied,
+		CodeRoleNotAuthorized:
+		return status.Error(codes.PermissionDenied, e.message)
+	case
+		CodeEmailNotVerified,
+		CodeFailedPrecondition:
+		return status.Error(codes.FailedPrecondition, e.message)
+	case
 		CodeAuthNotRegistered,
 		CodeEmailNotRegistered,
 		CodeOAuthRegularSignIn,
@@ -106,6 +114,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeOrphanedEventInbox,
 		CodePanicOccurred,
 		CodeProtobufParsingFailed,
+		CodeTypeConversionFailed,
 		CodeURLGenerationFailed,
 		CodeUUIDGenerationFailed:
 		return status.Error(codes.Internal, e.message)
@@ -127,6 +136,10 @@ func (e *Error) ToHTTPErr() int {
 		CodeRefreshTokenNotFound,
 		CodeUnauthenticated:
 		return http.StatusUnauthorized
+	case
+		CodeFailedPrecondition,
+		CodePermissionDenied:
+		return http.StatusForbidden
 	case CodeNotFound:
 		return http.StatusNotFound
 	case CodeAlreadyExists:

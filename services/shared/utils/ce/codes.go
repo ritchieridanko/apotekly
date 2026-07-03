@@ -4,14 +4,18 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
 )
 
 // Internal Errors
 var (
-	ErrCookieNotFound error = http.ErrNoCookie
-	ErrDBAffectNoRows error = errors.New("no rows affected")
-	ErrDBQueryNoRows  error = pgx.ErrNoRows
+	ErrCookieNotFound  error = http.ErrNoCookie
+	ErrDBAffectNoRows  error = errors.New("no rows affected")
+	ErrDBQueryNoRows   error = pgx.ErrNoRows
+	ErrInvalidJWTClaim error = jwt.ErrTokenInvalidClaims
+	ErrJWTExpired      error = jwt.ErrTokenExpired
+	ErrJWTMalformed    error = jwt.ErrTokenMalformed
 )
 
 // Internal Error Codes
@@ -27,11 +31,13 @@ const (
 	CodeEmailDeliveryFailed     errCode = "ERR_EMAIL_DELIVERY_FAILED"
 	CodeEmailNotAvailable       errCode = "ERR_EMAIL_NOT_AVAILABLE"
 	CodeEmailNotRegistered      errCode = "ERR_EMAIL_NOT_REGISTERED"
+	CodeEmailNotVerified        errCode = "ERR_EMAIL_NOT_VERIFIED"
 	CodeEmailTemplatingFailed   errCode = "ERR_EMAIL_TEMPLATING_FAILED"
 	CodeEventCommittingFailed   errCode = "ERR_EVENT_COMMITTING_FAILED"
 	CodeEventFetchingFailed     errCode = "ERR_EVENT_FETCHING_FAILED"
 	CodeEventPublishingFailed   errCode = "ERR_EVENT_PUBLISHING_FAILED"
 	CodeEventTopicNotRegistered errCode = "ERR_EVENT_TOPIC_NOT_REGISTERED"
+	CodeFailedPrecondition      errCode = "ERR_FAILED_PRECONDITION"
 	CodeInternal                errCode = "ERR_INTERNAL"
 	CodeInvalidParams           errCode = "ERR_INVALID_PARAMS"
 	CodeInvalidPayload          errCode = "ERR_INVALID_PAYLOAD"
@@ -46,11 +52,14 @@ const (
 	CodeOAuthRegularSignIn      errCode = "ERR_OAUTH_REGULAR_SIGN_IN"
 	CodeOrphanedEventInbox      errCode = "ERR_ORPHANED_EVENT_INBOX"
 	CodePanicOccurred           errCode = "ERR_PANIC_OCCURRED"
+	CodePermissionDenied        errCode = "ERR_PERMISSION_DENIED"
 	CodeProtobufParsingFailed   errCode = "ERR_PROTOBUF_PARSING_FAILED"
 	CodeRefreshTokenNotFound    errCode = "ERR_REFRESH_TOKEN_NOT_FOUND"
+	CodeRoleNotAuthorized       errCode = "ERR_ROLE_NOT_AUTHORIZED"
 	CodeSessionExpired          errCode = "ERR_SESSION_EXPIRED"
 	CodeSessionNotFound         errCode = "ERR_SESSION_NOT_FOUND"
 	CodeSessionNotOwned         errCode = "ERR_SESSION_NOT_OWNED"
+	CodeTypeConversionFailed    errCode = "ERR_TYPE_CONVERSION_FAILED"
 	CodeUnauthenticated         errCode = "ERR_UNAUTHENTICATED"
 	CodeUnknown                 errCode = "ERR_UNKNOWN"
 	CodeURLGenerationFailed     errCode = "ERR_URL_GENERATION_FAILED"
@@ -62,6 +71,7 @@ const (
 const (
 	MsgAuthNotFound           string = "Auth not found"
 	MsgEmailAlreadyRegistered string = "Email is already registered"
+	MsgEmailNotVerified       string = "Email is not verified"
 	MsgInternalServer         string = "Internal server error"
 	MsgInvalidCredentials     string = "Invalid credentials"
 	MsgInvalidParams          string = "Invalid params"
@@ -72,4 +82,5 @@ const (
 	MsgSessionExpired         string = "Session expired"
 	MsgSessionNotFound        string = "Session not found"
 	MsgUnauthenticated        string = "Unauthenticated"
+	MsgUnauthorized           string = "Unauthorized"
 )

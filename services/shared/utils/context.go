@@ -8,9 +8,25 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type TransportContext struct {
-	IPAddress string
-	UserAgent string
+type (
+	AuthContext struct {
+		AuthID          uint64
+		Role            string
+		IsEmailVerified bool
+	}
+
+	TransportContext struct {
+		IPAddress string
+		UserAgent string
+	}
+)
+
+// Get Auth Information from Context
+func CtxAuth(ctx context.Context) *AuthContext {
+	if v, ok := ctx.Value(constants.CtxKeyAuth).(*AuthContext); ok {
+		return v
+	}
+	return nil
 }
 
 // Get Request ID from Context
@@ -37,6 +53,7 @@ func CtxTransport(ctx context.Context) *TransportContext {
 	return nil
 }
 
+// Inject Metadata into Context
 func CtxWithMetadata(ctx context.Context, kv ...string) context.Context {
 	return metadata.AppendToOutgoingContext(
 		ctx,

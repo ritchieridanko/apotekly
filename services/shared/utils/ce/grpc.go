@@ -18,6 +18,10 @@ func ToError(err error) *Error {
 		return NewError(CodeNotFound, st.Message(), err)
 	case codes.AlreadyExists:
 		return NewError(CodeAlreadyExists, st.Message(), err)
+	case codes.PermissionDenied:
+		return NewError(CodePermissionDenied, st.Message(), err)
+	case codes.FailedPrecondition:
+		return NewError(CodeFailedPrecondition, st.Message(), err)
 	case codes.Unauthenticated:
 		return NewError(CodeUnauthenticated, st.Message(), err)
 	case codes.Internal:
