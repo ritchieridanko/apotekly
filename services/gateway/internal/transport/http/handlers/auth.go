@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/clients"
@@ -164,6 +166,60 @@ func (h *AuthHandler) IsEmailAvailable(ctx *gin.Context) {
 		"OK",
 		dtos.IsEmailAvailableResponse{
 			IsAvailable: available,
+		},
+		nil,
+	)
+}
+
+func (h *AuthHandler) RotateAuthToken(ctx *gin.Context) {
+	refreshToken, err := ctx.Cookie(constants.CookieKeyRefreshToken)
+	if errors.Is(err, ce.ErrCookieNotFound) {
+		ce.NewError(ce.CodeRefreshTokenNotFound, ce.MsgInvalidSession, err).Bind(ctx)
+		return
+	}
+	if err != nil {
+		ce.NewError(ce.CodeInternal, ce.MsgInternalServer, err).Bind(ctx)
+		return
+	}
+
+	token := strings.TrimSpace(refreshToken)
+	if token == "" {
+		ce.NewError(
+			ce.CodeRefreshTokenNotFound,
+			ce.MsgInvalidSession,
+			errors.New("refresh token is empty"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	at, rotateErr := h.ac.RotateAuthToken(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		refreshToken,
+	)
+	if rotateErr != nil {
+		rotateErr.Bind(ctx)
+		return
+	}
+	if at != nil && at.RefreshToken != nil {
+		h.cookie.Set(
+			ctx,
+			constants.CookieKeyRefreshToken,
+			at.RefreshToken.Token,
+			"/",
+			int(at.RefreshToken.ExpiresInSeconds),
+		)
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Auth token rotated successfully",
+		dtos.RotateAuthTokenResponse{
+			AccessToken: h.toAccessToken(at),
 		},
 		nil,
 	)

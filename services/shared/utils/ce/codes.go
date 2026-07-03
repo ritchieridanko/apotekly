@@ -2,12 +2,14 @@ package ce
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/jackc/pgx/v5"
 )
 
 // Internal Errors
 var (
+	ErrCookieNotFound error = http.ErrNoCookie
 	ErrDBAffectNoRows error = errors.New("no rows affected")
 	ErrDBQueryNoRows  error = pgx.ErrNoRows
 )
@@ -45,6 +47,7 @@ const (
 	CodeOrphanedEventInbox      errCode = "ERR_ORPHANED_EVENT_INBOX"
 	CodePanicOccurred           errCode = "ERR_PANIC_OCCURRED"
 	CodeProtobufParsingFailed   errCode = "ERR_PROTOBUF_PARSING_FAILED"
+	CodeRefreshTokenNotFound    errCode = "ERR_REFRESH_TOKEN_NOT_FOUND"
 	CodeSessionExpired          errCode = "ERR_SESSION_EXPIRED"
 	CodeSessionNotFound         errCode = "ERR_SESSION_NOT_FOUND"
 	CodeSessionNotOwned         errCode = "ERR_SESSION_NOT_OWNED"

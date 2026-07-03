@@ -15,6 +15,7 @@ type AuthClient interface {
 	SignUp(ctx context.Context, req *models.SignUpReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	SignIn(ctx context.Context, req *models.SignInReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
+	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 }
 
 type authClient struct {
@@ -76,6 +77,23 @@ func (c *authClient) IsEmailAvailable(ctx context.Context, email string) (bool, 
 		)
 	}
 	return resp.GetIsAvailable(), nil
+}
+
+func (c *authClient) RotateAuthToken(ctx context.Context, refreshToken string) (*models.AuthToken, *ce.Error) {
+	resp, err := c.client.RotateAuthToken(
+		ctx,
+		&apis.RotateAuthTokenRequest{
+			RefreshToken: refreshToken,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return c.toAuthToken(resp.GetAuthToken()), nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

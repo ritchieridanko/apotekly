@@ -41,6 +41,7 @@ func Init(appName string, l *logger.Logger, ah *handlers.AuthHandler) *Router {
 	{
 		auth.POST("/signup", ah.SignUp)
 		auth.POST("/signin", ah.SignIn)
+		auth.POST("/refresh", ah.RotateAuthToken)
 
 		// Emails
 		email := auth.Group("/email")

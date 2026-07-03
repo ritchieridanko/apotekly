@@ -34,6 +34,10 @@ type (
 		IsAvailable bool `json:"is_available"`
 	}
 
+	RotateAuthTokenResponse struct {
+		AccessToken *AccessToken `json:"access_token,omitempty"`
+	}
+
 	SignInResponse struct {
 		Auth        *Auth        `json:"auth,omitempty"`
 		AccessToken *AccessToken `json:"access_token,omitempty"`
