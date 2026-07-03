@@ -68,15 +68,19 @@ func (e *Error) ToGRPCErr() error {
 		return status.Error(codes.InvalidArgument, e.message)
 	case
 		CodeAuthNotFound,
-		CodeNotFound:
+		CodeNotFound,
+		CodeSessionNotFound:
 		return status.Error(codes.NotFound, e.message)
 	case
 		CodeAlreadyExists,
 		CodeEmailNotAvailable:
 		return status.Error(codes.AlreadyExists, e.message)
 	case
+		CodeAuthNotRegistered,
 		CodeEmailNotRegistered,
 		CodeOAuthRegularSignIn,
+		CodeSessionExpired,
+		CodeSessionNotOwned,
 		CodeUnauthenticated,
 		CodeWrongPassword:
 		return status.Error(codes.Unauthenticated, e.message)

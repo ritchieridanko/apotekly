@@ -26,6 +26,7 @@ type AuthUsecase interface {
 	SignUp(ctx context.Context, req *models.SignUpReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	SignIn(ctx context.Context, req *models.SignInReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
+	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 }
 
 type authUsecase struct {
@@ -224,7 +225,6 @@ func (u *authUsecase) SignIn(ctx context.Context, req *models.SignInReq) (*model
 			ce.CodeEmailNotRegistered,
 			ce.MsgInvalidCredentials,
 			err.Unwrap(),
-			err.Fields()...,
 		)
 	}
 	if err != nil {
@@ -278,4 +278,70 @@ func (u *authUsecase) IsEmailAvailable(ctx context.Context, email string) (bool,
 
 	// Email Availability Check
 	return u.ar.IsEmailAvailable(ctx, em)
+}
+
+func (u *authUsecase) RotateAuthToken(ctx context.Context, refreshToken string) (*models.AuthToken, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.RotateAuthToken")
+	defer span.End()
+
+	// Data Normalization
+	token := strings.TrimSpace(refreshToken)
+
+	// Data Validation
+	if token == "" {
+		return nil, ce.NewError(
+			ce.CodeUnauthenticated,
+			ce.MsgUnauthenticated,
+			errors.New("refresh token is empty"),
+		)
+	}
+
+	var at *models.AuthToken
+	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Session Fetching
+		s, err := u.su.GetSession(ctx, token)
+		if err != nil {
+			return err
+		}
+
+		authIDField := logger.NewField("auth_id", s.AuthID)
+
+		// Session Expiration Check
+		if s.ExpiresAt.Before(time.Now().UTC()) {
+			return ce.NewError(
+				ce.CodeSessionExpired,
+				ce.MsgSessionExpired,
+				nil,
+				authIDField,
+			)
+		}
+
+		// Auth Fetching
+		a, err := u.ar.GetByID(ctx, s.AuthID)
+		if err != nil && err.Code() == ce.CodeAuthNotFound {
+			return ce.NewError(
+				ce.CodeAuthNotRegistered,
+				ce.MsgInvalidCredentials,
+				err.Unwrap(),
+				authIDField,
+			)
+		}
+		if err != nil {
+			return err.Append(authIDField)
+		}
+
+		// Session Refresh
+		at, err = u.su.RefreshSession(
+			ctx,
+			&models.RefreshSessionReq{
+				AuthID:          a.ID,
+				Role:            a.Role,
+				IsEmailVerified: a.IsEmailVerified(),
+				RefreshToken:    token,
+			},
+		)
+		return err
+	})
+
+	return at, err
 }

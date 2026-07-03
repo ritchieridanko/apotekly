@@ -533,6 +533,94 @@ func (x *IsEmailAvailableResponse) GetIsAvailable() bool {
 	return false
 }
 
+type RotateAuthTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateAuthTokenRequest) Reset() {
+	*x = RotateAuthTokenRequest{}
+	mi := &file_v1_auth_api_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateAuthTokenRequest) ProtoMessage() {}
+
+func (x *RotateAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*RotateAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *RotateAuthTokenRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RotateAuthTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthToken     *AuthToken             `protobuf:"bytes,1,opt,name=auth_token,json=authToken,proto3" json:"auth_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateAuthTokenResponse) Reset() {
+	*x = RotateAuthTokenResponse{}
+	mi := &file_v1_auth_api_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateAuthTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateAuthTokenResponse) ProtoMessage() {}
+
+func (x *RotateAuthTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateAuthTokenResponse.ProtoReflect.Descriptor instead.
+func (*RotateAuthTokenResponse) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *RotateAuthTokenResponse) GetAuthToken() *AuthToken {
+	if x != nil {
+		return x.AuthToken
+	}
+	return nil
+}
+
 var File_v1_auth_api_proto protoreflect.FileDescriptor
 
 const file_v1_auth_api_proto_rawDesc = "" +
@@ -568,11 +656,17 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\x17IsEmailAvailableRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"=\n" +
 	"\x18IsEmailAvailableResponse\x12!\n" +
-	"\fis_available\x18\x01 \x01(\bR\visAvailable2\xdc\x01\n" +
+	"\fis_available\x18\x01 \x01(\bR\visAvailable\"=\n" +
+	"\x16RotateAuthTokenRequest\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"L\n" +
+	"\x17RotateAuthTokenResponse\x121\n" +
+	"\n" +
+	"auth_token\x18\x01 \x01(\v2\x12.auth.v1.AuthTokenR\tauthToken2\xb2\x02\n" +
 	"\vAuthService\x129\n" +
 	"\x06SignUp\x12\x16.auth.v1.SignUpRequest\x1a\x17.auth.v1.SignUpResponse\x129\n" +
 	"\x06SignIn\x12\x16.auth.v1.SignInRequest\x1a\x17.auth.v1.SignInResponse\x12W\n" +
-	"\x10IsEmailAvailable\x12 .auth.v1.IsEmailAvailableRequest\x1a!.auth.v1.IsEmailAvailableResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x10IsEmailAvailable\x12 .auth.v1.IsEmailAvailableRequest\x1a!.auth.v1.IsEmailAvailableResponse\x12T\n" +
+	"\x0fRotateAuthToken\x12\x1f.auth.v1.RotateAuthTokenRequest\x1a .auth.v1.RotateAuthTokenResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_auth_api_proto_rawDescOnce sync.Once
@@ -586,7 +680,7 @@ func file_v1_auth_api_proto_rawDescGZIP() []byte {
 	return file_v1_auth_api_proto_rawDescData
 }
 
-var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_v1_auth_api_proto_goTypes = []any{
 	(*Auth)(nil),                     // 0: auth.v1.Auth
 	(*AccessToken)(nil),              // 1: auth.v1.AccessToken
@@ -598,25 +692,30 @@ var file_v1_auth_api_proto_goTypes = []any{
 	(*SignInResponse)(nil),           // 7: auth.v1.SignInResponse
 	(*IsEmailAvailableRequest)(nil),  // 8: auth.v1.IsEmailAvailableRequest
 	(*IsEmailAvailableResponse)(nil), // 9: auth.v1.IsEmailAvailableResponse
+	(*RotateAuthTokenRequest)(nil),   // 10: auth.v1.RotateAuthTokenRequest
+	(*RotateAuthTokenResponse)(nil),  // 11: auth.v1.RotateAuthTokenResponse
 }
 var file_v1_auth_api_proto_depIdxs = []int32{
-	1, // 0: auth.v1.AuthToken.access_token:type_name -> auth.v1.AccessToken
-	2, // 1: auth.v1.AuthToken.refresh_token:type_name -> auth.v1.RefreshToken
-	0, // 2: auth.v1.SignUpResponse.auth:type_name -> auth.v1.Auth
-	3, // 3: auth.v1.SignUpResponse.auth_token:type_name -> auth.v1.AuthToken
-	0, // 4: auth.v1.SignInResponse.auth:type_name -> auth.v1.Auth
-	3, // 5: auth.v1.SignInResponse.auth_token:type_name -> auth.v1.AuthToken
-	4, // 6: auth.v1.AuthService.SignUp:input_type -> auth.v1.SignUpRequest
-	6, // 7: auth.v1.AuthService.SignIn:input_type -> auth.v1.SignInRequest
-	8, // 8: auth.v1.AuthService.IsEmailAvailable:input_type -> auth.v1.IsEmailAvailableRequest
-	5, // 9: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
-	7, // 10: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
-	9, // 11: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	1,  // 0: auth.v1.AuthToken.access_token:type_name -> auth.v1.AccessToken
+	2,  // 1: auth.v1.AuthToken.refresh_token:type_name -> auth.v1.RefreshToken
+	0,  // 2: auth.v1.SignUpResponse.auth:type_name -> auth.v1.Auth
+	3,  // 3: auth.v1.SignUpResponse.auth_token:type_name -> auth.v1.AuthToken
+	0,  // 4: auth.v1.SignInResponse.auth:type_name -> auth.v1.Auth
+	3,  // 5: auth.v1.SignInResponse.auth_token:type_name -> auth.v1.AuthToken
+	3,  // 6: auth.v1.RotateAuthTokenResponse.auth_token:type_name -> auth.v1.AuthToken
+	4,  // 7: auth.v1.AuthService.SignUp:input_type -> auth.v1.SignUpRequest
+	6,  // 8: auth.v1.AuthService.SignIn:input_type -> auth.v1.SignInRequest
+	8,  // 9: auth.v1.AuthService.IsEmailAvailable:input_type -> auth.v1.IsEmailAvailableRequest
+	10, // 10: auth.v1.AuthService.RotateAuthToken:input_type -> auth.v1.RotateAuthTokenRequest
+	5,  // 11: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
+	7,  // 12: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
+	9,  // 13: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
+	11, // 14: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
+	11, // [11:15] is the sub-list for method output_type
+	7,  // [7:11] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_v1_auth_api_proto_init() }
@@ -630,7 +729,7 @@ func file_v1_auth_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_api_proto_rawDesc), len(file_v1_auth_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

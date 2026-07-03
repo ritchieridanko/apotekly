@@ -10,6 +10,8 @@ import (
 
 type SessionRepository interface {
 	Create(ctx context.Context, data *models.CreateSession) (err *ce.Error)
+	GetByRefreshToken(ctx context.Context, refreshToken string) (s *models.Session, err *ce.Error)
+	Revoke(ctx context.Context, params *models.RevokeSession) (s *models.Session, err *ce.Error)
 	RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (sessionID uint64, err *ce.Error)
 }
 
@@ -23,6 +25,14 @@ func NewSessionRepository(db database.SessionDatabase) SessionRepository {
 
 func (r *sessionRepository) Create(ctx context.Context, data *models.CreateSession) *ce.Error {
 	return r.database.Create(ctx, data)
+}
+
+func (r *sessionRepository) GetByRefreshToken(ctx context.Context, refreshToken string) (*models.Session, *ce.Error) {
+	return r.database.GetByRefreshToken(ctx, refreshToken)
+}
+
+func (r *sessionRepository) Revoke(ctx context.Context, params *models.RevokeSession) (*models.Session, *ce.Error) {
+	return r.database.Revoke(ctx, params)
 }
 
 func (r *sessionRepository) RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (uint64, *ce.Error) {

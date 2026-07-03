@@ -7,6 +7,13 @@ type (
 		IsEmailVerified bool
 	}
 
+	RefreshSessionReq struct {
+		AuthID          uint64
+		Role            string
+		IsEmailVerified bool
+		RefreshToken    string
+	}
+
 	SignInReq struct {
 		Email    string
 		Password string

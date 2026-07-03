@@ -17,6 +17,8 @@ import (
 
 type SessionUsecase interface {
 	CreateSession(ctx context.Context, req *models.CreateSessionReq) (at *models.AuthToken, err *ce.Error)
+	GetSession(ctx context.Context, refreshToken string) (s *models.Session, err *ce.Error)
+	RefreshSession(ctx context.Context, req *models.RefreshSessionReq) (at *models.AuthToken, err *ce.Error)
 }
 
 type sessionUsecase struct {
@@ -104,6 +106,81 @@ func (u *sessionUsecase) CreateSession(ctx context.Context, req *models.CreateSe
 			data.ParentID = &sessionID
 		}
 		return u.sr.Create(ctx, &data)
+	})
+	if txErr != nil {
+		return nil, txErr.Append(authIDField)
+	}
+
+	return &models.AuthToken{
+		AccessToken: &models.AccessToken{
+			Token:            jwt,
+			ExpiresInSeconds: uint64(u.accessToken.Seconds()),
+		},
+		RefreshToken: &models.RefreshToken{
+			Token:            uuid.String(),
+			ExpiresInSeconds: uint64(u.refreshToken.Seconds()),
+		},
+	}, nil
+}
+
+func (u *sessionUsecase) GetSession(ctx context.Context, refreshToken string) (*models.Session, *ce.Error) {
+	return u.sr.GetByRefreshToken(ctx, refreshToken)
+}
+
+func (u *sessionUsecase) RefreshSession(ctx context.Context, req *models.RefreshSessionReq) (*models.AuthToken, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "session.usecase.RefreshSession")
+	defer span.End()
+
+	authIDField := logger.NewField("auth_id", req.AuthID)
+
+	// UUID Creation
+	uuid := utils.GenerateUUID()
+
+	// JWT Creation
+	now := time.Now().UTC()
+	jwt, err := u.jwt.Generate(req.AuthID, req.Role, req.IsEmailVerified, &now)
+	if err != nil {
+		return nil, ce.NewError(
+			ce.CodeJWTGenerationFailed,
+			ce.MsgInternalServer,
+			err,
+			authIDField,
+		)
+	}
+
+	txErr := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Session Revocation
+		s, err := u.sr.Revoke(
+			ctx,
+			&models.RevokeSession{
+				RefreshToken: req.RefreshToken,
+				ExpiresAt:    now,
+			},
+		)
+		if err != nil {
+			return err
+		}
+		if s.AuthID != req.AuthID {
+			return ce.NewError(
+				ce.CodeSessionNotOwned,
+				ce.MsgInvalidSession,
+				nil,
+				logger.NewField("session_auth_id", s.AuthID),
+			)
+		}
+
+		// Session Creation
+		return u.sr.Create(
+			ctx,
+			&models.CreateSession{
+				ParentID:     &s.ID,
+				AuthID:       s.AuthID,
+				RefreshToken: uuid.String(),
+				IPAddress:    s.IPAddress,
+				UserAgent:    s.UserAgent,
+				ExpiresAt:    now.Add(u.refreshToken),
+			},
+		)
 	})
 	if txErr != nil {
 		return nil, txErr.Append(authIDField)

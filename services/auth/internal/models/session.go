@@ -23,6 +23,11 @@ type (
 		ExpiresAt    time.Time
 	}
 
+	RevokeSession struct {
+		RefreshToken string
+		ExpiresAt    time.Time
+	}
+
 	RevokeActiveSession struct {
 		AuthID    uint64
 		IPAddress string

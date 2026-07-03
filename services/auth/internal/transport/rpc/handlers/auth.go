@@ -64,6 +64,16 @@ func (h *AuthHandler) IsEmailAvailable(ctx context.Context, req *apis.IsEmailAva
 	}, nil
 }
 
+func (h *AuthHandler) RotateAuthToken(ctx context.Context, req *apis.RotateAuthTokenRequest) (*apis.RotateAuthTokenResponse, error) {
+	at, err := h.au.RotateAuthToken(ctx, req.GetRefreshToken())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.RotateAuthTokenResponse{
+		AuthToken: h.toAuthToken(at),
+	}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil

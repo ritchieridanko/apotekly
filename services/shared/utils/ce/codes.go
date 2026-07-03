@@ -16,6 +16,7 @@ var (
 const (
 	CodeAlreadyExists           errCode = "ERR_ALREADY_EXISTS"
 	CodeAuthNotFound            errCode = "ERR_AUTH_NOT_FOUND"
+	CodeAuthNotRegistered       errCode = "ERR_AUTH_NOT_REGISTERED"
 	CodeBCryptHashingFailed     errCode = "ERR_BCRYPT_HASHING_FAILED"
 	CodeCacheCommandExec        errCode = "ERR_CACHE_COMMAND_EXECUTION"
 	CodeCacheScriptExec         errCode = "ERR_CACHE_SCRIPT_EXECUTION"
@@ -44,6 +45,9 @@ const (
 	CodeOrphanedEventInbox      errCode = "ERR_ORPHANED_EVENT_INBOX"
 	CodePanicOccurred           errCode = "ERR_PANIC_OCCURRED"
 	CodeProtobufParsingFailed   errCode = "ERR_PROTOBUF_PARSING_FAILED"
+	CodeSessionExpired          errCode = "ERR_SESSION_EXPIRED"
+	CodeSessionNotFound         errCode = "ERR_SESSION_NOT_FOUND"
+	CodeSessionNotOwned         errCode = "ERR_SESSION_NOT_OWNED"
 	CodeUnauthenticated         errCode = "ERR_UNAUTHENTICATED"
 	CodeUnknown                 errCode = "ERR_UNKNOWN"
 	CodeURLGenerationFailed     errCode = "ERR_URL_GENERATION_FAILED"
@@ -59,6 +63,10 @@ const (
 	MsgInvalidCredentials     string = "Invalid credentials"
 	MsgInvalidParams          string = "Invalid params"
 	MsgInvalidPayload         string = "Invalid payload"
+	MsgInvalidSession         string = "Invalid session"
 	MsgNoPendingEventInbox    string = "No pending event inbox"
 	MsgOrphanedEventInbox     string = "Orphaned event inbox"
+	MsgSessionExpired         string = "Session expired"
+	MsgSessionNotFound        string = "Session not found"
+	MsgUnauthenticated        string = "Unauthenticated"
 )

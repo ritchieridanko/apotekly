@@ -12,6 +12,8 @@ import (
 
 type SessionDatabase interface {
 	Create(ctx context.Context, data *models.CreateSession) (err *ce.Error)
+	GetByRefreshToken(ctx context.Context, refreshToken string) (s *models.Session, err *ce.Error)
+	Revoke(ctx context.Context, params *models.RevokeSession) (s *models.Session, err *ce.Error)
 	RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (sessionID uint64, err *ce.Error)
 }
 
@@ -52,6 +54,98 @@ func (d *sessionDatabase) Create(ctx context.Context, data *models.CreateSession
 	}
 
 	return nil
+}
+
+func (d *sessionDatabase) GetByRefreshToken(ctx context.Context, refreshToken string) (*models.Session, *ce.Error) {
+	query := `
+		SELECT
+			id, auth_id, refresh_token,
+			ip_address, user_agent, expires_at
+		FROM
+			sessions
+		WHERE
+			refresh_token = $1
+			AND revoked_at IS NULL
+	`
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var s models.Session
+	err := d.database.Query(
+		ctx, query,
+		refreshToken,
+	).Scan(
+		&s.ID,
+		&s.AuthID,
+		&s.RefreshToken,
+		&s.IPAddress,
+		&s.UserAgent,
+		&s.ExpiresAt,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get session by refresh token: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeSessionNotFound,
+				ce.MsgSessionNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &s, nil
+}
+
+func (d *sessionDatabase) Revoke(ctx context.Context, params *models.RevokeSession) (*models.Session, *ce.Error) {
+	query := `
+		UPDATE
+			sessions
+		SET
+			revoked_at = NOW()
+		WHERE
+			refresh_token = $1
+			AND revoked_at IS NULL
+			AND expires_at >= $2
+		RETURNING
+			id, auth_id, refresh_token,
+			ip_address, user_agent
+	`
+
+	var s models.Session
+	err := d.database.Query(
+		ctx, query,
+		params.RefreshToken,
+		params.ExpiresAt,
+	).Scan(
+		&s.ID,
+		&s.AuthID,
+		&s.RefreshToken,
+		&s.IPAddress,
+		&s.UserAgent,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to revoke session: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeSessionNotFound,
+				ce.MsgSessionNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &s, nil
 }
 
 func (d *sessionDatabase) RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (uint64, *ce.Error) {
