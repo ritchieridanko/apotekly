@@ -84,6 +84,62 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) SignIn(ctx *gin.Context) {
+	var payload dtos.SignInRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	ip, ua := ctx.ClientIP(), ctx.Request.UserAgent()
+	if ok, why := h.validator.IPAddress(ip); !ok {
+		ce.NewError(ce.CodeInvalidRequestMetadata, why, nil).Bind(ctx)
+		return
+	}
+	if ok, why := h.validator.UserAgent(ua); !ok {
+		ce.NewError(ce.CodeInvalidRequestMetadata, why, nil).Bind(ctx)
+		return
+	}
+
+	a, at, err := h.ac.SignIn(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyIPAddress,
+			ip,
+			constants.MDKeyUserAgent,
+			ua,
+		),
+		&models.SignInReq{
+			Email:    payload.Email,
+			Password: payload.Password,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+	if at != nil && at.RefreshToken != nil {
+		h.cookie.Set(
+			ctx,
+			constants.CookieKeyRefreshToken,
+			at.RefreshToken.Token,
+			"/",
+			int(at.RefreshToken.ExpiresInSeconds),
+		)
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Signed in successfully",
+		dtos.SignInResponse{
+			Auth:        h.toAuth(a),
+			AccessToken: h.toAccessToken(at),
+		},
+		nil,
+	)
+}
+
 func (h *AuthHandler) IsEmailAvailable(ctx *gin.Context) {
 	var params dtos.IsEmailAvailableRequest
 	if err := ctx.ShouldBindQuery(&params); err != nil {

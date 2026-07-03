@@ -6,6 +6,11 @@ type (
 		Email string `form:"email" binding:"required"`
 	}
 
+	SignInRequest struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
 	SignUpRequest struct {
 		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -27,6 +32,11 @@ type (
 
 	IsEmailAvailableResponse struct {
 		IsAvailable bool `json:"is_available"`
+	}
+
+	SignInResponse struct {
+		Auth        *Auth        `json:"auth,omitempty"`
+		AccessToken *AccessToken `json:"access_token,omitempty"`
 	}
 
 	SignUpResponse struct {

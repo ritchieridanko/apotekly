@@ -20,7 +20,7 @@ func Recovery(l *logger.Logger) gin.HandlerFunc {
 					logger.NewField("method", ctx.Request.Method),
 					logger.NewField("path", ctx.Request.URL.Path),
 					logger.NewField("panic", fmt.Sprintf("%v", r)),
-					logger.NewField("stack_trace", debug.Stack()),
+					logger.NewField("stack_trace", string(debug.Stack())),
 				)
 
 				ctx.AbortWithStatusJSON(
