@@ -283,6 +283,42 @@ func (h *AuthHandler) RotateAuthToken(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) ResendVerification(ctx *gin.Context) {
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	email, err := h.ac.ResendVerification(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Verification resent successfully",
+		dtos.ResendVerificationResponse{
+			Email: email,
+		},
+		nil,
+	)
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *dtos.Auth {
 	if a == nil {
 		return nil

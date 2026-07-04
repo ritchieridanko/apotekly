@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var authServiceField logger.Field = logger.NewField("service", "auth")
@@ -17,6 +18,7 @@ type AuthClient interface {
 	SignOut(ctx context.Context, refreshToken string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
+	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 }
 
 type authClient struct {
@@ -112,6 +114,18 @@ func (c *authClient) RotateAuthToken(ctx context.Context, refreshToken string) (
 		)
 	}
 	return c.toAuthToken(resp.GetAuthToken()), nil
+}
+
+func (c *authClient) ResendVerification(ctx context.Context) (string, *ce.Error) {
+	resp, err := c.client.ResendVerification(ctx, &emptypb.Empty{})
+	if err != nil {
+		return "", ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return resp.GetEmail(), nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

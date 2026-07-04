@@ -50,6 +50,13 @@ func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler
 		{
 			// Availability
 			email.GET("/available", ah.IsEmailAvailable)
+
+			// Verifications
+			verification := email.Group("/verification")
+			{
+				// Resend
+				verification.POST("", middlewares.Auth(j), ah.ResendVerification)
+			}
 		}
 	}
 

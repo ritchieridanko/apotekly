@@ -34,6 +34,10 @@ type (
 		IsAvailable bool `json:"is_available"`
 	}
 
+	ResendVerificationResponse struct {
+		Email string `json:"email"`
+	}
+
 	RotateAuthTokenResponse struct {
 		AccessToken *AccessToken `json:"access_token,omitempty"`
 	}
