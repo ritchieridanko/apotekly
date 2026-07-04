@@ -17,6 +17,7 @@ import (
 )
 
 type EmailChannel interface {
+	SendVerification(ctx context.Context, data *models.VerificationEmail) (err *ce.Error)
 	SendWelcome(ctx context.Context, data *models.WelcomeEmail) (err *ce.Error)
 }
 
@@ -40,6 +41,40 @@ func NewEmailChannel(clientAddr, sender, logoURL string, m *mailer.Mailer) (Emai
 		mailer:     m,
 		template:   tmpl,
 	}, nil
+}
+
+func (c *emailChannel) SendVerification(ctx context.Context, data *models.VerificationEmail) *ce.Error {
+	// URL Generation
+	url, err := utils.GenerateTokenizedURL(
+		c.clientAddr,
+		"/auth/verify-email",
+		data.Token,
+	)
+	if err != nil {
+		return ce.NewError(ce.CodeURLGenerationFailed, ce.MsgInternalServer, err)
+	}
+
+	// Template Building
+	body, buildErr := c.buildTemplate(
+		"verification",
+		map[string]any{
+			"Subject":   "Verify Your Account!",
+			"Recipient": data.Recipient,
+			"Title":     "Email Verification",
+			"LogoURL":   c.logoURL,
+			"URL":       url,
+			"Year":      time.Now().UTC().Year(),
+		},
+	)
+	if buildErr != nil {
+		return buildErr
+	}
+
+	// Message Composition
+	msg := c.composeMessage([]string{data.Recipient}, "Verify Your Account!", body.String())
+
+	// Email Delivery
+	return c.send(msg)
 }
 
 func (c *emailChannel) SendWelcome(ctx context.Context, data *models.WelcomeEmail) *ce.Error {

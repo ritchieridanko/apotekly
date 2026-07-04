@@ -1,4 +1,4 @@
-{{ define "welcome" }}
+{{ define "verification" }}
 <!DOCTYPE html>
 <html>
   <head>
@@ -52,11 +52,7 @@
           line-height: 1.6;
         "
       >
-        {{ if .IsEmailVerified }}
-          Welcome to <b>Apotekly</b>! We're excited to have you on our platform. You can now complete your profile and start exploring by clicking the button below. If you didn't create an account, please contact our support team immediately.
-        {{ else }}
-          Welcome to <b>Apotekly</b>! We're excited to have you on our platform. To start using your account with full features, please verify your email by clicking the button below. If you didn't create an account, you can safely ignore this email.
-        {{ end }}
+        To start using your account with full features, please verify your email by clicking the button below. If you didn't request this verification, you can safely ignore this email.
       </p>
 
       <!-- CTA -->
@@ -79,51 +75,45 @@
           text-decoration: none;
         "
       >
-        {{ if .IsEmailVerified }}
-          Get Started
-        {{ else }}
-          Verify Email
-        {{ end }}
+        Verify Email
       </a>
 
       <!-- Divider -->
       <div style="height: 1px; background-color: #eeeeee; margin: 24px 0"></div>
 
-      {{ if not .IsEmailVerified }}
-        <!-- Fallback Link -->
-        <p
+      <!-- Fallback Link -->
+      <p
+        style="
+          margin: 0 0 8px;
+          color: #99a1af;
+          font-size: 14px;
+          line-height: 1.5;
+        "
+      >
+        If the button above doesn't work, copy and paste this link into your browser:
+      </p>
+      <div
+        style="
+          margin-bottom: 30px;
+          padding: 12px;
+          background-color: #f3f4f6;
+          border-radius: 6px;
+          word-break: break-all;
+        "
+      >
+        <a
+          href="{{ .URL }}"
+          target="_blank"
           style="
-            margin: 0 0 8px;
-            color: #99a1af;
+            color: #244da3;
             font-size: 14px;
-            line-height: 1.5;
+            font-weight: 500;
+            text-decoration: none;
           "
         >
-          If the button above doesn't work, copy and paste this link into your browser:
-        </p>
-        <div
-          style="
-            margin-bottom: 30px;
-            padding: 12px;
-            background-color: #f3f4f6;
-            border-radius: 6px;
-            word-break: break-all;
-          "
-        >
-          <a
-            href="{{ .URL }}"
-            target="_blank"
-            style="
-              color: #244da3;
-              font-size: 14px;
-              font-weight: 500;
-              text-decoration: none;
-            "
-          >
-            {{ .URL }}
-          </a>
-        </div>
-      {{ end }}
+          {{ .URL }}
+        </a>
+      </div>
       
       {{ template "signature" . }}
     </div>

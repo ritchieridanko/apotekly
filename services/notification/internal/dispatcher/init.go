@@ -38,10 +38,10 @@ func (d *Dispatcher) Dispatch(ctx context.Context) *ce.Error {
 		evtIDField := logger.NewField("event_id", ei.ID.String())
 		evtTopicField := logger.NewField("event_topic", ei.Topic)
 
-		// Event Handling
+		// Event Processing
 		switch ei.Topic {
 		case "auth.created":
-			data, convertErr := utils.FromJSONRawMessage[models.AuthCreatedEvt](ei.Payload)
+			data, convertErr := utils.FromJSONRawMessage[models.EventAC](ei.Payload)
 			if convertErr != nil {
 				return ce.NewError(
 					ce.CodeJSONUnmarshallingFailed,
@@ -52,7 +52,20 @@ func (d *Dispatcher) Dispatch(ctx context.Context) *ce.Error {
 				)
 			}
 
-			err = d.au.HandleAuthCreated(ctx, data)
+			err = d.au.ProcessEventAC(ctx, data)
+		case "auth.email.verification.requested":
+			data, convertErr := utils.FromJSONRawMessage[models.EventAEVR](ei.Payload)
+			if convertErr != nil {
+				return ce.NewError(
+					ce.CodeJSONUnmarshallingFailed,
+					ce.MsgInternalServer,
+					convertErr,
+					evtIDField,
+					evtTopicField,
+				)
+			}
+
+			err = d.au.ProcessEventAEVR(ctx, data)
 		default:
 			return ce.NewError(
 				ce.CodeEventTopicNotRegistered,
@@ -63,7 +76,7 @@ func (d *Dispatcher) Dispatch(ctx context.Context) *ce.Error {
 			)
 		}
 
-		// Set retrying if Event Handling fails
+		// Set retrying if Event Processing fails
 		if err != nil {
 			backoff := min(
 				time.Second*time.Duration(1<<ei.RetryCount),
@@ -84,7 +97,7 @@ func (d *Dispatcher) Dispatch(ctx context.Context) *ce.Error {
 			return err.Append(evtIDField, evtTopicField)
 		}
 
-		// Set completed if Event Handling is OK
+		// Set completed if Event Processing is OK
 		if err := d.eir.Complete(ctx, ei.ID); err != nil {
 			return err.Append(evtIDField, evtTopicField)
 		}

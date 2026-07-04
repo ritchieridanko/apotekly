@@ -58,6 +58,7 @@ func main() {
 	// Event Subscribers & Processors Run
 	workers := []func(context.Context) error{
 		ctr.RunSubscriberAC,
+		ctr.RunSubscriberAEVR,
 		ctr.RunEventProcessor1,
 		ctr.RunEventProcessor2,
 	}

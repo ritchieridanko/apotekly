@@ -28,7 +28,8 @@ type Container struct {
 	logger     *logger.Logger
 	mailer     *mailer.Mailer
 
-	acs *subscriber.Subscriber
+	acs   *subscriber.Subscriber
+	aevrs *subscriber.Subscriber
 
 	ec channels.EmailChannel
 
@@ -61,6 +62,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) (*Container, error) {
 
 	// Subscribers
 	acs := subscriber.NewSubscriber(inf.SubscriberAC(), l)
+	aevrs := subscriber.NewSubscriber(inf.SubscriberAEVR(), l)
 
 	// Channels
 	ec, err := channels.NewEmailChannel(cfg.Client.Addr, cfg.Mailer.From, cfg.App.LogoURL, m)
@@ -101,6 +103,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) (*Container, error) {
 		logger:     l,
 		mailer:     m,
 		acs:        acs,
+		aevrs:      aevrs,
 		ec:         ec,
 		eidb:       eidb,
 		eir:        eir,
@@ -121,7 +124,16 @@ func (c *Container) RunSubscriberAC(ctx context.Context) error {
 	return c.acs.Listen(
 		ctx,
 		c.rqem(c.rvem(c.tem(c.lem(
-			c.aeh.HandleAuthCreated,
+			c.aeh.HandleAC,
+		)))),
+	)
+}
+
+func (c *Container) RunSubscriberAEVR(ctx context.Context) error {
+	return c.aevrs.Listen(
+		ctx,
+		c.rqem(c.rvem(c.tem(c.lem(
+			c.aeh.HandleAEVR,
 		)))),
 	)
 }

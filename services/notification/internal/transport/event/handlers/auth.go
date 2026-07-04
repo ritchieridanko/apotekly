@@ -21,7 +21,7 @@ func NewAuthEventHandler(eiu usecases.EventInboxUsecase) *AuthEventHandler {
 	return &AuthEventHandler{eiu: eiu}
 }
 
-func (eh *AuthEventHandler) HandleAuthCreated(ctx context.Context, msg kafka.Message) *ce.Error {
+func (eh *AuthEventHandler) HandleAC(ctx context.Context, msg kafka.Message) *ce.Error {
 	var evt events.AuthCreated
 	if err := proto.Unmarshal(msg.Value, &evt); err != nil {
 		return ce.NewError(ce.CodeProtobufParsingFailed, ce.MsgInternalServer, err)
@@ -29,7 +29,7 @@ func (eh *AuthEventHandler) HandleAuthCreated(ctx context.Context, msg kafka.Mes
 
 	evtIDField := logger.NewField("event_id", evt.GetId())
 
-	payload := models.AuthCreatedEvt{
+	payload := models.EventAC{
 		ID:                utils.ToUUID(evt.GetId()),
 		AuthID:            evt.GetAuthId(),
 		Email:             evt.GetEmail(),
@@ -38,6 +38,46 @@ func (eh *AuthEventHandler) HandleAuthCreated(ctx context.Context, msg kafka.Mes
 		Session:           evt.Session,
 		VerificationToken: evt.VerificationToken,
 		CreatedAt:         utils.ToTime(evt.GetCreatedAt()),
+	}
+	rm, err := utils.ToJSONRawMessage(payload)
+	if err != nil {
+		return ce.NewError(
+			ce.CodeJSONRawEncodingFailed,
+			ce.MsgInternalServer,
+			err,
+			evtIDField,
+		)
+	}
+
+	storeErr := eh.eiu.StoreEvent(
+		ctx,
+		&models.Event{
+			ID:      payload.ID,
+			Topic:   msg.Topic,
+			Payload: rm,
+		},
+	)
+	if storeErr != nil {
+		return storeErr.Append(evtIDField)
+	}
+	return nil
+}
+
+func (eh *AuthEventHandler) HandleAEVR(ctx context.Context, msg kafka.Message) *ce.Error {
+	var evt events.AuthEmailVerificationRequested
+	if err := proto.Unmarshal(msg.Value, &evt); err != nil {
+		return ce.NewError(ce.CodeProtobufParsingFailed, ce.MsgInternalServer, err)
+	}
+
+	evtIDField := logger.NewField("event_id", evt.GetId())
+
+	payload := models.EventAEVR{
+		ID:        utils.ToUUID(evt.GetId()),
+		AuthID:    evt.GetAuthId(),
+		Email:     evt.GetEmail(),
+		Role:      evt.GetRole(),
+		Token:     evt.GetToken(),
+		CreatedAt: utils.ToTime(evt.GetCreatedAt()),
 	}
 	rm, err := utils.ToJSONRawMessage(payload)
 	if err != nil {

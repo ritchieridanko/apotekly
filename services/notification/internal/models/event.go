@@ -39,7 +39,7 @@ type (
 )
 
 type (
-	AuthCreatedEvt struct {
+	EventAC struct {
 		ID                uuid.UUID  `json:"id"`
 		AuthID            uint64     `json:"auth_id"`
 		Email             string     `json:"email"`
@@ -48,5 +48,14 @@ type (
 		Session           *string    `json:"session"`
 		VerificationToken *string    `json:"verification_token"`
 		CreatedAt         *time.Time `json:"created_at"`
+	}
+
+	EventAEVR struct {
+		ID        uuid.UUID  `json:"id"`
+		AuthID    uint64     `json:"auth_id"`
+		Email     string     `json:"email"`
+		Role      string     `json:"role"`
+		Token     string     `json:"token"`
+		CreatedAt *time.Time `json:"created_at"`
 	}
 )

@@ -10,7 +10,8 @@ import (
 )
 
 type AuthUsecase interface {
-	HandleAuthCreated(ctx context.Context, data *models.AuthCreatedEvt) (err *ce.Error)
+	ProcessEventAC(ctx context.Context, data *models.EventAC) (err *ce.Error)
+	ProcessEventAEVR(ctx context.Context, data *models.EventAEVR) (err *ce.Error)
 }
 
 type authUsecase struct {
@@ -22,8 +23,8 @@ func NewAuthUsecase(appName string, ec channels.EmailChannel) AuthUsecase {
 	return &authUsecase{appName: appName, ec: ec}
 }
 
-func (u *authUsecase) HandleAuthCreated(ctx context.Context, data *models.AuthCreatedEvt) *ce.Error {
-	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.HandleAuthCreated")
+func (u *authUsecase) ProcessEventAC(ctx context.Context, data *models.EventAC) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ProcessEventAC")
 	defer span.End()
 
 	var token string
@@ -38,6 +39,20 @@ func (u *authUsecase) HandleAuthCreated(ctx context.Context, data *models.AuthCr
 			Role:              data.Role,
 			IsEmailVerified:   data.EmailVerifiedAt != nil,
 			VerificationToken: token,
+		},
+	)
+}
+
+func (u *authUsecase) ProcessEventAEVR(ctx context.Context, data *models.EventAEVR) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ProcessEventAEVR")
+	defer span.End()
+
+	return u.ec.SendVerification(
+		ctx,
+		&models.VerificationEmail{
+			Recipient: data.Email,
+			Role:      data.Role,
+			Token:     data.Token,
 		},
 	)
 }
