@@ -22,6 +22,7 @@ type Infra struct {
 	logger   *zap.Logger
 	tracer   *tracer.Tracer
 	acp      *kafka.Writer
+	aevrp    *kafka.Writer
 }
 
 func Init(cfg *configs.Config) (*Infra, error) {
@@ -47,6 +48,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 
 	// Publishers
 	acp := publisher.Init(&cfg.Broker.AC, cfg.Broker.Brokers, l)
+	aevrp := publisher.Init(&cfg.Broker.AEVR, cfg.Broker.Brokers, l)
 
 	return &Infra{
 		config:   cfg,
@@ -55,6 +57,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		logger:   l,
 		tracer:   t,
 		acp:      acp,
+		aevrp:    aevrp,
 	}, nil
 }
 
@@ -74,6 +77,10 @@ func (i *Infra) PublisherAC() *kafka.Writer {
 	return i.acp
 }
 
+func (i *Infra) PublisherAEVR() *kafka.Writer {
+	return i.aevrp
+}
+
 func (i *Infra) Close() error {
 	if err := i.cache.Close(); err != nil {
 		return fmt.Errorf("failed to close cache: %w", err)
@@ -86,6 +93,9 @@ func (i *Infra) Close() error {
 	}
 	if err := i.acp.Close(); err != nil {
 		return fmt.Errorf("failed to close publisher (topic: %s): %w", i.acp.Topic, err)
+	}
+	if err := i.aevrp.Close(); err != nil {
+		return fmt.Errorf("failed to close publisher (topic: %s): %w", i.aevrp.Topic, err)
 	}
 
 	i.database.Close()

@@ -55,3 +55,8 @@ broker:
     balancer: "murmur2"
     batch_size: 1
     batch_timeout: "5ms"
+  aevr:
+    name: "auth.email.verification.requested"
+    balancer: "murmur2"
+    batch_size: 1
+    batch_timeout: "5ms"

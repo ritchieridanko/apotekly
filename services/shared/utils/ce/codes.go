@@ -28,6 +28,7 @@ const (
 	CodeCacheScriptExec         errCode = "ERR_CACHE_SCRIPT_EXECUTION"
 	CodeDBQueryExec             errCode = "ERR_DB_QUERY_EXECUTION"
 	CodeDBTx                    errCode = "ERR_DB_TX"
+	CodeEmailAlreadyVerified    errCode = "ERR_EMAIL_ALREADY_VERIFIED"
 	CodeEmailDeliveryFailed     errCode = "ERR_EMAIL_DELIVERY_FAILED"
 	CodeEmailNotAvailable       errCode = "ERR_EMAIL_NOT_AVAILABLE"
 	CodeEmailNotRegistered      errCode = "ERR_EMAIL_NOT_REGISTERED"
@@ -71,6 +72,7 @@ const (
 const (
 	MsgAuthNotFound           string = "Auth not found"
 	MsgEmailAlreadyRegistered string = "Email is already registered"
+	MsgEmailAlreadyVerified   string = "Email is already verified"
 	MsgEmailNotVerified       string = "Email is not verified"
 	MsgInternalServer         string = "Internal server error"
 	MsgInvalidCredentials     string = "Invalid credentials"

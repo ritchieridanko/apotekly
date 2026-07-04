@@ -24,5 +24,6 @@ func (p *AuthPolicy) IsRoleAuthorized(role string) bool {
 }
 
 var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
-	"/auth.v1.AuthService/SignOut": {authenticated: true},
+	"/auth.v1.AuthService/SignOut":            {authenticated: true},
+	"/auth.v1.AuthService/ResendVerification": {authenticated: true},
 }

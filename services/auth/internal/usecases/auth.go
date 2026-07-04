@@ -28,6 +28,7 @@ type AuthUsecase interface {
 	SignOut(ctx context.Context, refreshToken string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
+	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 }
 
 type authUsecase struct {
@@ -38,6 +39,7 @@ type authUsecase struct {
 	tr                repositories.TokenRepository
 	transactor        *database.Transactor
 	acp               *publisher.Publisher
+	aevrp             *publisher.Publisher
 	bcrypt            *bcrypt.BCrypt
 	validator         *validator.Validator
 	logger            *logger.Logger
@@ -51,6 +53,7 @@ func NewAuthUsecase(
 	tr repositories.TokenRepository,
 	tx *database.Transactor,
 	acp *publisher.Publisher,
+	aevrp *publisher.Publisher,
 	b *bcrypt.BCrypt,
 	v *validator.Validator,
 	l *logger.Logger,
@@ -63,6 +66,7 @@ func NewAuthUsecase(
 		tr:                tr,
 		transactor:        tx,
 		acp:               acp,
+		aevrp:             aevrp,
 		bcrypt:            b,
 		validator:         v,
 		logger:            l,
@@ -363,4 +367,92 @@ func (u *authUsecase) RotateAuthToken(ctx context.Context, refreshToken string) 
 	})
 
 	return at, err
+}
+
+func (u *authUsecase) ResendVerification(ctx context.Context) (string, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ResendVerification")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return "", ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Auth Fetching
+	// NOTE: Resend verification is only allowed if not yet verified
+	a, err := u.ar.GetByID(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		return "", ce.NewError(
+			ce.CodeAuthNotRegistered,
+			ce.MsgInvalidCredentials,
+			err.Unwrap(),
+			authIDField,
+		)
+	}
+	if err != nil {
+		return "", err.Append(authIDField)
+	}
+	if a.IsEmailVerified() {
+		return "", ce.NewError(
+			ce.CodeEmailAlreadyVerified,
+			ce.MsgEmailAlreadyVerified,
+			nil,
+			authIDField,
+		)
+	}
+
+	// Verification Token Creation
+	token := utils.GenerateUUID().String()
+	err = u.tr.CreateVerification(
+		ctx,
+		&models.CreateVerificationToken{
+			AuthID:   a.ID,
+			Token:    token,
+			Duration: u.verificationToken,
+		},
+	)
+	if err != nil {
+		return "", err.Append(authIDField)
+	}
+
+	evtTopicField := logger.NewField("event_topic", u.aevrp.Topic())
+
+	// auth.email.verification.requested Event Publishing
+	id := utils.GenerateUUID().String()
+	pubErr := u.aevrp.Publish(
+		ctx,
+		"auth_"+strconv.FormatUint(a.ID, 10)+"_"+id,
+		&events.AuthEmailVerificationRequested{
+			Id:        id,
+			AuthId:    a.ID,
+			Email:     a.Email,
+			Role:      a.Role,
+			Token:     token,
+			CreatedAt: timestamppb.New(time.Now().UTC()),
+		},
+	)
+	if pubErr != nil {
+		return "", ce.NewError(
+			ce.CodeEventPublishingFailed,
+			ce.MsgInternalServer,
+			pubErr,
+			authIDField,
+			evtTopicField,
+		)
+	}
+
+	u.logger.Info(
+		ctx,
+		"EVENT PUBLISHED",
+		authIDField,
+		evtTopicField,
+	)
+
+	return a.Email, nil
 }

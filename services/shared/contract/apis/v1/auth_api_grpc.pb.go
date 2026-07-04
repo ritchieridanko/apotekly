@@ -20,11 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_SignUp_FullMethodName           = "/auth.v1.AuthService/SignUp"
-	AuthService_SignIn_FullMethodName           = "/auth.v1.AuthService/SignIn"
-	AuthService_SignOut_FullMethodName          = "/auth.v1.AuthService/SignOut"
-	AuthService_IsEmailAvailable_FullMethodName = "/auth.v1.AuthService/IsEmailAvailable"
-	AuthService_RotateAuthToken_FullMethodName  = "/auth.v1.AuthService/RotateAuthToken"
+	AuthService_SignUp_FullMethodName             = "/auth.v1.AuthService/SignUp"
+	AuthService_SignIn_FullMethodName             = "/auth.v1.AuthService/SignIn"
+	AuthService_SignOut_FullMethodName            = "/auth.v1.AuthService/SignOut"
+	AuthService_IsEmailAvailable_FullMethodName   = "/auth.v1.AuthService/IsEmailAvailable"
+	AuthService_RotateAuthToken_FullMethodName    = "/auth.v1.AuthService/RotateAuthToken"
+	AuthService_ResendVerification_FullMethodName = "/auth.v1.AuthService/ResendVerification"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -36,6 +37,7 @@ type AuthServiceClient interface {
 	SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	IsEmailAvailable(ctx context.Context, in *IsEmailAvailableRequest, opts ...grpc.CallOption) (*IsEmailAvailableResponse, error)
 	RotateAuthToken(ctx context.Context, in *RotateAuthTokenRequest, opts ...grpc.CallOption) (*RotateAuthTokenResponse, error)
+	ResendVerification(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResendVerificationResponse, error)
 }
 
 type authServiceClient struct {
@@ -96,6 +98,16 @@ func (c *authServiceClient) RotateAuthToken(ctx context.Context, in *RotateAuthT
 	return out, nil
 }
 
+func (c *authServiceClient) ResendVerification(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResendVerificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResendVerificationResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResendVerification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -105,6 +117,7 @@ type AuthServiceServer interface {
 	SignOut(context.Context, *SignOutRequest) (*emptypb.Empty, error)
 	IsEmailAvailable(context.Context, *IsEmailAvailableRequest) (*IsEmailAvailableResponse, error)
 	RotateAuthToken(context.Context, *RotateAuthTokenRequest) (*RotateAuthTokenResponse, error)
+	ResendVerification(context.Context, *emptypb.Empty) (*ResendVerificationResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -129,6 +142,9 @@ func (UnimplementedAuthServiceServer) IsEmailAvailable(context.Context, *IsEmail
 }
 func (UnimplementedAuthServiceServer) RotateAuthToken(context.Context, *RotateAuthTokenRequest) (*RotateAuthTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RotateAuthToken not implemented")
+}
+func (UnimplementedAuthServiceServer) ResendVerification(context.Context, *emptypb.Empty) (*ResendVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResendVerification not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -241,6 +257,24 @@ func _AuthService_RotateAuthToken_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ResendVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ResendVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ResendVerification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ResendVerification(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -267,6 +301,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RotateAuthToken",
 			Handler:    _AuthService_RotateAuthToken_Handler,
+		},
+		{
+			MethodName: "ResendVerification",
+			Handler:    _AuthService_ResendVerification_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

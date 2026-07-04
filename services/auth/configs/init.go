@@ -35,7 +35,8 @@ type Broker struct {
 	Brokers string `mapstructure:"brokers"`
 
 	// Publishers
-	AC cfg.Publisher `mapstructure:"ac"`
+	AC   cfg.Publisher `mapstructure:"ac"`
+	AEVR cfg.Publisher `mapstructure:"aevr"`
 }
 
 func Init(path string) (*Config, error) {

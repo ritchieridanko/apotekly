@@ -103,7 +103,7 @@ func (d *authDatabase) GetByEmail(ctx context.Context, email string) (*models.Au
 func (d *authDatabase) GetByID(ctx context.Context, authID uint64) (*models.Auth, *ce.Error) {
 	query := `
 		SELECT
-			id, role, email_verified_at
+			id, email, role, email_verified_at
 		FROM
 			auth
 		WHERE
@@ -120,6 +120,7 @@ func (d *authDatabase) GetByID(ctx context.Context, authID uint64) (*models.Auth
 		authID,
 	).Scan(
 		&a.ID,
+		&a.Email,
 		&a.Role,
 		&a.EmailVerifiedAt,
 	)

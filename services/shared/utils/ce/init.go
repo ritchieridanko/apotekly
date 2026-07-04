@@ -80,6 +80,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeRoleNotAuthorized:
 		return status.Error(codes.PermissionDenied, e.message)
 	case
+		CodeEmailAlreadyVerified,
 		CodeEmailNotVerified,
 		CodeFailedPrecondition:
 		return status.Error(codes.FailedPrecondition, e.message)

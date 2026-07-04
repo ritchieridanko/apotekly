@@ -12,6 +12,7 @@ service AuthService {
   rpc SignOut (SignOutRequest) returns (google.protobuf.Empty);
   rpc IsEmailAvailable (IsEmailAvailableRequest) returns (IsEmailAvailableResponse);
   rpc RotateAuthToken (RotateAuthTokenRequest) returns (RotateAuthTokenResponse);
+  rpc ResendVerification (google.protobuf.Empty) returns (ResendVerificationResponse);
 }
 
 message Auth {
@@ -73,4 +74,8 @@ message RotateAuthTokenRequest {
 
 message RotateAuthTokenResponse {
   AuthToken auth_token = 1;
+}
+
+message ResendVerificationResponse {
+  string email = 1;
 }

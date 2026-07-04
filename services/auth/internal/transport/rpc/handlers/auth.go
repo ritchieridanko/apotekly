@@ -82,6 +82,16 @@ func (h *AuthHandler) RotateAuthToken(ctx context.Context, req *apis.RotateAuthT
 	}, nil
 }
 
+func (h *AuthHandler) ResendVerification(ctx context.Context, req *emptypb.Empty) (*apis.ResendVerificationResponse, error) {
+	email, err := h.au.ResendVerification(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.ResendVerificationResponse{
+		Email: email,
+	}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil
