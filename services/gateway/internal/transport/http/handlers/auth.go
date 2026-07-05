@@ -397,6 +397,50 @@ func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) ChangePassword(ctx *gin.Context) {
+	var payload dtos.ChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	err := h.ac.ChangePassword(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		&models.ChangePasswordReq{
+			OldPassword: payload.OldPassword,
+			NewPassword: payload.NewPassword,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse[any](
+		ctx,
+		http.StatusOK,
+		"Password changed successfully",
+		nil,
+		nil,
+	)
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *dtos.Auth {
 	if a == nil {
 		return nil

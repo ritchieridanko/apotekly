@@ -20,6 +20,7 @@ type AuthClient interface {
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 }
 
 type authClient struct {
@@ -145,6 +146,24 @@ func (c *authClient) VerifyEmail(ctx context.Context, req *models.VerifyEmailReq
 		)
 	}
 	return c.toAuth(resp.GetAuth()), c.toAuthToken(resp.GetAuthToken()), nil
+}
+
+func (c *authClient) ChangePassword(ctx context.Context, req *models.ChangePasswordReq) *ce.Error {
+	_, err := c.client.ChangePassword(
+		ctx,
+		&apis.ChangePasswordRequest{
+			OldPassword: req.OldPassword,
+			NewPassword: req.NewPassword,
+		},
+	)
+	if err != nil {
+		return ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

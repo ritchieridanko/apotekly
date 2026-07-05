@@ -2,6 +2,11 @@ package dtos
 
 // Requests
 type (
+	ChangePasswordRequest struct {
+		OldPassword string `json:"old_password" binding:"required"`
+		NewPassword string `json:"new_password" binding:"required"`
+	}
+
 	IsEmailAvailableRequest struct {
 		Email string `form:"email" binding:"required"`
 	}

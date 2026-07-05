@@ -61,6 +61,13 @@ func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler
 				verification.POST("/confirm", middlewares.Auth(j), ah.VerifyEmail)
 			}
 		}
+
+		// Passwords
+		password := auth.Group("/password")
+		{
+			// Update
+			password.PATCH("", middlewares.Auth(j), ah.ChangePassword)
+		}
 	}
 
 	return &Router{router: r}
