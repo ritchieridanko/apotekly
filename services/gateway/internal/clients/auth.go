@@ -19,6 +19,7 @@ type AuthClient interface {
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
+	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 }
 
 type authClient struct {
@@ -126,6 +127,24 @@ func (c *authClient) ResendVerification(ctx context.Context) (string, *ce.Error)
 		)
 	}
 	return resp.GetEmail(), nil
+}
+
+func (c *authClient) VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (*models.Auth, *models.AuthToken, *ce.Error) {
+	resp, err := c.client.VerifyEmail(
+		ctx,
+		&apis.VerifyEmailRequest{
+			RefreshToken:      req.RefreshToken,
+			VerificationToken: req.VerificationToken,
+		},
+	)
+	if err != nil {
+		return nil, nil, ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return c.toAuth(resp.GetAuth()), c.toAuthToken(resp.GetAuthToken()), nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

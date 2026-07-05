@@ -319,6 +319,84 @@ func (h *AuthHandler) ResendVerification(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
+	var params dtos.VerifyEmailRequest
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	refreshToken, err := ctx.Cookie(constants.CookieKeyRefreshToken)
+	if errors.Is(err, ce.ErrCookieNotFound) {
+		ce.NewError(ce.CodeRefreshTokenNotFound, ce.MsgInvalidSession, err).Bind(ctx)
+		return
+	}
+	if err != nil {
+		ce.NewError(ce.CodeInternal, ce.MsgInternalServer, err).Bind(ctx)
+		return
+	}
+
+	token := strings.TrimSpace(refreshToken)
+	if token == "" {
+		ce.NewError(
+			ce.CodeRefreshTokenNotFound,
+			ce.MsgInvalidSession,
+			errors.New("refresh token is empty"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	a, at, verifyErr := h.ac.VerifyEmail(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		&models.VerifyEmailReq{
+			RefreshToken:      token,
+			VerificationToken: params.VerificationToken,
+		},
+	)
+	if verifyErr != nil {
+		verifyErr.Bind(ctx)
+		return
+	}
+	if at != nil && at.RefreshToken != nil {
+		h.cookie.Set(
+			ctx,
+			constants.CookieKeyRefreshToken,
+			at.RefreshToken.Token,
+			"/",
+			int(at.RefreshToken.ExpiresInSeconds),
+		)
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Email verified successfully",
+		dtos.VerifyEmailResponse{
+			Auth:        h.toAuth(a),
+			AccessToken: h.toAccessToken(at),
+		},
+		nil,
+	)
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *dtos.Auth {
 	if a == nil {
 		return nil

@@ -15,6 +15,10 @@ type (
 		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
+
+	VerifyEmailRequest struct {
+		VerificationToken string `form:"token" binding:"required"`
+	}
 )
 
 // Responses
@@ -48,6 +52,11 @@ type (
 	}
 
 	SignUpResponse struct {
+		Auth        *Auth        `json:"auth,omitempty"`
+		AccessToken *AccessToken `json:"access_token,omitempty"`
+	}
+
+	VerifyEmailResponse struct {
 		Auth        *Auth        `json:"auth,omitempty"`
 		AccessToken *AccessToken `json:"access_token,omitempty"`
 	}
