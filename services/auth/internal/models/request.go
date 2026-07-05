@@ -1,6 +1,11 @@
 package models
 
 type (
+	ChangePasswordReq struct {
+		OldPassword string
+		NewPassword string
+	}
+
 	CreateSessionReq struct {
 		AuthID          uint64
 		Role            string

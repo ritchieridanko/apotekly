@@ -30,6 +30,7 @@ type AuthUsecase interface {
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 }
 
 type authUsecase struct {
@@ -386,7 +387,7 @@ func (u *authUsecase) ResendVerification(ctx context.Context) (string, *ce.Error
 	authIDField := logger.NewField("auth_id", authCtx.AuthID)
 
 	// Auth Fetching
-	// NOTE: Resend verification is only allowed if not yet verified
+	// NOTE: ResendVerification usecase is only allowed if not yet verified
 	a, err := u.ar.GetByID(ctx, authCtx.AuthID)
 	if err != nil && err.Code() == ce.CodeAuthNotFound {
 		return "", ce.NewError(
@@ -575,4 +576,63 @@ func (u *authUsecase) VerifyEmail(ctx context.Context, req *models.VerifyEmailRe
 	}
 
 	return a, at, nil
+}
+
+func (u *authUsecase) ChangePassword(ctx context.Context, req *models.ChangePasswordReq) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ChangePassword")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Validation
+	if ok, why := u.validator.Password(req.NewPassword); !ok {
+		return ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+	}
+
+	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Auth Fetching
+		// NOTE: ChangePassword usecase is not allowed for oauth account (password == nil)
+		auth, err := u.ar.GetByID(ctx, authCtx.AuthID)
+		if err != nil && err.Code() == ce.CodeAuthNotFound {
+			return ce.NewError(ce.CodeAuthNotRegistered, ce.MsgInvalidCredentials, err.Unwrap())
+		}
+		if err != nil {
+			return err
+		}
+		if auth.Password == nil {
+			return ce.NewError(ce.CodeOAuthPasswordChange, ce.MsgOAuthPasswordChange, nil)
+		}
+
+		// Old Password Validation
+		if err := u.bcrypt.Validate(*auth.Password, req.OldPassword); err != nil {
+			return ce.NewError(ce.CodeWrongPassword, ce.MsgInvalidOldPassword, err)
+		}
+
+		// New Password Hashing
+		hash, hashErr := u.bcrypt.Hash(req.NewPassword)
+		if hashErr != nil {
+			return ce.NewError(ce.CodeBCryptHashingFailed, ce.MsgInternalServer, hashErr)
+		}
+
+		// Password Update
+		err = u.ar.UpdatePassword(ctx, auth.ID, hash)
+		if err != nil && err.Code() == ce.CodeAuthNotFound {
+			return ce.NewError(ce.CodeAuthNotRegistered, ce.MsgInvalidCredentials, err.Unwrap())
+		}
+		return err
+	})
+	if err != nil {
+		return err.Append(authIDField)
+	}
+
+	return nil
 }

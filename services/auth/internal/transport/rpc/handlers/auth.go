@@ -109,6 +109,20 @@ func (h *AuthHandler) VerifyEmail(ctx context.Context, req *apis.VerifyEmailRequ
 	}, nil
 }
 
+func (h *AuthHandler) ChangePassword(ctx context.Context, req *apis.ChangePasswordRequest) (*emptypb.Empty, error) {
+	err := h.au.ChangePassword(
+		ctx,
+		&models.ChangePasswordReq{
+			OldPassword: req.GetOldPassword(),
+			NewPassword: req.GetNewPassword(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil

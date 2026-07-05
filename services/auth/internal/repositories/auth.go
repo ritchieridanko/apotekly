@@ -13,6 +13,7 @@ type AuthRepository interface {
 	Create(ctx context.Context, data *models.CreateAuth) (a *models.Auth, err *ce.Error)
 	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
+	UpdatePassword(ctx context.Context, authID uint64, newPassword string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 }
@@ -36,6 +37,10 @@ func (r *authRepository) GetByEmail(ctx context.Context, email string) (*models.
 
 func (r *authRepository) GetByID(ctx context.Context, authID uint64) (*models.Auth, *ce.Error) {
 	return r.database.GetByID(ctx, authID)
+}
+
+func (r *authRepository) UpdatePassword(ctx context.Context, authID uint64, newPassword string) *ce.Error {
+	return r.database.UpdatePassword(ctx, authID, newPassword)
 }
 
 func (r *authRepository) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {

@@ -84,7 +84,8 @@ func (e *Error) ToGRPCErr() error {
 	case
 		CodeEmailAlreadyVerified,
 		CodeEmailNotVerified,
-		CodeFailedPrecondition:
+		CodeFailedPrecondition,
+		CodeOAuthPasswordChange:
 		return status.Error(codes.FailedPrecondition, e.message)
 	case
 		CodeAuthNotRegistered,

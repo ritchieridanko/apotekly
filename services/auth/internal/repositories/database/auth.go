@@ -14,6 +14,7 @@ type AuthDatabase interface {
 	Create(ctx context.Context, data *models.CreateAuth) (a *models.Auth, err *ce.Error)
 	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
+	UpdatePassword(ctx context.Context, authID uint64, newPassword string) (err *ce.Error)
 	EmailExists(ctx context.Context, email string) (exists bool, err *ce.Error)
 	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 }
@@ -104,7 +105,7 @@ func (d *authDatabase) GetByEmail(ctx context.Context, email string) (*models.Au
 func (d *authDatabase) GetByID(ctx context.Context, authID uint64) (*models.Auth, *ce.Error) {
 	query := `
 		SELECT
-			id, email, role, email_verified_at
+			id, email, password, role, email_verified_at
 		FROM
 			auth
 		WHERE
@@ -122,6 +123,7 @@ func (d *authDatabase) GetByID(ctx context.Context, authID uint64) (*models.Auth
 	).Scan(
 		&a.ID,
 		&a.Email,
+		&a.Password,
 		&a.Role,
 		&a.EmailVerifiedAt,
 	)
@@ -142,6 +144,43 @@ func (d *authDatabase) GetByID(ctx context.Context, authID uint64) (*models.Auth
 	}
 
 	return &a, nil
+}
+
+func (d *authDatabase) UpdatePassword(ctx context.Context, authID uint64, newPassword string) *ce.Error {
+	query := `
+		UPDATE
+			auth
+		SET
+			password = $2,
+			password_changed_at = NOW(),
+			updated_at = NOW()
+		WHERE
+			id = $1
+			AND deleted_at IS NULL
+	`
+
+	err := d.database.Execute(
+		ctx, query,
+		authID,
+		newPassword,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to update password: %w", err)
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return ce.NewError(
+				ce.CodeAuthNotFound,
+				ce.MsgAuthNotFound,
+				wrappedErr,
+			)
+		}
+		return ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return nil
 }
 
 func (d *authDatabase) EmailExists(ctx context.Context, email string) (bool, *ce.Error) {
