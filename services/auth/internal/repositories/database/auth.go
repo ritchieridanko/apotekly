@@ -15,6 +15,7 @@ type AuthDatabase interface {
 	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 	EmailExists(ctx context.Context, email string) (exists bool, err *ce.Error)
+	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 }
 
 type authDatabase struct {
@@ -168,4 +169,47 @@ func (d *authDatabase) EmailExists(ctx context.Context, email string) (bool, *ce
 	}
 
 	return true, nil
+}
+
+func (d *authDatabase) SetVerified(ctx context.Context, authID uint64) (*models.Auth, *ce.Error) {
+	query := `
+		UPDATE
+			auth
+		SET
+			email_verified_at = NOW(),
+			updated_at = NOW()
+		WHERE
+			id = $1
+			AND deleted_at IS NULL
+		RETURNING
+			id, email, role, email_verified_at
+	`
+
+	var a models.Auth
+	err := d.database.Query(
+		ctx, query,
+		authID,
+	).Scan(
+		&a.ID,
+		&a.Email,
+		&a.Role,
+		&a.EmailVerifiedAt,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to set auth verified: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeAuthNotFound,
+				ce.MsgAuthNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &a, nil
 }

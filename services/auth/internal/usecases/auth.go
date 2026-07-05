@@ -29,6 +29,7 @@ type AuthUsecase interface {
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
+	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 }
 
 type authUsecase struct {
@@ -455,4 +456,123 @@ func (u *authUsecase) ResendVerification(ctx context.Context) (string, *ce.Error
 	)
 
 	return a.Email, nil
+}
+
+func (u *authUsecase) VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (*models.Auth, *models.AuthToken, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.VerifyEmail")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Normalization
+	refreshToken := strings.TrimSpace(req.RefreshToken)
+	verificationToken := strings.TrimSpace(req.VerificationToken)
+
+	// Data Validation
+	if refreshToken == "" {
+		return nil, nil, ce.NewError(
+			ce.CodeUnauthenticated,
+			ce.MsgUnauthenticated,
+			errors.New("refresh token is empty"),
+			authIDField,
+		)
+	}
+	if verificationToken == "" {
+		return nil, nil, ce.NewError(
+			ce.CodeInvalidPayload,
+			"Verification token is required",
+			nil,
+			authIDField,
+		)
+	}
+
+	// Verification Token Consumption
+	authID, err := u.tr.UseVerification(ctx, verificationToken)
+	if err != nil {
+		return nil, nil, err.Append(authIDField)
+	}
+
+	// Verification Token Ownership Validation
+	// NOTE: Invalid ownership re-creates the verification token
+	if authID != authCtx.AuthID {
+		err := u.tr.CreateVerification(
+			ctx,
+			&models.CreateVerificationToken{
+				AuthID:   authID,
+				Token:    verificationToken,
+				Duration: u.verificationToken,
+			},
+		)
+		if err != nil {
+			return nil, nil, err.Append(authIDField)
+		}
+		return nil, nil, ce.NewError(
+			ce.CodeTokenNotOwned,
+			ce.MsgInvalidToken,
+			nil,
+			authIDField,
+			logger.NewField("token_auth_id", authID),
+		)
+	}
+
+	// Verification Update
+	// NOTE: Fail to update verification status re-creates the verification token
+	a, err := u.ar.SetVerified(ctx, authID)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		return nil, nil, ce.NewError(
+			ce.CodeAuthNotRegistered,
+			ce.MsgInvalidCredentials,
+			err.Unwrap(),
+			authIDField,
+		)
+	}
+	if err != nil {
+		createErr := u.tr.CreateVerification(
+			ctx,
+			&models.CreateVerificationToken{
+				AuthID:   authID,
+				Token:    verificationToken,
+				Duration: u.verificationToken,
+			},
+		)
+		if createErr != nil {
+			return nil, nil, createErr.Append(authIDField)
+		}
+		return nil, nil, err.Append(authIDField)
+	}
+
+	// Session Refresh
+	// NOTE: Fail to refresh session does not fail VerifyEmail usecase
+	at, err := u.su.RefreshSession(
+		ctx,
+		&models.RefreshSessionReq{
+			AuthID:          a.ID,
+			Role:            a.Role,
+			IsEmailVerified: a.IsEmailVerified(),
+			RefreshToken:    refreshToken,
+		},
+	)
+	if err != nil {
+		u.logger.Warn(
+			ctx,
+			"verified email. failed to refresh session",
+			err.Append(
+				authIDField,
+				logger.NewField("error_code", err.Code()),
+				logger.NewField("error", err.Unwrap()),
+			).Fields()...,
+		)
+		return a, nil, nil
+	}
+
+	return a, at, nil
 }

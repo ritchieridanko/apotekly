@@ -13,6 +13,7 @@ service AuthService {
   rpc IsEmailAvailable (IsEmailAvailableRequest) returns (IsEmailAvailableResponse);
   rpc RotateAuthToken (RotateAuthTokenRequest) returns (RotateAuthTokenResponse);
   rpc ResendVerification (google.protobuf.Empty) returns (ResendVerificationResponse);
+  rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse);
 }
 
 message Auth {
@@ -78,4 +79,14 @@ message RotateAuthTokenResponse {
 
 message ResendVerificationResponse {
   string email = 1;
+}
+
+message VerifyEmailRequest {
+  string refresh_token = 1;
+  string verification_token = 2;
+}
+
+message VerifyEmailResponse {
+  Auth auth = 1;
+  AuthToken auth_token = 2;
 }

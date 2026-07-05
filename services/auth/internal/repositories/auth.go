@@ -14,6 +14,7 @@ type AuthRepository interface {
 	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
+	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 }
 
 type authRepository struct {
@@ -51,4 +52,8 @@ func (r *authRepository) IsEmailAvailable(ctx context.Context, email string) (bo
 		return false, err
 	}
 	return !reserved, nil
+}
+
+func (r *authRepository) SetVerified(ctx context.Context, authID uint64) (*models.Auth, *ce.Error) {
+	return r.database.SetVerified(ctx, authID)
 }

@@ -92,6 +92,23 @@ func (h *AuthHandler) ResendVerification(ctx context.Context, req *emptypb.Empty
 	}, nil
 }
 
+func (h *AuthHandler) VerifyEmail(ctx context.Context, req *apis.VerifyEmailRequest) (*apis.VerifyEmailResponse, error) {
+	a, at, err := h.au.VerifyEmail(
+		ctx,
+		&models.VerifyEmailReq{
+			RefreshToken:      req.GetRefreshToken(),
+			VerificationToken: req.GetVerificationToken(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.VerifyEmailResponse{
+		Auth:      h.toAuth(a),
+		AuthToken: h.toAuthToken(at),
+	}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil

@@ -23,4 +23,9 @@ type (
 		Email    string
 		Password string
 	}
+
+	VerifyEmailReq struct {
+		RefreshToken      string
+		VerificationToken string
+	}
 )

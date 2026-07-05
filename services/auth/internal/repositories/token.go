@@ -10,6 +10,7 @@ import (
 
 type TokenRepository interface {
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
+	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 }
 
 type tokenRepository struct {
@@ -22,4 +23,8 @@ func NewTokenRepository(cc cache.TokenCache) TokenRepository {
 
 func (r *tokenRepository) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {
 	return r.cache.CreateVerification(ctx, data)
+}
+
+func (r *tokenRepository) UseVerification(ctx context.Context, token string) (uint64, *ce.Error) {
+	return r.cache.UseVerification(ctx, token)
 }

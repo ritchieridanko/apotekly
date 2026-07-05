@@ -6,10 +6,12 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/redis/go-redis/v9"
 )
 
 // Internal Errors
 var (
+	ErrCacheNoResult   error = redis.Nil
 	ErrCookieNotFound  error = http.ErrNoCookie
 	ErrDBAffectNoRows  error = errors.New("no rows affected")
 	ErrDBQueryNoRows   error = pgx.ErrNoRows
@@ -43,6 +45,7 @@ const (
 	CodeInvalidParams           errCode = "ERR_INVALID_PARAMS"
 	CodeInvalidPayload          errCode = "ERR_INVALID_PAYLOAD"
 	CodeInvalidRequestMetadata  errCode = "ERR_INVALID_REQUEST_METADATA"
+	CodeInvalidToken            errCode = "ERR_INVALID_TOKEN"
 	CodeJSONRawEncodingFailed   errCode = "ERR_JSON_RAW_ENCODING_FAILED"
 	CodeJSONUnmarshallingFailed errCode = "ERR_JSON_UNMARSHALLING_FAILED"
 	CodeJWTGenerationFailed     errCode = "ERR_JWT_GENERATION_FAILED"
@@ -60,6 +63,7 @@ const (
 	CodeSessionExpired          errCode = "ERR_SESSION_EXPIRED"
 	CodeSessionNotFound         errCode = "ERR_SESSION_NOT_FOUND"
 	CodeSessionNotOwned         errCode = "ERR_SESSION_NOT_OWNED"
+	CodeTokenNotOwned           errCode = "ERR_TOKEN_NOT_OWNED"
 	CodeTypeConversionFailed    errCode = "ERR_TYPE_CONVERSION_FAILED"
 	CodeUnauthenticated         errCode = "ERR_UNAUTHENTICATED"
 	CodeUnknown                 errCode = "ERR_UNKNOWN"
@@ -79,6 +83,7 @@ const (
 	MsgInvalidParams          string = "Invalid params"
 	MsgInvalidPayload         string = "Invalid payload"
 	MsgInvalidSession         string = "Invalid session"
+	MsgInvalidToken           string = "Invalid token"
 	MsgNoPendingEventInbox    string = "No pending event inbox"
 	MsgOrphanedEventInbox     string = "Orphaned event inbox"
 	MsgSessionExpired         string = "Session expired"

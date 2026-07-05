@@ -64,7 +64,9 @@ func (e *Error) ToGRPCErr() error {
 	case
 		CodeInvalidParams,
 		CodeInvalidPayload,
-		CodeInvalidRequestMetadata:
+		CodeInvalidRequestMetadata,
+		CodeInvalidToken,
+		CodeTokenNotOwned:
 		return status.Error(codes.InvalidArgument, e.message)
 	case
 		CodeAuthNotFound,
