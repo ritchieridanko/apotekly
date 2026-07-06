@@ -14,6 +14,7 @@ service AuthService {
   rpc RotateAuthToken (RotateAuthTokenRequest) returns (RotateAuthTokenResponse);
   rpc ResendVerification (google.protobuf.Empty) returns (ResendVerificationResponse);
   rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse);
+  rpc ChangeEmail (ChangeEmailRequest) returns (ChangeEmailResponse);
   rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty);
 }
 
@@ -90,6 +91,15 @@ message VerifyEmailRequest {
 message VerifyEmailResponse {
   Auth auth = 1;
   AuthToken auth_token = 2;
+}
+
+message ChangeEmailRequest {
+  string password = 1;
+  string new_email = 2;
+}
+
+message ChangeEmailResponse {
+  string email = 1;
 }
 
 message ChangePasswordRequest {

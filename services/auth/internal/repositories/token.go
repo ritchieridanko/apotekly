@@ -9,6 +9,7 @@ import (
 )
 
 type TokenRepository interface {
+	CreateEmailChange(ctx context.Context, data *models.CreateEmailChange) (err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 }
@@ -19,6 +20,10 @@ type tokenRepository struct {
 
 func NewTokenRepository(cc cache.TokenCache) TokenRepository {
 	return &tokenRepository{cache: cc}
+}
+
+func (r *tokenRepository) CreateEmailChange(ctx context.Context, data *models.CreateEmailChange) *ce.Error {
+	return r.cache.CreateEmailChange(ctx, data)
 }
 
 func (r *tokenRepository) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {

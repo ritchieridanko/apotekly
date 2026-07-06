@@ -30,17 +30,20 @@ type AuthUsecase interface {
 	RotateAuthToken(ctx context.Context, refreshToken string) (at *models.AuthToken, err *ce.Error)
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
+	ChangeEmail(ctx context.Context, req *models.ChangeEmailReq) (email string, err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 }
 
 type authUsecase struct {
 	appName           string
+	emailChangeToken  time.Duration
 	verificationToken time.Duration
 	su                SessionUsecase
 	ar                repositories.AuthRepository
 	tr                repositories.TokenRepository
 	transactor        *database.Transactor
 	acp               *publisher.Publisher
+	aecrp             *publisher.Publisher
 	aevrp             *publisher.Publisher
 	bcrypt            *bcrypt.BCrypt
 	validator         *validator.Validator
@@ -49,12 +52,14 @@ type authUsecase struct {
 
 func NewAuthUsecase(
 	appName string,
+	emailChangeToken time.Duration,
 	verificationToken time.Duration,
 	su SessionUsecase,
 	ar repositories.AuthRepository,
 	tr repositories.TokenRepository,
 	tx *database.Transactor,
 	acp *publisher.Publisher,
+	aecrp *publisher.Publisher,
 	aevrp *publisher.Publisher,
 	b *bcrypt.BCrypt,
 	v *validator.Validator,
@@ -62,12 +67,14 @@ func NewAuthUsecase(
 ) AuthUsecase {
 	return &authUsecase{
 		appName:           appName,
+		emailChangeToken:  emailChangeToken,
 		verificationToken: verificationToken,
 		su:                su,
 		ar:                ar,
 		tr:                tr,
 		transactor:        tx,
 		acp:               acp,
+		aecrp:             aecrp,
 		aevrp:             aevrp,
 		bcrypt:            b,
 		validator:         v,
@@ -578,6 +585,132 @@ func (u *authUsecase) VerifyEmail(ctx context.Context, req *models.VerifyEmailRe
 	return a, at, nil
 }
 
+func (u *authUsecase) ChangeEmail(ctx context.Context, req *models.ChangeEmailReq) (string, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ChangeEmail")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return "", ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Normalization
+	newEmail := strings.ToLower(req.NewEmail)
+
+	// Data Validation
+	if ok, why := u.validator.Email(newEmail); !ok {
+		return "", ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+	}
+
+	// Auth Fetching
+	// NOTE: ChangeEmail usecase is not allowed for oauth account (password == nil)
+	a, err := u.ar.GetByID(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		return "", ce.NewError(
+			ce.CodeAuthNotRegistered,
+			ce.MsgInvalidCredentials,
+			err.Unwrap(),
+			authIDField,
+		)
+	}
+	if err != nil {
+		return "", err.Append(authIDField)
+	}
+	if a.Password == nil {
+		return "", ce.NewError(
+			ce.CodeOAuthEmailChange,
+			ce.MsgOAuthEmailChange,
+			nil,
+			authIDField,
+		)
+	}
+
+	// Password Validation
+	if err := u.bcrypt.Validate(*a.Password, req.Password); err != nil {
+		return "", ce.NewError(
+			ce.CodeWrongPassword,
+			ce.MsgInvalidPassword,
+			err,
+			authIDField,
+		)
+	}
+
+	// Email Availability Check
+	available, err := u.ar.IsEmailAvailable(ctx, newEmail)
+	if err != nil {
+		return "", err.Append(authIDField)
+	}
+	if !available {
+		return "", ce.NewError(
+			ce.CodeEmailNotAvailable,
+			ce.MsgEmailAlreadyRegistered,
+			nil,
+			authIDField,
+		)
+	}
+
+	// Email Change Token Creation
+	token := utils.GenerateUUID().String()
+	err = u.tr.CreateEmailChange(
+		ctx,
+		&models.CreateEmailChange{
+			AuthID:   a.ID,
+			NewEmail: newEmail,
+			Token:    token,
+			Duration: u.emailChangeToken,
+		},
+	)
+	if err != nil {
+		return "", err.Append(authIDField)
+	}
+
+	evtTopicField := logger.NewField("event_topic", u.aecrp.Topic())
+
+	// auth.email.change.requested Event Publishing
+	// NOTE: Fail to publish event cancels email reservation
+	id := utils.GenerateUUID().String()
+	pubErr := u.aecrp.Publish(
+		ctx,
+		"auth_"+strconv.FormatUint(a.ID, 10)+"_"+id,
+		&events.AuthEmailChangeRequested{
+			Id:        id,
+			AuthId:    a.ID,
+			OldEmail:  a.Email,
+			NewEmail:  newEmail,
+			Role:      a.Role,
+			Token:     token,
+			CreatedAt: timestamppb.New(time.Now().UTC()),
+		},
+	)
+	if pubErr != nil {
+		if err := u.ar.UnreserveEmail(ctx, newEmail); err != nil {
+			return "", err.Append(authIDField, evtTopicField)
+		}
+		return "", ce.NewError(
+			ce.CodeEventPublishingFailed,
+			ce.MsgInternalServer,
+			pubErr,
+			authIDField,
+			evtTopicField,
+		)
+	}
+
+	u.logger.Info(
+		ctx,
+		"EVENT PUBLISHED",
+		authIDField,
+		evtTopicField,
+	)
+
+	return newEmail, nil
+}
+
 func (u *authUsecase) ChangePassword(ctx context.Context, req *models.ChangePasswordReq) *ce.Error {
 	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ChangePassword")
 	defer span.End()
@@ -601,19 +734,19 @@ func (u *authUsecase) ChangePassword(ctx context.Context, req *models.ChangePass
 	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
 		// Auth Fetching
 		// NOTE: ChangePassword usecase is not allowed for oauth account (password == nil)
-		auth, err := u.ar.GetByID(ctx, authCtx.AuthID)
+		a, err := u.ar.GetByID(ctx, authCtx.AuthID)
 		if err != nil && err.Code() == ce.CodeAuthNotFound {
 			return ce.NewError(ce.CodeAuthNotRegistered, ce.MsgInvalidCredentials, err.Unwrap())
 		}
 		if err != nil {
 			return err
 		}
-		if auth.Password == nil {
+		if a.Password == nil {
 			return ce.NewError(ce.CodeOAuthPasswordChange, ce.MsgOAuthPasswordChange, nil)
 		}
 
 		// Old Password Validation
-		if err := u.bcrypt.Validate(*auth.Password, req.OldPassword); err != nil {
+		if err := u.bcrypt.Validate(*a.Password, req.OldPassword); err != nil {
 			return ce.NewError(ce.CodeWrongPassword, ce.MsgInvalidOldPassword, err)
 		}
 
@@ -624,7 +757,7 @@ func (u *authUsecase) ChangePassword(ctx context.Context, req *models.ChangePass
 		}
 
 		// Password Update
-		err = u.ar.UpdatePassword(ctx, auth.ID, hash)
+		err = u.ar.UpdatePassword(ctx, a.ID, hash)
 		if err != nil && err.Code() == ce.CodeAuthNotFound {
 			return ce.NewError(ce.CodeAuthNotRegistered, ce.MsgInvalidCredentials, err.Unwrap())
 		}

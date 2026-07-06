@@ -122,6 +122,98 @@ func (x *AuthCreated) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type AuthEmailChangeRequested struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	AuthId        uint64                 `protobuf:"varint,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	OldEmail      string                 `protobuf:"bytes,3,opt,name=old_email,json=oldEmail,proto3" json:"old_email,omitempty"`
+	NewEmail      string                 `protobuf:"bytes,4,opt,name=new_email,json=newEmail,proto3" json:"new_email,omitempty"`
+	Role          string                 `protobuf:"bytes,5,opt,name=role,proto3" json:"role,omitempty"`
+	Token         string                 `protobuf:"bytes,6,opt,name=token,proto3" json:"token,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthEmailChangeRequested) Reset() {
+	*x = AuthEmailChangeRequested{}
+	mi := &file_v1_auth_event_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthEmailChangeRequested) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthEmailChangeRequested) ProtoMessage() {}
+
+func (x *AuthEmailChangeRequested) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_event_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthEmailChangeRequested.ProtoReflect.Descriptor instead.
+func (*AuthEmailChangeRequested) Descriptor() ([]byte, []int) {
+	return file_v1_auth_event_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AuthEmailChangeRequested) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *AuthEmailChangeRequested) GetAuthId() uint64 {
+	if x != nil {
+		return x.AuthId
+	}
+	return 0
+}
+
+func (x *AuthEmailChangeRequested) GetOldEmail() string {
+	if x != nil {
+		return x.OldEmail
+	}
+	return ""
+}
+
+func (x *AuthEmailChangeRequested) GetNewEmail() string {
+	if x != nil {
+		return x.NewEmail
+	}
+	return ""
+}
+
+func (x *AuthEmailChangeRequested) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *AuthEmailChangeRequested) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *AuthEmailChangeRequested) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
 type AuthEmailVerificationRequested struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -136,7 +228,7 @@ type AuthEmailVerificationRequested struct {
 
 func (x *AuthEmailVerificationRequested) Reset() {
 	*x = AuthEmailVerificationRequested{}
-	mi := &file_v1_auth_event_proto_msgTypes[1]
+	mi := &file_v1_auth_event_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -148,7 +240,7 @@ func (x *AuthEmailVerificationRequested) String() string {
 func (*AuthEmailVerificationRequested) ProtoMessage() {}
 
 func (x *AuthEmailVerificationRequested) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_auth_event_proto_msgTypes[1]
+	mi := &file_v1_auth_event_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -161,7 +253,7 @@ func (x *AuthEmailVerificationRequested) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthEmailVerificationRequested.ProtoReflect.Descriptor instead.
 func (*AuthEmailVerificationRequested) Descriptor() ([]byte, []int) {
-	return file_v1_auth_event_proto_rawDescGZIP(), []int{1}
+	return file_v1_auth_event_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AuthEmailVerificationRequested) GetId() string {
@@ -223,7 +315,16 @@ const file_v1_auth_event_proto_rawDesc = "" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\n" +
 	"\n" +
 	"\b_sessionB\x15\n" +
-	"\x13_verification_token\"\xc4\x01\n" +
+	"\x13_verification_token\"\xe2\x01\n" +
+	"\x18AuthEmailChangeRequested\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\aauth_id\x18\x02 \x01(\x04R\x06authId\x12\x1b\n" +
+	"\told_email\x18\x03 \x01(\tR\boldEmail\x12\x1b\n" +
+	"\tnew_email\x18\x04 \x01(\tR\bnewEmail\x12\x12\n" +
+	"\x04role\x18\x05 \x01(\tR\x04role\x12\x14\n" +
+	"\x05token\x18\x06 \x01(\tR\x05token\x129\n" +
+	"\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc4\x01\n" +
 	"\x1eAuthEmailVerificationRequested\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\aauth_id\x18\x02 \x01(\x04R\x06authId\x12\x14\n" +
@@ -245,21 +346,23 @@ func file_v1_auth_event_proto_rawDescGZIP() []byte {
 	return file_v1_auth_event_proto_rawDescData
 }
 
-var file_v1_auth_event_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_v1_auth_event_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_v1_auth_event_proto_goTypes = []any{
 	(*AuthCreated)(nil),                    // 0: auth.v1.AuthCreated
-	(*AuthEmailVerificationRequested)(nil), // 1: auth.v1.AuthEmailVerificationRequested
-	(*timestamppb.Timestamp)(nil),          // 2: google.protobuf.Timestamp
+	(*AuthEmailChangeRequested)(nil),       // 1: auth.v1.AuthEmailChangeRequested
+	(*AuthEmailVerificationRequested)(nil), // 2: auth.v1.AuthEmailVerificationRequested
+	(*timestamppb.Timestamp)(nil),          // 3: google.protobuf.Timestamp
 }
 var file_v1_auth_event_proto_depIdxs = []int32{
-	2, // 0: auth.v1.AuthCreated.email_verified_at:type_name -> google.protobuf.Timestamp
-	2, // 1: auth.v1.AuthCreated.created_at:type_name -> google.protobuf.Timestamp
-	2, // 2: auth.v1.AuthEmailVerificationRequested.created_at:type_name -> google.protobuf.Timestamp
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 0: auth.v1.AuthCreated.email_verified_at:type_name -> google.protobuf.Timestamp
+	3, // 1: auth.v1.AuthCreated.created_at:type_name -> google.protobuf.Timestamp
+	3, // 2: auth.v1.AuthEmailChangeRequested.created_at:type_name -> google.protobuf.Timestamp
+	3, // 3: auth.v1.AuthEmailVerificationRequested.created_at:type_name -> google.protobuf.Timestamp
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_v1_auth_event_proto_init() }
@@ -274,7 +377,7 @@ func file_v1_auth_event_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_event_proto_rawDesc), len(file_v1_auth_event_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

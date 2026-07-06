@@ -14,6 +14,7 @@ import (
 )
 
 type TokenCache interface {
+	CreateEmailChange(ctx context.Context, data *models.CreateEmailChange) (err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 }
@@ -26,8 +27,64 @@ func NewTokenCache(cc *cc.Cache) TokenCache {
 	return &tokenCache{cache: cc}
 }
 
+func (c *tokenCache) CreateEmailChange(ctx context.Context, data *models.CreateEmailChange) *ce.Error {
+	emch := constants.CachePrefixEmailChange
+	emres := constants.CachePrefixEmailReservation
+	script := `
+		local token = redis.call("GET", KEYS[1])
+		if token then
+			local email = redis.call("HGET", KEYS[3] .. ":" .. token, "ne")
+			if email then
+				redis.call("DEL", KEYS[5] .. ":" .. email)
+			end
+
+			redis.call("DEL", KEYS[1])
+			redis.call("DEL", KEYS[3] .. ":" .. token)
+		end
+
+		local reserved = redis.call("SET", KEYS[4], ARGV[2], "NX", "EX", ARGV[4])
+		if not reserved then
+			return 0
+		end
+
+		redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[4])
+		redis.call("HSET", KEYS[2], "id", ARGV[2], "ne", ARGV[3])
+		redis.call("EXPIRE", KEYS[2], ARGV[4])
+		return 1
+	`
+
+	res, err := c.cache.Evaluate(
+		ctx, "s:cremch", script,
+		[]string{
+			emch + ":" + strconv.FormatUint(data.AuthID, 10), // KEYS[1]
+			emch + ":" + data.Token,                          // KEYS[2]
+			emch,                                             // KEYS[3]
+			emres + ":" + data.NewEmail,                      // KEYS[4]
+			emres,                                            // KEYS[5]
+		},
+		[]any{
+			data.Token,                   // ARGV[1]
+			data.AuthID,                  // ARGV[2]
+			data.NewEmail,                // ARGV[3]
+			int(data.Duration.Seconds()), // ARGV[4]
+		},
+	)
+	if err != nil {
+		return ce.NewError(
+			ce.CodeCacheScriptExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to create email change token: %w", err),
+		)
+	}
+	if res.(int64) == 0 {
+		return ce.NewError(ce.CodeEmailNotAvailable, ce.MsgEmailAlreadyRegistered, nil)
+	}
+
+	return nil
+}
+
 func (c *tokenCache) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {
-	prefix := constants.CachePrefixEmailVerification
+	emver := constants.CachePrefixEmailVerification
 	script := `
 		local token = redis.call("GET", KEYS[1])
 		if token then
@@ -43,14 +100,14 @@ func (c *tokenCache) CreateVerification(ctx context.Context, data *models.Create
 	_, err := c.cache.Evaluate(
 		ctx, "s:crever", script,
 		[]string{
-			prefix + ":" + strconv.FormatUint(data.AuthID, 10),
-			prefix + ":" + data.Token,
-			prefix,
+			emver + ":" + strconv.FormatUint(data.AuthID, 10), // KEYS[1]
+			emver + ":" + data.Token,                          // KEYS[2]
+			emver,                                             // KEYS[3]
 		},
 		[]any{
-			data.Token,
-			data.AuthID,
-			int(data.Duration.Seconds()),
+			data.Token,                   // ARGV[1]
+			data.AuthID,                  // ARGV[2]
+			int(data.Duration.Seconds()), // ARGV[3]
 		},
 	)
 	if err != nil {
@@ -65,7 +122,7 @@ func (c *tokenCache) CreateVerification(ctx context.Context, data *models.Create
 }
 
 func (c *tokenCache) UseVerification(ctx context.Context, token string) (uint64, *ce.Error) {
-	prefix := constants.CachePrefixEmailVerification
+	emver := constants.CachePrefixEmailVerification
 	script := `
 		local authID = redis.call("GET", KEYS[1])
 		if authID then
@@ -79,8 +136,8 @@ func (c *tokenCache) UseVerification(ctx context.Context, token string) (uint64,
 	res, err := c.cache.Evaluate(
 		ctx, "s:usever", script,
 		[]string{
-			prefix + ":" + token,
-			prefix,
+			emver + ":" + token, // KEYS[1]
+			emver,               // KEYS[2]
 		},
 		nil,
 	)

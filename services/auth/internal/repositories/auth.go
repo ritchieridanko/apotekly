@@ -15,6 +15,7 @@ type AuthRepository interface {
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 	UpdatePassword(ctx context.Context, authID uint64, newPassword string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
+	UnreserveEmail(ctx context.Context, email string) (err *ce.Error)
 	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 }
 
@@ -57,6 +58,10 @@ func (r *authRepository) IsEmailAvailable(ctx context.Context, email string) (bo
 		return false, err
 	}
 	return !reserved, nil
+}
+
+func (r *authRepository) UnreserveEmail(ctx context.Context, email string) *ce.Error {
+	return r.cache.UnreserveEmail(ctx, email)
 }
 
 func (r *authRepository) SetVerified(ctx context.Context, authID uint64) (*models.Auth, *ce.Error) {

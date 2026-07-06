@@ -31,6 +31,10 @@ func (c *Cache) Exists(ctx context.Context, key string) (bool, error) {
 	return res > 0, err
 }
 
+func (c *Cache) Delete(ctx context.Context, keys ...string) error {
+	return c.client.Del(ctx, keys...).Err()
+}
+
 func (c *Cache) Evaluate(ctx context.Context, hashKey, script string, keys []string, args []any) (any, error) {
 	hash, err := c.Get(ctx, hashKey)
 	if err != nil {

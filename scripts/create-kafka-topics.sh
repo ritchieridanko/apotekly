@@ -7,6 +7,7 @@ done
 
 TOPICS=(
   "auth.created"
+  "auth.email.change.requested"
   "auth.email.verification.requested"
 )
 

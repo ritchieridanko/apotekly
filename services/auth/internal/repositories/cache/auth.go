@@ -10,6 +10,7 @@ import (
 )
 
 type AuthCache interface {
+	UnreserveEmail(ctx context.Context, email string) (err *ce.Error)
 	IsEmailReserved(ctx context.Context, email string) (reserved bool, err *ce.Error)
 }
 
@@ -19,6 +20,21 @@ type authCache struct {
 
 func NewAuthCache(cc *cc.Cache) AuthCache {
 	return &authCache{cache: cc}
+}
+
+func (c *authCache) UnreserveEmail(ctx context.Context, email string) *ce.Error {
+	err := c.cache.Delete(
+		ctx,
+		constants.CachePrefixEmailReservation+":"+email,
+	)
+	if err != nil {
+		return ce.NewError(
+			ce.CodeCacheCommandExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to unreserve email: %w", err),
+		)
+	}
+	return nil
 }
 
 func (c *authCache) IsEmailReserved(ctx context.Context, email string) (bool, *ce.Error) {

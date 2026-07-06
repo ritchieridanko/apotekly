@@ -26,6 +26,7 @@ type Container struct {
 	logger     *logger.Logger
 
 	acp   *publisher.Publisher
+	aecrp *publisher.Publisher
 	aevrp *publisher.Publisher
 
 	acc cache.AuthCache
@@ -59,6 +60,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Publishers
 	acp := publisher.NewPublisher(inf.PublisherAC())
+	aecrp := publisher.NewPublisher(inf.PublisherAECR())
 	aevrp := publisher.NewPublisher(inf.PublisherAEVR())
 
 	// Caches
@@ -81,7 +83,12 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Usecases
 	su := usecases.NewSessionUsecase(cfg.App.Name, cfg.Auth.JWT.Duration, cfg.Auth.Duration.Session, sr, tx, j)
-	au := usecases.NewAuthUsecase(cfg.App.Name, cfg.Auth.Duration.Verification, su, ar, tr, tx, acp, aevrp, b, v, l)
+	au := usecases.NewAuthUsecase(
+		cfg.App.Name,
+		cfg.Auth.Duration.EmailChange,
+		cfg.Auth.Duration.Verification,
+		su, ar, tr, tx, acp, aecrp, aevrp, b, v, l,
+	)
 
 	// Handlers
 	ah := handlers.NewAuthHandler(au)
@@ -96,6 +103,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		transactor: tx,
 		logger:     l,
 		acp:        acp,
+		aecrp:      aecrp,
 		aevrp:      aevrp,
 		acc:        acc,
 		tcc:        tcc,

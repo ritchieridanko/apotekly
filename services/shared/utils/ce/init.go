@@ -85,6 +85,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeEmailAlreadyVerified,
 		CodeEmailNotVerified,
 		CodeFailedPrecondition,
+		CodeOAuthEmailChange,
 		CodeOAuthPasswordChange:
 		return status.Error(codes.FailedPrecondition, e.message)
 	case

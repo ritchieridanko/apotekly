@@ -26,6 +26,7 @@ type Auth struct {
 	JWT    cfg.JWT    `mapstructure:"jwt"`
 
 	Duration struct {
+		EmailChange  time.Duration `mapstructure:"email_change"`
 		Session      time.Duration `mapstructure:"session"`
 		Verification time.Duration `mapstructure:"verification"`
 	} `mapstructure:"duration"`
@@ -36,6 +37,7 @@ type Broker struct {
 
 	// Publishers
 	AC   cfg.Publisher `mapstructure:"ac"`
+	AECR cfg.Publisher `mapstructure:"aecr"`
 	AEVR cfg.Publisher `mapstructure:"aevr"`
 }
 

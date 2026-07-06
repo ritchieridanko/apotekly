@@ -17,6 +17,16 @@ message AuthCreated {
   google.protobuf.Timestamp created_at = 8;
 }
 
+message AuthEmailChangeRequested {
+  string id = 1;
+  uint64 auth_id = 2;
+  string old_email = 3;
+  string new_email = 4;
+  string role = 5;
+  string token = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
 message AuthEmailVerificationRequested {
   string id = 1;
   uint64 auth_id = 2;

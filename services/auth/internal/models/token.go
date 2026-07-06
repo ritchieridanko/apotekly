@@ -18,6 +18,13 @@ type (
 		RefreshToken *RefreshToken
 	}
 
+	CreateEmailChange struct {
+		AuthID   uint64
+		NewEmail string
+		Token    string
+		Duration time.Duration
+	}
+
 	CreateVerificationToken struct {
 		AuthID   uint64
 		Token    string
