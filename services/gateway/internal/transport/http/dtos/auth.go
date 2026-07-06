@@ -2,6 +2,11 @@ package dtos
 
 // Requests
 type (
+	ChangeEmailRequest struct {
+		Password string `json:"password" binding:"required"`
+		NewEmail string `json:"new_email" binding:"required"`
+	}
+
 	ChangePasswordRequest struct {
 		OldPassword string `json:"old_password" binding:"required"`
 		NewPassword string `json:"new_password" binding:"required"`
@@ -37,6 +42,10 @@ type (
 		Email           string `json:"email"`
 		Role            string `json:"role"`
 		IsEmailVerified bool   `json:"is_email_verified"`
+	}
+
+	ChangeEmailResponse struct {
+		Email string `json:"email"`
 	}
 
 	IsEmailAvailableResponse struct {

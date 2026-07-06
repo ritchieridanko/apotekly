@@ -1,6 +1,11 @@
 package models
 
 type (
+	ChangeEmailReq struct {
+		Password string
+		NewEmail string
+	}
+
 	ChangePasswordReq struct {
 		OldPassword string
 		NewPassword string

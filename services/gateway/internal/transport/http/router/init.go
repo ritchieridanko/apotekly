@@ -60,6 +60,13 @@ func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler
 				// Confirm
 				verification.POST("/confirm", middlewares.Auth(j), ah.VerifyEmail)
 			}
+
+			// Changes
+			change := email.Group("/change")
+			{
+				// Change
+				change.POST("", middlewares.Auth(j), ah.ChangeEmail)
+			}
 		}
 
 		// Passwords
