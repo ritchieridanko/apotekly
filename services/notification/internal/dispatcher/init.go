@@ -53,6 +53,19 @@ func (d *Dispatcher) Dispatch(ctx context.Context) *ce.Error {
 			}
 
 			err = d.au.ProcessEventAC(ctx, data)
+		case "auth.email.change.requested":
+			data, convertErr := utils.FromJSONRawMessage[models.EventAECR](ei.Payload)
+			if convertErr != nil {
+				return ce.NewError(
+					ce.CodeJSONUnmarshallingFailed,
+					ce.MsgInternalServer,
+					convertErr,
+					evtIDField,
+					evtTopicField,
+				)
+			}
+
+			err = d.au.ProcessEventAECR(ctx, data)
 		case "auth.email.verification.requested":
 			data, convertErr := utils.FromJSONRawMessage[models.EventAEVR](ei.Payload)
 			if convertErr != nil {

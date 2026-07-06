@@ -50,6 +50,16 @@ type (
 		CreatedAt         *time.Time `json:"created_at"`
 	}
 
+	EventAECR struct {
+		ID        uuid.UUID  `json:"id"`
+		AuthID    uint64     `json:"auth_id"`
+		OldEmail  string     `json:"old_email"`
+		NewEmail  string     `json:"new_email"`
+		Role      string     `json:"role"`
+		Token     string     `json:"token"`
+		CreatedAt *time.Time `json:"created_at"`
+	}
+
 	EventAEVR struct {
 		ID        uuid.UUID  `json:"id"`
 		AuthID    uint64     `json:"auth_id"`

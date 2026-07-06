@@ -22,6 +22,7 @@ type Infra struct {
 	mailer   *gomail.Dialer
 	tracer   *tracer.Tracer
 	acs      *kafka.Reader
+	aecrs    *kafka.Reader
 	aevrs    *kafka.Reader
 }
 
@@ -45,6 +46,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 
 	// Subscribers
 	acs := subscriber.Init(&cfg.Broker.AC, cfg.App.Name, cfg.Broker.Brokers, l)
+	aecrs := subscriber.Init(&cfg.Broker.AECR, cfg.App.Name, cfg.Broker.Brokers, l)
 	aevrs := subscriber.Init(&cfg.Broker.AEVR, cfg.App.Name, cfg.Broker.Brokers, l)
 
 	return &Infra{
@@ -54,6 +56,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		mailer:   m,
 		tracer:   t,
 		acs:      acs,
+		aecrs:    aecrs,
 		aevrs:    aevrs,
 	}, nil
 }
@@ -74,6 +77,10 @@ func (i *Infra) SubscriberAC() *kafka.Reader {
 	return i.acs
 }
 
+func (i *Infra) SubscriberAECR() *kafka.Reader {
+	return i.aecrs
+}
+
 func (i *Infra) SubscriberAEVR() *kafka.Reader {
 	return i.aevrs
 }
@@ -87,6 +94,9 @@ func (i *Infra) Close() error {
 	}
 	if err := i.acs.Close(); err != nil {
 		return fmt.Errorf("failed to close subscriber (topic: %s): %w", i.acs.Config().Topic, err)
+	}
+	if err := i.aecrs.Close(); err != nil {
+		return fmt.Errorf("failed to close subscriber (topic: %s): %w", i.aecrs.Config().Topic, err)
 	}
 	if err := i.aevrs.Close(); err != nil {
 		return fmt.Errorf("failed to close subscriber (topic: %s): %w", i.aevrs.Config().Topic, err)

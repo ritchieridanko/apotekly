@@ -11,6 +11,7 @@ import (
 
 type AuthUsecase interface {
 	ProcessEventAC(ctx context.Context, data *models.EventAC) (err *ce.Error)
+	ProcessEventAECR(ctx context.Context, data *models.EventAECR) (err *ce.Error)
 	ProcessEventAEVR(ctx context.Context, data *models.EventAEVR) (err *ce.Error)
 }
 
@@ -39,6 +40,22 @@ func (u *authUsecase) ProcessEventAC(ctx context.Context, data *models.EventAC) 
 			Role:              data.Role,
 			IsEmailVerified:   data.EmailVerifiedAt != nil,
 			VerificationToken: token,
+		},
+	)
+}
+
+func (u *authUsecase) ProcessEventAECR(ctx context.Context, data *models.EventAECR) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ProcessEventAECR")
+	defer span.End()
+
+	return u.ec.SendEmailChange(
+		ctx,
+		&models.EmailChangeEmail{
+			EventID:  data.ID,
+			OldEmail: data.OldEmail,
+			NewEmail: data.NewEmail,
+			Role:     data.Role,
+			Token:    data.Token,
 		},
 	)
 }

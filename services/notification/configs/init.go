@@ -24,6 +24,7 @@ type Broker struct {
 
 	// Subscribers
 	AC   cfg.Subscriber `mapstructure:"ac"`
+	AECR cfg.Subscriber `mapstructure:"aecr"`
 	AEVR cfg.Subscriber `mapstructure:"aevr"`
 }
 

@@ -36,6 +36,11 @@ broker:
     max_bytes: 1000000
     max_wait: "100ms"
     commit_interval: "500ms"
+  aecr:
+    name: "auth.email.change.requested"
+    max_bytes: 1000000
+    max_wait: "100ms"
+    commit_interval: "500ms"
   aevr:
     name: "auth.email.verification.requested"
     max_bytes: 1000000
