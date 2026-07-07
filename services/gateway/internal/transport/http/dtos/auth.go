@@ -20,6 +20,10 @@ type (
 		Email string `form:"email" binding:"required"`
 	}
 
+	ResetPasswordRequest struct {
+		Email string `json:"email" binding:"required"`
+	}
+
 	SignInRequest struct {
 		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -57,6 +61,10 @@ type (
 	}
 
 	ResendVerificationResponse struct {
+		Email string `json:"email"`
+	}
+
+	ResetPasswordResponse struct {
 		Email string `json:"email"`
 	}
 

@@ -23,6 +23,7 @@ type AuthClient interface {
 	ChangeEmail(ctx context.Context, req *models.ChangeEmailReq) (email string, err *ce.Error)
 	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
+	ResetPassword(ctx context.Context, email string) (recipient string, err *ce.Error)
 }
 
 type authClient struct {
@@ -201,6 +202,23 @@ func (c *authClient) ChangePassword(ctx context.Context, req *models.ChangePassw
 		)
 	}
 	return nil
+}
+
+func (c *authClient) ResetPassword(ctx context.Context, email string) (string, *ce.Error) {
+	resp, err := c.client.ResetPassword(
+		ctx,
+		&apis.ResetPasswordRequest{
+			Email: email,
+		},
+	)
+	if err != nil {
+		return "", ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return resp.GetEmail(), nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

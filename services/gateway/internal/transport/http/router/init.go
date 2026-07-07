@@ -73,6 +73,9 @@ func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler
 		// Passwords
 		password := auth.Group("/password")
 		{
+			// Reset
+			password.POST("/reset", ah.ResetPassword)
+
 			// Update
 			password.PATCH("", middlewares.Auth(j), ah.ChangePassword)
 		}
