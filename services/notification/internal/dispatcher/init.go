@@ -79,6 +79,19 @@ func (d *Dispatcher) Dispatch(ctx context.Context) *ce.Error {
 			}
 
 			err = d.au.ProcessEventAEVR(ctx, data)
+		case "auth.password.reset.requested":
+			data, convertErr := utils.FromJSONRawMessage[models.EventAPRR](ei.Payload)
+			if convertErr != nil {
+				return ce.NewError(
+					ce.CodeJSONUnmarshallingFailed,
+					ce.MsgInternalServer,
+					convertErr,
+					evtIDField,
+					evtTopicField,
+				)
+			}
+
+			err = d.au.ProcessEventAPRR(ctx, data)
 		default:
 			return ce.NewError(
 				ce.CodeEventTopicNotRegistered,

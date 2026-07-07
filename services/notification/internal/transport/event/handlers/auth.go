@@ -143,3 +143,43 @@ func (eh *AuthEventHandler) HandleAEVR(ctx context.Context, msg kafka.Message) *
 	}
 	return nil
 }
+
+func (eh *AuthEventHandler) HandleAPRR(ctx context.Context, msg kafka.Message) *ce.Error {
+	var evt events.AuthPasswordResetRequested
+	if err := proto.Unmarshal(msg.Value, &evt); err != nil {
+		return ce.NewError(ce.CodeProtobufParsingFailed, ce.MsgInternalServer, err)
+	}
+
+	evtIDField := logger.NewField("event_id", evt.GetId())
+
+	payload := models.EventAPRR{
+		ID:        utils.ToUUID(evt.GetId()),
+		AuthID:    evt.GetAuthId(),
+		Email:     evt.GetEmail(),
+		Role:      evt.GetRole(),
+		Token:     evt.GetToken(),
+		CreatedAt: utils.ToTime(evt.GetCreatedAt()),
+	}
+	rm, err := utils.ToJSONRawMessage(payload)
+	if err != nil {
+		return ce.NewError(
+			ce.CodeJSONRawEncodingFailed,
+			ce.MsgInternalServer,
+			err,
+			evtIDField,
+		)
+	}
+
+	storeErr := eh.eiu.StoreEvent(
+		ctx,
+		&models.Event{
+			ID:      payload.ID,
+			Topic:   msg.Topic,
+			Payload: rm,
+		},
+	)
+	if storeErr != nil {
+		return storeErr.Append(evtIDField)
+	}
+	return nil
+}

@@ -18,6 +18,7 @@ import (
 
 type EmailChannel interface {
 	SendEmailChange(ctx context.Context, data *models.EmailChangeEmail) (err *ce.Error)
+	SendPasswordReset(ctx context.Context, data *models.PasswordResetEmail) (err *ce.Error)
 	SendVerification(ctx context.Context, data *models.VerificationEmail) (err *ce.Error)
 	SendWelcome(ctx context.Context, data *models.WelcomeEmail) (err *ce.Error)
 }
@@ -113,6 +114,40 @@ func (c *emailChannel) SendEmailChange(ctx context.Context, data *models.EmailCh
 		)
 	}
 	return nil
+}
+
+func (c *emailChannel) SendPasswordReset(ctx context.Context, data *models.PasswordResetEmail) *ce.Error {
+	// URL Generation
+	url, err := utils.GenerateTokenizedURL(
+		c.clientAddr,
+		"/auth/reset-password",
+		data.Token,
+	)
+	if err != nil {
+		return ce.NewError(ce.CodeURLGenerationFailed, ce.MsgInternalServer, err)
+	}
+
+	// Template Building
+	body, buildErr := c.buildTemplate(
+		"password_reset",
+		map[string]any{
+			"Subject":   "Reset Your Password!",
+			"Recipient": data.Recipient,
+			"Title":     "Password Reset",
+			"LogoURL":   c.logoURL,
+			"URL":       url,
+			"Year":      time.Now().UTC().Year(),
+		},
+	)
+	if buildErr != nil {
+		return buildErr
+	}
+
+	// Message Composition
+	msg := c.composeMessage([]string{data.Recipient}, "Reset Your Password!", body.String())
+
+	// Email Delivery
+	return c.send(msg)
 }
 
 func (c *emailChannel) SendVerification(ctx context.Context, data *models.VerificationEmail) *ce.Error {

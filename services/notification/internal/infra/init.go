@@ -24,6 +24,7 @@ type Infra struct {
 	acs      *kafka.Reader
 	aecrs    *kafka.Reader
 	aevrs    *kafka.Reader
+	aprrs    *kafka.Reader
 }
 
 func Init(cfg *configs.Config) (*Infra, error) {
@@ -48,6 +49,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 	acs := subscriber.Init(&cfg.Broker.AC, cfg.App.Name, cfg.Broker.Brokers, l)
 	aecrs := subscriber.Init(&cfg.Broker.AECR, cfg.App.Name, cfg.Broker.Brokers, l)
 	aevrs := subscriber.Init(&cfg.Broker.AEVR, cfg.App.Name, cfg.Broker.Brokers, l)
+	aprrs := subscriber.Init(&cfg.Broker.APRR, cfg.App.Name, cfg.Broker.Brokers, l)
 
 	return &Infra{
 		config:   cfg,
@@ -58,6 +60,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		acs:      acs,
 		aecrs:    aecrs,
 		aevrs:    aevrs,
+		aprrs:    aprrs,
 	}, nil
 }
 
@@ -85,6 +88,10 @@ func (i *Infra) SubscriberAEVR() *kafka.Reader {
 	return i.aevrs
 }
 
+func (i *Infra) SubscriberAPRR() *kafka.Reader {
+	return i.aprrs
+}
+
 func (i *Infra) Close() error {
 	if err := i.logger.Sync(); err != nil {
 		return fmt.Errorf("failed to close logger: %w", err)
@@ -100,6 +107,9 @@ func (i *Infra) Close() error {
 	}
 	if err := i.aevrs.Close(); err != nil {
 		return fmt.Errorf("failed to close subscriber (topic: %s): %w", i.aevrs.Config().Topic, err)
+	}
+	if err := i.aprrs.Close(); err != nil {
+		return fmt.Errorf("failed to close subscriber (topic: %s): %w", i.aprrs.Config().Topic, err)
 	}
 
 	i.database.Close()

@@ -46,3 +46,8 @@ broker:
     max_bytes: 1000000
     max_wait: "100ms"
     commit_interval: "500ms"
+  aprr:
+    name: "auth.password.reset.requested"
+    max_bytes: 1000000
+    max_wait: "100ms"
+    commit_interval: "500ms"

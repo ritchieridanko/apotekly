@@ -68,4 +68,13 @@ type (
 		Token     string     `json:"token"`
 		CreatedAt *time.Time `json:"created_at"`
 	}
+
+	EventAPRR struct {
+		ID        uuid.UUID  `json:"id"`
+		AuthID    uint64     `json:"auth_id"`
+		Email     string     `json:"email"`
+		Role      string     `json:"role"`
+		Token     string     `json:"token"`
+		CreatedAt *time.Time `json:"created_at"`
+	}
 )

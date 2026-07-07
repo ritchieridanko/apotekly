@@ -13,6 +13,7 @@ type AuthUsecase interface {
 	ProcessEventAC(ctx context.Context, data *models.EventAC) (err *ce.Error)
 	ProcessEventAECR(ctx context.Context, data *models.EventAECR) (err *ce.Error)
 	ProcessEventAEVR(ctx context.Context, data *models.EventAEVR) (err *ce.Error)
+	ProcessEventAPRR(ctx context.Context, data *models.EventAPRR) (err *ce.Error)
 }
 
 type authUsecase struct {
@@ -67,6 +68,20 @@ func (u *authUsecase) ProcessEventAEVR(ctx context.Context, data *models.EventAE
 	return u.ec.SendVerification(
 		ctx,
 		&models.VerificationEmail{
+			Recipient: data.Email,
+			Role:      data.Role,
+			Token:     data.Token,
+		},
+	)
+}
+
+func (u *authUsecase) ProcessEventAPRR(ctx context.Context, data *models.EventAPRR) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ProcessEventAPRR")
+	defer span.End()
+
+	return u.ec.SendPasswordReset(
+		ctx,
+		&models.PasswordResetEmail{
 			Recipient: data.Email,
 			Role:      data.Role,
 			Token:     data.Token,

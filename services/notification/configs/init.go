@@ -26,6 +26,7 @@ type Broker struct {
 	AC   cfg.Subscriber `mapstructure:"ac"`
 	AECR cfg.Subscriber `mapstructure:"aecr"`
 	AEVR cfg.Subscriber `mapstructure:"aevr"`
+	APRR cfg.Subscriber `mapstructure:"aprr"`
 }
 
 func Init(path string) (*Config, error) {

@@ -60,6 +60,7 @@ func main() {
 		ctr.RunSubscriberAC,
 		ctr.RunSubscriberAECR,
 		ctr.RunSubscriberAEVR,
+		ctr.RunSubscriberAPRR,
 		ctr.RunEventProcessor1,
 		ctr.RunEventProcessor2,
 	}

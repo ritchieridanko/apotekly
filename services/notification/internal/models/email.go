@@ -11,6 +11,12 @@ type (
 		Token    string
 	}
 
+	PasswordResetEmail struct {
+		Recipient string
+		Role      string
+		Token     string
+	}
+
 	VerificationEmail struct {
 		Recipient string
 		Role      string
