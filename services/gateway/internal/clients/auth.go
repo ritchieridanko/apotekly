@@ -21,6 +21,7 @@ type AuthClient interface {
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	ChangeEmail(ctx context.Context, req *models.ChangeEmailReq) (email string, err *ce.Error)
+	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 }
 
@@ -165,6 +166,23 @@ func (c *authClient) ChangeEmail(ctx context.Context, req *models.ChangeEmailReq
 		)
 	}
 	return resp.GetEmail(), nil
+}
+
+func (c *authClient) ConfirmEmailChange(ctx context.Context, emailChangeToken string) *ce.Error {
+	_, err := c.client.ConfirmEmailChange(
+		ctx,
+		&apis.ConfirmEmailChangeRequest{
+			EmailChangeToken: emailChangeToken,
+		},
+	)
+	if err != nil {
+		return ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return nil
 }
 
 func (c *authClient) ChangePassword(ctx context.Context, req *models.ChangePasswordReq) *ce.Error {

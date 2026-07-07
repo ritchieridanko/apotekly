@@ -443,6 +443,53 @@ func (h *AuthHandler) ChangeEmail(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) ConfirmEmailChange(ctx *gin.Context) {
+	var params dtos.ConfirmEmailChangeRequest
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	err := h.ac.ConfirmEmailChange(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		params.EmailChangeToken,
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	h.cookie.Unset(
+		ctx,
+		constants.CookieKeyRefreshToken,
+		"/",
+	)
+
+	utils.SetHTTPResponse[any](
+		ctx,
+		http.StatusOK,
+		"Email changed successfully",
+		nil,
+		nil,
+	)
+}
+
 func (h *AuthHandler) ChangePassword(ctx *gin.Context) {
 	var payload dtos.ChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {

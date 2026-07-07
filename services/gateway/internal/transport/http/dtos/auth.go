@@ -12,6 +12,10 @@ type (
 		NewPassword string `json:"new_password" binding:"required"`
 	}
 
+	ConfirmEmailChangeRequest struct {
+		EmailChangeToken string `form:"token" binding:"required"`
+	}
+
 	IsEmailAvailableRequest struct {
 		Email string `form:"email" binding:"required"`
 	}

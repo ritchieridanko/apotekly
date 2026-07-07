@@ -66,6 +66,7 @@ func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler
 			{
 				// Change
 				change.POST("", middlewares.Auth(j), ah.ChangeEmail)
+				change.POST("/confirm", middlewares.Auth(j), ah.ConfirmEmailChange)
 			}
 		}
 
