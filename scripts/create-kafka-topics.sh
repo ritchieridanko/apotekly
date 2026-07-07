@@ -9,6 +9,7 @@ TOPICS=(
   "auth.created"
   "auth.email.change.requested"
   "auth.email.verification.requested"
+  "auth.password.reset.requested"
 )
 
 # Create Kafka topics

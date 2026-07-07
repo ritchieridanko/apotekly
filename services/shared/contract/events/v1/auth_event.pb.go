@@ -298,6 +298,90 @@ func (x *AuthEmailVerificationRequested) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type AuthPasswordResetRequested struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	AuthId        uint64                 `protobuf:"varint,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Role          string                 `protobuf:"bytes,4,opt,name=role,proto3" json:"role,omitempty"`
+	Token         string                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthPasswordResetRequested) Reset() {
+	*x = AuthPasswordResetRequested{}
+	mi := &file_v1_auth_event_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthPasswordResetRequested) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthPasswordResetRequested) ProtoMessage() {}
+
+func (x *AuthPasswordResetRequested) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_event_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthPasswordResetRequested.ProtoReflect.Descriptor instead.
+func (*AuthPasswordResetRequested) Descriptor() ([]byte, []int) {
+	return file_v1_auth_event_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AuthPasswordResetRequested) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *AuthPasswordResetRequested) GetAuthId() uint64 {
+	if x != nil {
+		return x.AuthId
+	}
+	return 0
+}
+
+func (x *AuthPasswordResetRequested) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *AuthPasswordResetRequested) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *AuthPasswordResetRequested) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *AuthPasswordResetRequested) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
 var File_v1_auth_event_proto protoreflect.FileDescriptor
 
 const file_v1_auth_event_proto_rawDesc = "" +
@@ -332,6 +416,14 @@ const file_v1_auth_event_proto_rawDesc = "" +
 	"\x04role\x18\x04 \x01(\tR\x04role\x12\x14\n" +
 	"\x05token\x18\x05 \x01(\tR\x05token\x129\n" +
 	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc0\x01\n" +
+	"\x1aAuthPasswordResetRequested\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\aauth_id\x18\x02 \x01(\x04R\x06authId\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\x12\n" +
+	"\x04role\x18\x04 \x01(\tR\x04role\x12\x14\n" +
+	"\x05token\x18\x05 \x01(\tR\x05token\x129\n" +
+	"\n" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtBNZLgithub.com/ritchieridanko/apotekly/services/shared/contract/events/v1;eventsb\x06proto3"
 
 var (
@@ -346,23 +438,25 @@ func file_v1_auth_event_proto_rawDescGZIP() []byte {
 	return file_v1_auth_event_proto_rawDescData
 }
 
-var file_v1_auth_event_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_v1_auth_event_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_v1_auth_event_proto_goTypes = []any{
 	(*AuthCreated)(nil),                    // 0: auth.v1.AuthCreated
 	(*AuthEmailChangeRequested)(nil),       // 1: auth.v1.AuthEmailChangeRequested
 	(*AuthEmailVerificationRequested)(nil), // 2: auth.v1.AuthEmailVerificationRequested
-	(*timestamppb.Timestamp)(nil),          // 3: google.protobuf.Timestamp
+	(*AuthPasswordResetRequested)(nil),     // 3: auth.v1.AuthPasswordResetRequested
+	(*timestamppb.Timestamp)(nil),          // 4: google.protobuf.Timestamp
 }
 var file_v1_auth_event_proto_depIdxs = []int32{
-	3, // 0: auth.v1.AuthCreated.email_verified_at:type_name -> google.protobuf.Timestamp
-	3, // 1: auth.v1.AuthCreated.created_at:type_name -> google.protobuf.Timestamp
-	3, // 2: auth.v1.AuthEmailChangeRequested.created_at:type_name -> google.protobuf.Timestamp
-	3, // 3: auth.v1.AuthEmailVerificationRequested.created_at:type_name -> google.protobuf.Timestamp
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	4, // 0: auth.v1.AuthCreated.email_verified_at:type_name -> google.protobuf.Timestamp
+	4, // 1: auth.v1.AuthCreated.created_at:type_name -> google.protobuf.Timestamp
+	4, // 2: auth.v1.AuthEmailChangeRequested.created_at:type_name -> google.protobuf.Timestamp
+	4, // 3: auth.v1.AuthEmailVerificationRequested.created_at:type_name -> google.protobuf.Timestamp
+	4, // 4: auth.v1.AuthPasswordResetRequested.created_at:type_name -> google.protobuf.Timestamp
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_v1_auth_event_proto_init() }
@@ -377,7 +471,7 @@ func file_v1_auth_event_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_event_proto_rawDesc), len(file_v1_auth_event_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

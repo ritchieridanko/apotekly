@@ -35,3 +35,12 @@ message AuthEmailVerificationRequested {
   string token = 5;
   google.protobuf.Timestamp created_at = 6;
 }
+
+message AuthPasswordResetRequested {
+  string id = 1;
+  uint64 auth_id = 2;
+  string email = 3;
+  string role = 4;
+  string token = 5;
+  google.protobuf.Timestamp created_at = 6;
+}

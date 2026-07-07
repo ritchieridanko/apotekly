@@ -147,6 +147,16 @@ func (h *AuthHandler) ChangePassword(ctx context.Context, req *apis.ChangePasswo
 	return &emptypb.Empty{}, nil
 }
 
+func (h *AuthHandler) ResetPassword(ctx context.Context, req *apis.ResetPasswordRequest) (*apis.ResetPasswordResponse, error) {
+	email, err := h.au.ResetPassword(ctx, req.GetEmail())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.ResetPasswordResponse{
+		Email: email,
+	}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil

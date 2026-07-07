@@ -28,6 +28,7 @@ type Container struct {
 	acp   *publisher.Publisher
 	aecrp *publisher.Publisher
 	aevrp *publisher.Publisher
+	aprrp *publisher.Publisher
 
 	acc cache.AuthCache
 	tcc cache.TokenCache
@@ -62,6 +63,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	acp := publisher.NewPublisher(inf.PublisherAC())
 	aecrp := publisher.NewPublisher(inf.PublisherAECR())
 	aevrp := publisher.NewPublisher(inf.PublisherAEVR())
+	aprrp := publisher.NewPublisher(inf.PublisherAPRR())
 
 	// Caches
 	acc := cache.NewAuthCache(cc)
@@ -86,8 +88,11 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	au := usecases.NewAuthUsecase(
 		cfg.App.Name,
 		cfg.Auth.Duration.EmailChange,
+		cfg.Auth.Duration.PasswordReset,
 		cfg.Auth.Duration.Verification,
-		su, ar, tr, tx, acp, aecrp, aevrp, b, v, l,
+		su, ar, tr, tx,
+		acp, aecrp, aevrp, aprrp,
+		b, v, l,
 	)
 
 	// Handlers
@@ -105,6 +110,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		acp:        acp,
 		aecrp:      aecrp,
 		aevrp:      aevrp,
+		aprrp:      aprrp,
 		acc:        acc,
 		tcc:        tcc,
 		adb:        adb,

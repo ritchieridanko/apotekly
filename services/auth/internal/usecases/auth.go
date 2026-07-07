@@ -33,27 +33,31 @@ type AuthUsecase interface {
 	ChangeEmail(ctx context.Context, req *models.ChangeEmailReq) (email string, err *ce.Error)
 	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
+	ResetPassword(ctx context.Context, email string) (recipient string, err *ce.Error)
 }
 
 type authUsecase struct {
-	appName           string
-	emailChangeToken  time.Duration
-	verificationToken time.Duration
-	su                SessionUsecase
-	ar                repositories.AuthRepository
-	tr                repositories.TokenRepository
-	transactor        *database.Transactor
-	acp               *publisher.Publisher
-	aecrp             *publisher.Publisher
-	aevrp             *publisher.Publisher
-	bcrypt            *bcrypt.BCrypt
-	validator         *validator.Validator
-	logger            *logger.Logger
+	appName            string
+	emailChangeToken   time.Duration
+	passwordResetToken time.Duration
+	verificationToken  time.Duration
+	su                 SessionUsecase
+	ar                 repositories.AuthRepository
+	tr                 repositories.TokenRepository
+	transactor         *database.Transactor
+	acp                *publisher.Publisher
+	aecrp              *publisher.Publisher
+	aevrp              *publisher.Publisher
+	aprrp              *publisher.Publisher
+	bcrypt             *bcrypt.BCrypt
+	validator          *validator.Validator
+	logger             *logger.Logger
 }
 
 func NewAuthUsecase(
 	appName string,
 	emailChangeToken time.Duration,
+	passwordResetToken time.Duration,
 	verificationToken time.Duration,
 	su SessionUsecase,
 	ar repositories.AuthRepository,
@@ -62,24 +66,27 @@ func NewAuthUsecase(
 	acp *publisher.Publisher,
 	aecrp *publisher.Publisher,
 	aevrp *publisher.Publisher,
+	aprrp *publisher.Publisher,
 	b *bcrypt.BCrypt,
 	v *validator.Validator,
 	l *logger.Logger,
 ) AuthUsecase {
 	return &authUsecase{
-		appName:           appName,
-		emailChangeToken:  emailChangeToken,
-		verificationToken: verificationToken,
-		su:                su,
-		ar:                ar,
-		tr:                tr,
-		transactor:        tx,
-		acp:               acp,
-		aecrp:             aecrp,
-		aevrp:             aevrp,
-		bcrypt:            b,
-		validator:         v,
-		logger:            l,
+		appName:            appName,
+		emailChangeToken:   emailChangeToken,
+		passwordResetToken: passwordResetToken,
+		verificationToken:  verificationToken,
+		su:                 su,
+		ar:                 ar,
+		tr:                 tr,
+		transactor:         tx,
+		acp:                acp,
+		aecrp:              aecrp,
+		aevrp:              aevrp,
+		aprrp:              aprrp,
+		bcrypt:             b,
+		validator:          v,
+		logger:             l,
 	}
 }
 
@@ -602,7 +609,7 @@ func (u *authUsecase) ChangeEmail(ctx context.Context, req *models.ChangeEmailRe
 	authIDField := logger.NewField("auth_id", authCtx.AuthID)
 
 	// Data Normalization
-	newEmail := strings.ToLower(req.NewEmail)
+	newEmail := strings.ToLower(strings.TrimSpace(req.NewEmail))
 
 	// Data Validation
 	if ok, why := u.validator.Email(newEmail); !ok {
@@ -873,4 +880,93 @@ func (u *authUsecase) ChangePassword(ctx context.Context, req *models.ChangePass
 	}
 
 	return nil
+}
+
+func (u *authUsecase) ResetPassword(ctx context.Context, email string) (string, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ResetPassword")
+	defer span.End()
+
+	// Data Normalization
+	em := strings.ToLower(strings.TrimSpace(email))
+
+	// Data Validation
+	if ok, why := u.validator.Email(em); !ok {
+		return "", ce.NewError(ce.CodeInvalidPayload, why, nil)
+	}
+
+	// Auth Fetching
+	// NOTE: ResetPassword usecase is not allowed for oauth account (password == nil)
+	//       and won't return error if oauth account or email is not registered
+	a, err := u.ar.GetByEmail(ctx, em)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		u.logger.Warn(
+			ctx,
+			"failed to reset password: email is not registered",
+			logger.NewField("error_code", err.Code()),
+			logger.NewField("error", err.Unwrap()),
+		)
+		return em, nil
+	}
+	if err != nil {
+		return "", err
+	}
+	if a.Password == nil {
+		u.logger.Warn(
+			ctx,
+			"failed to reset password: oauth account",
+			logger.NewField("auth_id", a.ID),
+		)
+		return em, nil
+	}
+
+	authIDField := logger.NewField("auth_id", a.ID)
+
+	// Password Reset Token Creation
+	token := utils.GenerateUUID().String()
+	err = u.tr.CreatePasswordReset(
+		ctx,
+		&models.CreatePasswordResetToken{
+			AuthID:   a.ID,
+			Token:    token,
+			Duration: u.passwordResetToken,
+		},
+	)
+	if err != nil {
+		return "", err.Append(authIDField)
+	}
+
+	evtTopicField := logger.NewField("event_topic", u.aprrp.Topic())
+
+	// auth.password.reset.requested Event Publishing
+	id := utils.GenerateUUID().String()
+	pubErr := u.aprrp.Publish(
+		ctx,
+		"auth_"+strconv.FormatUint(a.ID, 10)+"_"+id,
+		&events.AuthPasswordResetRequested{
+			Id:        id,
+			AuthId:    a.ID,
+			Email:     a.Email,
+			Role:      a.Role,
+			Token:     token,
+			CreatedAt: timestamppb.New(time.Now().UTC()),
+		},
+	)
+	if pubErr != nil {
+		return "", ce.NewError(
+			ce.CodeEventPublishingFailed,
+			ce.MsgInternalServer,
+			pubErr,
+			authIDField,
+			evtTopicField,
+		)
+	}
+
+	u.logger.Info(
+		ctx,
+		"EVENT PUBLISHED",
+		authIDField,
+		evtTopicField,
+	)
+
+	return em, nil
 }

@@ -25,6 +25,12 @@ type (
 		Duration time.Duration
 	}
 
+	CreatePasswordResetToken struct {
+		AuthID   uint64
+		Token    string
+		Duration time.Duration
+	}
+
 	CreateVerificationToken struct {
 		AuthID   uint64
 		Token    string

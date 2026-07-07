@@ -16,6 +16,7 @@ import (
 type TokenCache interface {
 	CreateEmailChange(ctx context.Context, data *models.CreateEmailChangeToken) (err *ce.Error)
 	UseEmailChange(ctx context.Context, token string) (authID uint64, newEmail string, err *ce.Error)
+	CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) (err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 }
@@ -146,6 +147,44 @@ func (c *tokenCache) UseEmailChange(ctx context.Context, token string) (uint64, 
 	}
 
 	return authID, newEmail, nil
+}
+
+func (c *tokenCache) CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) *ce.Error {
+	pares := constants.CachePrefixPasswordReset
+	script := `
+		local token = redis.call("GET", KEYS[1])
+		if token then
+			redis.call("DEL", KEYS[1])
+			redis.call("DEL", KEYS[3] .. ":" .. token)
+		end
+
+		redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[3])
+		redis.call("SET", KEYS[2], ARGV[2], "EX", ARGV[3])
+		return 1
+	`
+
+	_, err := c.cache.Evaluate(
+		ctx, "s:crepar", script,
+		[]string{
+			pares + ":" + strconv.FormatUint(data.AuthID, 10), // KEYS[1]
+			pares + ":" + data.Token,                          // KEYS[2]
+			pares,                                             // KEYS[3]
+		},
+		[]any{
+			data.Token,                   // ARGV[1]
+			data.AuthID,                  // ARGV[2]
+			int(data.Duration.Seconds()), // ARGV[3]
+		},
+	)
+	if err != nil {
+		return ce.NewError(
+			ce.CodeCacheScriptExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to create password reset token: %w", err),
+		)
+	}
+
+	return nil
 }
 
 func (c *tokenCache) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {
