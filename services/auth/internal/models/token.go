@@ -18,7 +18,7 @@ type (
 		RefreshToken *RefreshToken
 	}
 
-	CreateEmailChange struct {
+	CreateEmailChangeToken struct {
 		AuthID   uint64
 		NewEmail string
 		Token    string

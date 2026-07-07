@@ -14,6 +14,7 @@ type AuthDatabase interface {
 	Create(ctx context.Context, data *models.CreateAuth) (a *models.Auth, err *ce.Error)
 	GetByEmail(ctx context.Context, email string) (a *models.Auth, err *ce.Error)
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
+	UpdateEmail(ctx context.Context, authID uint64, newEmail string) (err *ce.Error)
 	UpdatePassword(ctx context.Context, authID uint64, newPassword string) (err *ce.Error)
 	EmailExists(ctx context.Context, email string) (exists bool, err *ce.Error)
 	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
@@ -144,6 +145,43 @@ func (d *authDatabase) GetByID(ctx context.Context, authID uint64) (*models.Auth
 	}
 
 	return &a, nil
+}
+
+func (d *authDatabase) UpdateEmail(ctx context.Context, authID uint64, newEmail string) *ce.Error {
+	query := `
+		UPDATE
+			auth
+		SET
+			email = $2,
+			email_changed_at = NOW(),
+			updated_at = NOW()
+		WHERE
+			id = $1
+			AND deleted_at IS NULL
+	`
+
+	err := d.database.Execute(
+		ctx, query,
+		authID,
+		newEmail,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to update email: %w", err)
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return ce.NewError(
+				ce.CodeAuthNotFound,
+				ce.MsgAuthNotFound,
+				wrappedErr,
+			)
+		}
+		return ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return nil
 }
 
 func (d *authDatabase) UpdatePassword(ctx context.Context, authID uint64, newPassword string) *ce.Error {

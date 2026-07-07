@@ -28,5 +28,6 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 	"/auth.v1.AuthService/ResendVerification": {authenticated: true},
 	"/auth.v1.AuthService/VerifyEmail":        {authenticated: true},
 	"/auth.v1.AuthService/ChangeEmail":        {authenticated: true},
+	"/auth.v1.AuthService/ConfirmEmailChange": {authenticated: true},
 	"/auth.v1.AuthService/ChangePassword":     {authenticated: true},
 }

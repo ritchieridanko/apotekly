@@ -119,6 +119,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeOrphanedEventInbox,
 		CodePanicOccurred,
 		CodeProtobufParsingFailed,
+		CodeTypeAssertionFailed,
 		CodeTypeConversionFailed,
 		CodeURLGenerationFailed,
 		CodeUUIDGenerationFailed:

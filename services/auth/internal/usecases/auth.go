@@ -31,6 +31,7 @@ type AuthUsecase interface {
 	ResendVerification(ctx context.Context) (email string, err *ce.Error)
 	VerifyEmail(ctx context.Context, req *models.VerifyEmailReq) (a *models.Auth, at *models.AuthToken, err *ce.Error)
 	ChangeEmail(ctx context.Context, req *models.ChangeEmailReq) (email string, err *ce.Error)
+	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 }
 
@@ -659,7 +660,7 @@ func (u *authUsecase) ChangeEmail(ctx context.Context, req *models.ChangeEmailRe
 	token := utils.GenerateUUID().String()
 	err = u.tr.CreateEmailChange(
 		ctx,
-		&models.CreateEmailChange{
+		&models.CreateEmailChangeToken{
 			AuthID:   a.ID,
 			NewEmail: newEmail,
 			Token:    token,
@@ -709,6 +710,110 @@ func (u *authUsecase) ChangeEmail(ctx context.Context, req *models.ChangeEmailRe
 	)
 
 	return newEmail, nil
+}
+
+func (u *authUsecase) ConfirmEmailChange(ctx context.Context, emailChangeToken string) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ConfirmEmailChange")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Normalization
+	token := strings.TrimSpace(emailChangeToken)
+
+	// Data Validation
+	if token == "" {
+		return ce.NewError(
+			ce.CodeInvalidPayload,
+			"Email change token is required",
+			nil,
+			authIDField,
+		)
+	}
+
+	// Email Change Token Consumption
+	authID, newEmail, err := u.tr.UseEmailChange(ctx, token)
+	if err != nil {
+		return err.Append(authIDField)
+	}
+
+	// Email Change Token Ownership Validation
+	// NOTE: Invalid ownership re-creates the email change token
+	if authID != authCtx.AuthID {
+		err := u.tr.CreateEmailChange(
+			ctx,
+			&models.CreateEmailChangeToken{
+				AuthID:   authID,
+				NewEmail: newEmail,
+				Token:    token,
+				Duration: u.emailChangeToken,
+			},
+		)
+		if err != nil {
+			return err.Append(authIDField)
+		}
+		return ce.NewError(
+			ce.CodeTokenNotOwned,
+			ce.MsgInvalidToken,
+			nil,
+			authIDField,
+			logger.NewField("token_auth_id", authID),
+		)
+	}
+
+	// Email Update
+	// NOTE: Fail to update email re-creates the email change token
+	err = u.ar.UpdateEmail(ctx, authID, newEmail)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		return ce.NewError(
+			ce.CodeAuthNotRegistered,
+			ce.MsgInvalidCredentials,
+			err.Unwrap(),
+			authIDField,
+		)
+	}
+	if err != nil {
+		createErr := u.tr.CreateEmailChange(
+			ctx,
+			&models.CreateEmailChangeToken{
+				AuthID:   authID,
+				NewEmail: newEmail,
+				Token:    token,
+				Duration: u.emailChangeToken,
+			},
+		)
+		if createErr != nil {
+			return createErr.Append(authIDField)
+		}
+		return err.Append(authIDField)
+	}
+
+	// Email Unreservation
+	if err := u.ar.UnreserveEmail(ctx, newEmail); err != nil {
+		return err.Append(authIDField)
+	}
+
+	// All Active Sessions Revocation
+	// NOTE: Fail to revoke all active sessions does not fail ConfirmEmailChange usecase
+	if err := u.su.RevokeAllActiveSessions(ctx, authID); err != nil {
+		u.logger.Warn(
+			ctx,
+			"updated email. failed to revoke all active sessions",
+			authIDField,
+			logger.NewField("error_code", err.Code()),
+			logger.NewField("error", err.Unwrap()),
+		)
+	}
+	return nil
 }
 
 func (u *authUsecase) ChangePassword(ctx context.Context, req *models.ChangePasswordReq) *ce.Error {

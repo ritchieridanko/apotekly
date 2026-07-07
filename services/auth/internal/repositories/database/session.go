@@ -15,6 +15,7 @@ type SessionDatabase interface {
 	GetByRefreshToken(ctx context.Context, refreshToken string) (s *models.Session, err *ce.Error)
 	Revoke(ctx context.Context, params *models.RevokeSession) (s *models.Session, err *ce.Error)
 	RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (sessionID uint64, err *ce.Error)
+	RevokeAllActive(ctx context.Context, params *models.RevokeAllActiveSessions) (err *ce.Error)
 }
 
 type sessionDatabase struct {
@@ -186,4 +187,35 @@ func (d *sessionDatabase) RevokeActive(ctx context.Context, params *models.Revok
 	}
 
 	return sessionID, nil
+}
+
+func (d *sessionDatabase) RevokeAllActive(ctx context.Context, params *models.RevokeAllActiveSessions) *ce.Error {
+	query := `
+		UPDATE
+			sessions
+		SET
+			revoked_at = NOW()
+		WHERE
+			auth_id = $1
+			AND revoked_at IS NULL
+			AND expires_at >= $2
+	`
+
+	err := d.database.Execute(
+		ctx, query,
+		params.AuthID,
+		params.ExpiresAt,
+	)
+	if err != nil {
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return nil
+		}
+		return ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to revoke all active sessions: %w", err),
+		)
+	}
+
+	return nil
 }

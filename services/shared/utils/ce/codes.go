@@ -66,6 +66,7 @@ const (
 	CodeSessionNotFound         errCode = "ERR_SESSION_NOT_FOUND"
 	CodeSessionNotOwned         errCode = "ERR_SESSION_NOT_OWNED"
 	CodeTokenNotOwned           errCode = "ERR_TOKEN_NOT_OWNED"
+	CodeTypeAssertionFailed     errCode = "ERR_TYPE_ASSERTION_FAILED"
 	CodeTypeConversionFailed    errCode = "ERR_TYPE_CONVERSION_FAILED"
 	CodeUnauthenticated         errCode = "ERR_UNAUTHENTICATED"
 	CodeUnknown                 errCode = "ERR_UNKNOWN"

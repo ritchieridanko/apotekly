@@ -13,6 +13,7 @@ type SessionRepository interface {
 	GetByRefreshToken(ctx context.Context, refreshToken string) (s *models.Session, err *ce.Error)
 	Revoke(ctx context.Context, params *models.RevokeSession) (s *models.Session, err *ce.Error)
 	RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (sessionID uint64, err *ce.Error)
+	RevokeAllActive(ctx context.Context, params *models.RevokeAllActiveSessions) (err *ce.Error)
 }
 
 type sessionRepository struct {
@@ -37,4 +38,8 @@ func (r *sessionRepository) Revoke(ctx context.Context, params *models.RevokeSes
 
 func (r *sessionRepository) RevokeActive(ctx context.Context, params *models.RevokeActiveSession) (uint64, *ce.Error) {
 	return r.database.RevokeActive(ctx, params)
+}
+
+func (r *sessionRepository) RevokeAllActive(ctx context.Context, params *models.RevokeAllActiveSessions) *ce.Error {
+	return r.database.RevokeAllActive(ctx, params)
 }

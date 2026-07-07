@@ -125,6 +125,14 @@ func (h *AuthHandler) ChangeEmail(ctx context.Context, req *apis.ChangeEmailRequ
 	}, nil
 }
 
+func (h *AuthHandler) ConfirmEmailChange(ctx context.Context, req *apis.ConfirmEmailChangeRequest) (*emptypb.Empty, error) {
+	err := h.au.ConfirmEmailChange(ctx, req.GetEmailChangeToken())
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
 func (h *AuthHandler) ChangePassword(ctx context.Context, req *apis.ChangePasswordRequest) (*emptypb.Empty, error) {
 	err := h.au.ChangePassword(
 		ctx,

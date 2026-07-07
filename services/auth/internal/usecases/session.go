@@ -20,6 +20,7 @@ type SessionUsecase interface {
 	GetSession(ctx context.Context, refreshToken string) (s *models.Session, err *ce.Error)
 	RefreshSession(ctx context.Context, req *models.RefreshSessionReq) (at *models.AuthToken, err *ce.Error)
 	RevokeSession(ctx context.Context, refreshToken string) (err *ce.Error)
+	RevokeAllActiveSessions(ctx context.Context, authID uint64) (err *ce.Error)
 }
 
 type sessionUsecase struct {
@@ -208,4 +209,14 @@ func (u *sessionUsecase) RevokeSession(ctx context.Context, refreshToken string)
 		},
 	)
 	return err
+}
+
+func (u *sessionUsecase) RevokeAllActiveSessions(ctx context.Context, authID uint64) *ce.Error {
+	return u.sr.RevokeAllActive(
+		ctx,
+		&models.RevokeAllActiveSessions{
+			AuthID:    authID,
+			ExpiresAt: time.Now().UTC(),
+		},
+	)
 }

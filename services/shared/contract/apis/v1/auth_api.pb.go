@@ -910,6 +910,50 @@ func (x *ChangeEmailResponse) GetEmail() string {
 	return ""
 }
 
+type ConfirmEmailChangeRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	EmailChangeToken string                 `protobuf:"bytes,1,opt,name=email_change_token,json=emailChangeToken,proto3" json:"email_change_token,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ConfirmEmailChangeRequest) Reset() {
+	*x = ConfirmEmailChangeRequest{}
+	mi := &file_v1_auth_api_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmEmailChangeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmEmailChangeRequest) ProtoMessage() {}
+
+func (x *ConfirmEmailChangeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmEmailChangeRequest.ProtoReflect.Descriptor instead.
+func (*ConfirmEmailChangeRequest) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ConfirmEmailChangeRequest) GetEmailChangeToken() string {
+	if x != nil {
+		return x.EmailChangeToken
+	}
+	return ""
+}
+
 type ChangePasswordRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	OldPassword   string                 `protobuf:"bytes,1,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
@@ -920,7 +964,7 @@ type ChangePasswordRequest struct {
 
 func (x *ChangePasswordRequest) Reset() {
 	*x = ChangePasswordRequest{}
-	mi := &file_v1_auth_api_proto_msgTypes[18]
+	mi := &file_v1_auth_api_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -932,7 +976,7 @@ func (x *ChangePasswordRequest) String() string {
 func (*ChangePasswordRequest) ProtoMessage() {}
 
 func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_auth_api_proto_msgTypes[18]
+	mi := &file_v1_auth_api_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -945,7 +989,7 @@ func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
 func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
-	return file_v1_auth_api_proto_rawDescGZIP(), []int{18}
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ChangePasswordRequest) GetOldPassword() string {
@@ -1018,10 +1062,12 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\bpassword\x18\x01 \x01(\tR\bpassword\x12\x1b\n" +
 	"\tnew_email\x18\x02 \x01(\tR\bnewEmail\"+\n" +
 	"\x13ChangeEmailResponse\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\"]\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"I\n" +
+	"\x19ConfirmEmailChangeRequest\x12,\n" +
+	"\x12email_change_token\x18\x01 \x01(\tR\x10emailChangeToken\"]\n" +
 	"\x15ChangePasswordRequest\x12!\n" +
 	"\fold_password\x18\x01 \x01(\tR\voldPassword\x12!\n" +
-	"\fnew_password\x18\x02 \x01(\tR\vnewPassword2\x9f\x05\n" +
+	"\fnew_password\x18\x02 \x01(\tR\vnewPassword2\xf1\x05\n" +
 	"\vAuthService\x129\n" +
 	"\x06SignUp\x12\x16.auth.v1.SignUpRequest\x1a\x17.auth.v1.SignUpResponse\x129\n" +
 	"\x06SignIn\x12\x16.auth.v1.SignInRequest\x1a\x17.auth.v1.SignInResponse\x12:\n" +
@@ -1030,7 +1076,8 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\x0fRotateAuthToken\x12\x1f.auth.v1.RotateAuthTokenRequest\x1a .auth.v1.RotateAuthTokenResponse\x12Q\n" +
 	"\x12ResendVerification\x12\x16.google.protobuf.Empty\x1a#.auth.v1.ResendVerificationResponse\x12H\n" +
 	"\vVerifyEmail\x12\x1b.auth.v1.VerifyEmailRequest\x1a\x1c.auth.v1.VerifyEmailResponse\x12H\n" +
-	"\vChangeEmail\x12\x1b.auth.v1.ChangeEmailRequest\x1a\x1c.auth.v1.ChangeEmailResponse\x12H\n" +
+	"\vChangeEmail\x12\x1b.auth.v1.ChangeEmailRequest\x1a\x1c.auth.v1.ChangeEmailResponse\x12P\n" +
+	"\x12ConfirmEmailChange\x12\".auth.v1.ConfirmEmailChangeRequest\x1a\x16.google.protobuf.Empty\x12H\n" +
 	"\x0eChangePassword\x12\x1e.auth.v1.ChangePasswordRequest\x1a\x16.google.protobuf.EmptyBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
@@ -1045,7 +1092,7 @@ func file_v1_auth_api_proto_rawDescGZIP() []byte {
 	return file_v1_auth_api_proto_rawDescData
 }
 
-var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_v1_auth_api_proto_goTypes = []any{
 	(*Auth)(nil),                       // 0: auth.v1.Auth
 	(*AccessToken)(nil),                // 1: auth.v1.AccessToken
@@ -1065,8 +1112,9 @@ var file_v1_auth_api_proto_goTypes = []any{
 	(*VerifyEmailResponse)(nil),        // 15: auth.v1.VerifyEmailResponse
 	(*ChangeEmailRequest)(nil),         // 16: auth.v1.ChangeEmailRequest
 	(*ChangeEmailResponse)(nil),        // 17: auth.v1.ChangeEmailResponse
-	(*ChangePasswordRequest)(nil),      // 18: auth.v1.ChangePasswordRequest
-	(*emptypb.Empty)(nil),              // 19: google.protobuf.Empty
+	(*ConfirmEmailChangeRequest)(nil),  // 18: auth.v1.ConfirmEmailChangeRequest
+	(*ChangePasswordRequest)(nil),      // 19: auth.v1.ChangePasswordRequest
+	(*emptypb.Empty)(nil),              // 20: google.protobuf.Empty
 }
 var file_v1_auth_api_proto_depIdxs = []int32{
 	1,  // 0: auth.v1.AuthToken.access_token:type_name -> auth.v1.AccessToken
@@ -1083,21 +1131,23 @@ var file_v1_auth_api_proto_depIdxs = []int32{
 	8,  // 11: auth.v1.AuthService.SignOut:input_type -> auth.v1.SignOutRequest
 	9,  // 12: auth.v1.AuthService.IsEmailAvailable:input_type -> auth.v1.IsEmailAvailableRequest
 	11, // 13: auth.v1.AuthService.RotateAuthToken:input_type -> auth.v1.RotateAuthTokenRequest
-	19, // 14: auth.v1.AuthService.ResendVerification:input_type -> google.protobuf.Empty
+	20, // 14: auth.v1.AuthService.ResendVerification:input_type -> google.protobuf.Empty
 	14, // 15: auth.v1.AuthService.VerifyEmail:input_type -> auth.v1.VerifyEmailRequest
 	16, // 16: auth.v1.AuthService.ChangeEmail:input_type -> auth.v1.ChangeEmailRequest
-	18, // 17: auth.v1.AuthService.ChangePassword:input_type -> auth.v1.ChangePasswordRequest
-	5,  // 18: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
-	7,  // 19: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
-	19, // 20: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
-	10, // 21: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
-	12, // 22: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
-	13, // 23: auth.v1.AuthService.ResendVerification:output_type -> auth.v1.ResendVerificationResponse
-	15, // 24: auth.v1.AuthService.VerifyEmail:output_type -> auth.v1.VerifyEmailResponse
-	17, // 25: auth.v1.AuthService.ChangeEmail:output_type -> auth.v1.ChangeEmailResponse
-	19, // 26: auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
-	18, // [18:27] is the sub-list for method output_type
-	9,  // [9:18] is the sub-list for method input_type
+	18, // 17: auth.v1.AuthService.ConfirmEmailChange:input_type -> auth.v1.ConfirmEmailChangeRequest
+	19, // 18: auth.v1.AuthService.ChangePassword:input_type -> auth.v1.ChangePasswordRequest
+	5,  // 19: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
+	7,  // 20: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
+	20, // 21: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
+	10, // 22: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
+	12, // 23: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
+	13, // 24: auth.v1.AuthService.ResendVerification:output_type -> auth.v1.ResendVerificationResponse
+	15, // 25: auth.v1.AuthService.VerifyEmail:output_type -> auth.v1.VerifyEmailResponse
+	17, // 26: auth.v1.AuthService.ChangeEmail:output_type -> auth.v1.ChangeEmailResponse
+	20, // 27: auth.v1.AuthService.ConfirmEmailChange:output_type -> google.protobuf.Empty
+	20, // 28: auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
+	19, // [19:29] is the sub-list for method output_type
+	9,  // [9:19] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -1114,7 +1164,7 @@ func file_v1_auth_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_api_proto_rawDesc), len(file_v1_auth_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

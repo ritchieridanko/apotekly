@@ -15,6 +15,7 @@ service AuthService {
   rpc ResendVerification (google.protobuf.Empty) returns (ResendVerificationResponse);
   rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse);
   rpc ChangeEmail (ChangeEmailRequest) returns (ChangeEmailResponse);
+  rpc ConfirmEmailChange (ConfirmEmailChangeRequest) returns (google.protobuf.Empty);
   rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty);
 }
 
@@ -100,6 +101,10 @@ message ChangeEmailRequest {
 
 message ChangeEmailResponse {
   string email = 1;
+}
+
+message ConfirmEmailChangeRequest {
+  string email_change_token = 1;
 }
 
 message ChangePasswordRequest {

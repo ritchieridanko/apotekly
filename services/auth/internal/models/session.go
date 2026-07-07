@@ -34,4 +34,9 @@ type (
 		UserAgent string
 		ExpiresAt time.Time
 	}
+
+	RevokeAllActiveSessions struct {
+		AuthID    uint64
+		ExpiresAt time.Time
+	}
 )

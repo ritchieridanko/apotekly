@@ -14,7 +14,8 @@ import (
 )
 
 type TokenCache interface {
-	CreateEmailChange(ctx context.Context, data *models.CreateEmailChange) (err *ce.Error)
+	CreateEmailChange(ctx context.Context, data *models.CreateEmailChangeToken) (err *ce.Error)
+	UseEmailChange(ctx context.Context, token string) (authID uint64, newEmail string, err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 }
@@ -27,7 +28,7 @@ func NewTokenCache(cc *cc.Cache) TokenCache {
 	return &tokenCache{cache: cc}
 }
 
-func (c *tokenCache) CreateEmailChange(ctx context.Context, data *models.CreateEmailChange) *ce.Error {
+func (c *tokenCache) CreateEmailChange(ctx context.Context, data *models.CreateEmailChangeToken) *ce.Error {
 	emch := constants.CachePrefixEmailChange
 	emres := constants.CachePrefixEmailReservation
 	script := `
@@ -81,6 +82,70 @@ func (c *tokenCache) CreateEmailChange(ctx context.Context, data *models.CreateE
 	}
 
 	return nil
+}
+
+func (c *tokenCache) UseEmailChange(ctx context.Context, token string) (uint64, string, *ce.Error) {
+	emch := constants.CachePrefixEmailChange
+	script := `
+		if redis.call("EXISTS", KEYS[1]) == 0 then
+			return nil
+		end
+
+		local data = redis.call("HMGET", KEYS[1], "id", "ne")
+		local authID = data[1]
+		local email = data[2]
+		
+		redis.call("DEL", KEYS[1])
+		redis.call("DEL", KEYS[2] .. ":" .. authID)
+		
+		return {authID, email}
+	`
+
+	res, err := c.cache.Evaluate(
+		ctx, "s:usemch", script,
+		[]string{
+			emch + ":" + token, // KEYS[1]
+			emch,               // KEYS[2]
+		},
+		nil,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to use email change token: %w", err)
+		if errors.Is(err, ce.ErrCacheNoResult) {
+			return 0, "", ce.NewError(
+				ce.CodeInvalidToken,
+				ce.MsgInvalidToken,
+				wrappedErr,
+			)
+		}
+		return 0, "", ce.NewError(
+			ce.CodeCacheScriptExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	values, ok := res.([]any)
+	if !ok || len(values) != 2 {
+		return 0, "", ce.NewError(ce.CodeTypeAssertionFailed, ce.MsgInternalServer, nil)
+	}
+
+	id, ok1 := values[0].(string)
+	newEmail, ok2 := values[1].(string)
+	if !ok1 || !ok2 {
+		return 0, "", ce.NewError(ce.CodeTypeAssertionFailed, ce.MsgInternalServer, nil)
+	}
+
+	authID, err := utils.ToUint64(id)
+	if err != nil {
+		return 0, "", ce.NewError(
+			ce.CodeTypeConversionFailed,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to use email change token: %w", err),
+		)
+	}
+
+	return authID, newEmail, nil
 }
 
 func (c *tokenCache) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {
