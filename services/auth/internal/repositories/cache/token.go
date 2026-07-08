@@ -19,6 +19,7 @@ type TokenCache interface {
 	CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) (err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
+	IsPasswordResetValid(ctx context.Context, token string) (valid bool, err *ce.Error)
 }
 
 type tokenCache struct {
@@ -271,4 +272,19 @@ func (c *tokenCache) UseVerification(ctx context.Context, token string) (uint64,
 	}
 
 	return authID, nil
+}
+
+func (c *tokenCache) IsPasswordResetValid(ctx context.Context, token string) (bool, *ce.Error) {
+	exists, err := c.cache.Exists(
+		ctx,
+		constants.CachePrefixPasswordReset+":"+token,
+	)
+	if err != nil {
+		return false, ce.NewError(
+			ce.CodeCacheCommandExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to check if password reset token is valid: %w", err),
+		)
+	}
+	return exists, nil
 }

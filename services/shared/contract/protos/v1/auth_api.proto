@@ -18,6 +18,7 @@ service AuthService {
   rpc ConfirmEmailChange (ConfirmEmailChangeRequest) returns (google.protobuf.Empty);
   rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty);
   rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
+  rpc IsPasswordResetTokenValid (IsPasswordResetTokenValidRequest) returns (IsPasswordResetTokenValidResponse);
 }
 
 message Auth {
@@ -119,4 +120,12 @@ message ResetPasswordRequest {
 
 message ResetPasswordResponse {
   string email = 1;
+}
+
+message IsPasswordResetTokenValidRequest {
+  string token = 1;
+}
+
+message IsPasswordResetTokenValidResponse {
+  bool is_valid = 1;
 }

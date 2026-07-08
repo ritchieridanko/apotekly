@@ -157,6 +157,16 @@ func (h *AuthHandler) ResetPassword(ctx context.Context, req *apis.ResetPassword
 	}, nil
 }
 
+func (h *AuthHandler) IsPasswordResetTokenValid(ctx context.Context, req *apis.IsPasswordResetTokenValidRequest) (*apis.IsPasswordResetTokenValidResponse, error) {
+	valid, err := h.au.IsPasswordResetTokenValid(ctx, req.GetToken())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.IsPasswordResetTokenValidResponse{
+		IsValid: valid,
+	}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil

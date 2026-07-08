@@ -1094,6 +1094,94 @@ func (x *ResetPasswordResponse) GetEmail() string {
 	return ""
 }
 
+type IsPasswordResetTokenValidRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IsPasswordResetTokenValidRequest) Reset() {
+	*x = IsPasswordResetTokenValidRequest{}
+	mi := &file_v1_auth_api_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IsPasswordResetTokenValidRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IsPasswordResetTokenValidRequest) ProtoMessage() {}
+
+func (x *IsPasswordResetTokenValidRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IsPasswordResetTokenValidRequest.ProtoReflect.Descriptor instead.
+func (*IsPasswordResetTokenValidRequest) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *IsPasswordResetTokenValidRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type IsPasswordResetTokenValidResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IsValid       bool                   `protobuf:"varint,1,opt,name=is_valid,json=isValid,proto3" json:"is_valid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IsPasswordResetTokenValidResponse) Reset() {
+	*x = IsPasswordResetTokenValidResponse{}
+	mi := &file_v1_auth_api_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IsPasswordResetTokenValidResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IsPasswordResetTokenValidResponse) ProtoMessage() {}
+
+func (x *IsPasswordResetTokenValidResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IsPasswordResetTokenValidResponse.ProtoReflect.Descriptor instead.
+func (*IsPasswordResetTokenValidResponse) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *IsPasswordResetTokenValidResponse) GetIsValid() bool {
+	if x != nil {
+		return x.IsValid
+	}
+	return false
+}
+
 var File_v1_auth_api_proto protoreflect.FileDescriptor
 
 const file_v1_auth_api_proto_rawDesc = "" +
@@ -1159,7 +1247,11 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\x14ResetPasswordRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"-\n" +
 	"\x15ResetPasswordResponse\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email2\xc1\x06\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"8\n" +
+	" IsPasswordResetTokenValidRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\">\n" +
+	"!IsPasswordResetTokenValidResponse\x12\x19\n" +
+	"\bis_valid\x18\x01 \x01(\bR\aisValid2\xb5\a\n" +
 	"\vAuthService\x129\n" +
 	"\x06SignUp\x12\x16.auth.v1.SignUpRequest\x1a\x17.auth.v1.SignUpResponse\x129\n" +
 	"\x06SignIn\x12\x16.auth.v1.SignInRequest\x1a\x17.auth.v1.SignInResponse\x12:\n" +
@@ -1171,7 +1263,8 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\vChangeEmail\x12\x1b.auth.v1.ChangeEmailRequest\x1a\x1c.auth.v1.ChangeEmailResponse\x12P\n" +
 	"\x12ConfirmEmailChange\x12\".auth.v1.ConfirmEmailChangeRequest\x1a\x16.google.protobuf.Empty\x12H\n" +
 	"\x0eChangePassword\x12\x1e.auth.v1.ChangePasswordRequest\x1a\x16.google.protobuf.Empty\x12N\n" +
-	"\rResetPassword\x12\x1d.auth.v1.ResetPasswordRequest\x1a\x1e.auth.v1.ResetPasswordResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\rResetPassword\x12\x1d.auth.v1.ResetPasswordRequest\x1a\x1e.auth.v1.ResetPasswordResponse\x12r\n" +
+	"\x19IsPasswordResetTokenValid\x12).auth.v1.IsPasswordResetTokenValidRequest\x1a*.auth.v1.IsPasswordResetTokenValidResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_auth_api_proto_rawDescOnce sync.Once
@@ -1185,31 +1278,33 @@ func file_v1_auth_api_proto_rawDescGZIP() []byte {
 	return file_v1_auth_api_proto_rawDescData
 }
 
-var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_v1_auth_api_proto_goTypes = []any{
-	(*Auth)(nil),                       // 0: auth.v1.Auth
-	(*AccessToken)(nil),                // 1: auth.v1.AccessToken
-	(*RefreshToken)(nil),               // 2: auth.v1.RefreshToken
-	(*AuthToken)(nil),                  // 3: auth.v1.AuthToken
-	(*SignUpRequest)(nil),              // 4: auth.v1.SignUpRequest
-	(*SignUpResponse)(nil),             // 5: auth.v1.SignUpResponse
-	(*SignInRequest)(nil),              // 6: auth.v1.SignInRequest
-	(*SignInResponse)(nil),             // 7: auth.v1.SignInResponse
-	(*SignOutRequest)(nil),             // 8: auth.v1.SignOutRequest
-	(*IsEmailAvailableRequest)(nil),    // 9: auth.v1.IsEmailAvailableRequest
-	(*IsEmailAvailableResponse)(nil),   // 10: auth.v1.IsEmailAvailableResponse
-	(*RotateAuthTokenRequest)(nil),     // 11: auth.v1.RotateAuthTokenRequest
-	(*RotateAuthTokenResponse)(nil),    // 12: auth.v1.RotateAuthTokenResponse
-	(*ResendVerificationResponse)(nil), // 13: auth.v1.ResendVerificationResponse
-	(*VerifyEmailRequest)(nil),         // 14: auth.v1.VerifyEmailRequest
-	(*VerifyEmailResponse)(nil),        // 15: auth.v1.VerifyEmailResponse
-	(*ChangeEmailRequest)(nil),         // 16: auth.v1.ChangeEmailRequest
-	(*ChangeEmailResponse)(nil),        // 17: auth.v1.ChangeEmailResponse
-	(*ConfirmEmailChangeRequest)(nil),  // 18: auth.v1.ConfirmEmailChangeRequest
-	(*ChangePasswordRequest)(nil),      // 19: auth.v1.ChangePasswordRequest
-	(*ResetPasswordRequest)(nil),       // 20: auth.v1.ResetPasswordRequest
-	(*ResetPasswordResponse)(nil),      // 21: auth.v1.ResetPasswordResponse
-	(*emptypb.Empty)(nil),              // 22: google.protobuf.Empty
+	(*Auth)(nil),                              // 0: auth.v1.Auth
+	(*AccessToken)(nil),                       // 1: auth.v1.AccessToken
+	(*RefreshToken)(nil),                      // 2: auth.v1.RefreshToken
+	(*AuthToken)(nil),                         // 3: auth.v1.AuthToken
+	(*SignUpRequest)(nil),                     // 4: auth.v1.SignUpRequest
+	(*SignUpResponse)(nil),                    // 5: auth.v1.SignUpResponse
+	(*SignInRequest)(nil),                     // 6: auth.v1.SignInRequest
+	(*SignInResponse)(nil),                    // 7: auth.v1.SignInResponse
+	(*SignOutRequest)(nil),                    // 8: auth.v1.SignOutRequest
+	(*IsEmailAvailableRequest)(nil),           // 9: auth.v1.IsEmailAvailableRequest
+	(*IsEmailAvailableResponse)(nil),          // 10: auth.v1.IsEmailAvailableResponse
+	(*RotateAuthTokenRequest)(nil),            // 11: auth.v1.RotateAuthTokenRequest
+	(*RotateAuthTokenResponse)(nil),           // 12: auth.v1.RotateAuthTokenResponse
+	(*ResendVerificationResponse)(nil),        // 13: auth.v1.ResendVerificationResponse
+	(*VerifyEmailRequest)(nil),                // 14: auth.v1.VerifyEmailRequest
+	(*VerifyEmailResponse)(nil),               // 15: auth.v1.VerifyEmailResponse
+	(*ChangeEmailRequest)(nil),                // 16: auth.v1.ChangeEmailRequest
+	(*ChangeEmailResponse)(nil),               // 17: auth.v1.ChangeEmailResponse
+	(*ConfirmEmailChangeRequest)(nil),         // 18: auth.v1.ConfirmEmailChangeRequest
+	(*ChangePasswordRequest)(nil),             // 19: auth.v1.ChangePasswordRequest
+	(*ResetPasswordRequest)(nil),              // 20: auth.v1.ResetPasswordRequest
+	(*ResetPasswordResponse)(nil),             // 21: auth.v1.ResetPasswordResponse
+	(*IsPasswordResetTokenValidRequest)(nil),  // 22: auth.v1.IsPasswordResetTokenValidRequest
+	(*IsPasswordResetTokenValidResponse)(nil), // 23: auth.v1.IsPasswordResetTokenValidResponse
+	(*emptypb.Empty)(nil),                     // 24: google.protobuf.Empty
 }
 var file_v1_auth_api_proto_depIdxs = []int32{
 	1,  // 0: auth.v1.AuthToken.access_token:type_name -> auth.v1.AccessToken
@@ -1226,25 +1321,27 @@ var file_v1_auth_api_proto_depIdxs = []int32{
 	8,  // 11: auth.v1.AuthService.SignOut:input_type -> auth.v1.SignOutRequest
 	9,  // 12: auth.v1.AuthService.IsEmailAvailable:input_type -> auth.v1.IsEmailAvailableRequest
 	11, // 13: auth.v1.AuthService.RotateAuthToken:input_type -> auth.v1.RotateAuthTokenRequest
-	22, // 14: auth.v1.AuthService.ResendVerification:input_type -> google.protobuf.Empty
+	24, // 14: auth.v1.AuthService.ResendVerification:input_type -> google.protobuf.Empty
 	14, // 15: auth.v1.AuthService.VerifyEmail:input_type -> auth.v1.VerifyEmailRequest
 	16, // 16: auth.v1.AuthService.ChangeEmail:input_type -> auth.v1.ChangeEmailRequest
 	18, // 17: auth.v1.AuthService.ConfirmEmailChange:input_type -> auth.v1.ConfirmEmailChangeRequest
 	19, // 18: auth.v1.AuthService.ChangePassword:input_type -> auth.v1.ChangePasswordRequest
 	20, // 19: auth.v1.AuthService.ResetPassword:input_type -> auth.v1.ResetPasswordRequest
-	5,  // 20: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
-	7,  // 21: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
-	22, // 22: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
-	10, // 23: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
-	12, // 24: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
-	13, // 25: auth.v1.AuthService.ResendVerification:output_type -> auth.v1.ResendVerificationResponse
-	15, // 26: auth.v1.AuthService.VerifyEmail:output_type -> auth.v1.VerifyEmailResponse
-	17, // 27: auth.v1.AuthService.ChangeEmail:output_type -> auth.v1.ChangeEmailResponse
-	22, // 28: auth.v1.AuthService.ConfirmEmailChange:output_type -> google.protobuf.Empty
-	22, // 29: auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
-	21, // 30: auth.v1.AuthService.ResetPassword:output_type -> auth.v1.ResetPasswordResponse
-	20, // [20:31] is the sub-list for method output_type
-	9,  // [9:20] is the sub-list for method input_type
+	22, // 20: auth.v1.AuthService.IsPasswordResetTokenValid:input_type -> auth.v1.IsPasswordResetTokenValidRequest
+	5,  // 21: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
+	7,  // 22: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
+	24, // 23: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
+	10, // 24: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
+	12, // 25: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
+	13, // 26: auth.v1.AuthService.ResendVerification:output_type -> auth.v1.ResendVerificationResponse
+	15, // 27: auth.v1.AuthService.VerifyEmail:output_type -> auth.v1.VerifyEmailResponse
+	17, // 28: auth.v1.AuthService.ChangeEmail:output_type -> auth.v1.ChangeEmailResponse
+	24, // 29: auth.v1.AuthService.ConfirmEmailChange:output_type -> google.protobuf.Empty
+	24, // 30: auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
+	21, // 31: auth.v1.AuthService.ResetPassword:output_type -> auth.v1.ResetPasswordResponse
+	23, // 32: auth.v1.AuthService.IsPasswordResetTokenValid:output_type -> auth.v1.IsPasswordResetTokenValidResponse
+	21, // [21:33] is the sub-list for method output_type
+	9,  // [9:21] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -1261,7 +1358,7 @@ func file_v1_auth_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_api_proto_rawDesc), len(file_v1_auth_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

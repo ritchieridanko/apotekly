@@ -34,6 +34,7 @@ type AuthUsecase interface {
 	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 	ResetPassword(ctx context.Context, email string) (recipient string, err *ce.Error)
+	IsPasswordResetTokenValid(ctx context.Context, token string) (valid bool, err *ce.Error)
 }
 
 type authUsecase struct {
@@ -969,4 +970,20 @@ func (u *authUsecase) ResetPassword(ctx context.Context, email string) (string, 
 	)
 
 	return em, nil
+}
+
+func (u *authUsecase) IsPasswordResetTokenValid(ctx context.Context, token string) (bool, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.IsPasswordResetTokenValid")
+	defer span.End()
+
+	// Data Normalization
+	t := strings.TrimSpace(token)
+
+	// Data Validation
+	if t == "" {
+		return false, ce.NewError(ce.CodeInvalidPayload, "Password reset token is required", nil)
+	}
+
+	// Password Reset Token Validity Check
+	return u.tr.IsPasswordResetValid(ctx, t)
 }

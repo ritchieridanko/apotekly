@@ -14,6 +14,7 @@ type TokenRepository interface {
 	CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) (err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
+	IsPasswordResetValid(ctx context.Context, token string) (valid bool, err *ce.Error)
 }
 
 type tokenRepository struct {
@@ -42,4 +43,8 @@ func (r *tokenRepository) CreateVerification(ctx context.Context, data *models.C
 
 func (r *tokenRepository) UseVerification(ctx context.Context, token string) (uint64, *ce.Error) {
 	return r.cache.UseVerification(ctx, token)
+}
+
+func (r *tokenRepository) IsPasswordResetValid(ctx context.Context, token string) (bool, *ce.Error) {
+	return r.cache.IsPasswordResetValid(ctx, token)
 }
