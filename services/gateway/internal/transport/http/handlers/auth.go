@@ -563,6 +563,36 @@ func (h *AuthHandler) ResetPassword(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) ConfirmPasswordReset(ctx *gin.Context) {
+	var payload dtos.ConfirmPasswordResetRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	err := h.ac.ConfirmPasswordReset(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		&models.ConfirmPasswordResetReq{
+			PasswordResetToken: payload.PasswordResetToken,
+			NewPassword:        payload.NewPassword,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse[any](
+		ctx,
+		http.StatusOK,
+		"Password reset successfully",
+		nil,
+		nil,
+	)
+}
+
 func (h *AuthHandler) IsPasswordResetTokenValid(ctx *gin.Context) {
 	var params dtos.IsPasswordResetTokenValidRequest
 	if err := ctx.ShouldBindQuery(&params); err != nil {

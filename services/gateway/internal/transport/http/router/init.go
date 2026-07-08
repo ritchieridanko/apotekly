@@ -84,6 +84,9 @@ func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler
 				// Reset
 				reset.POST("", ah.ResetPassword)
 
+				// Confirm
+				reset.POST("/confirm", ah.ConfirmPasswordReset)
+
 				// Validity
 				reset.GET("/valid", ah.IsPasswordResetTokenValid)
 			}

@@ -11,6 +11,11 @@ type (
 		NewPassword string
 	}
 
+	ConfirmPasswordResetReq struct {
+		PasswordResetToken string
+		NewPassword        string
+	}
+
 	SignInReq struct {
 		Email    string
 		Password string
