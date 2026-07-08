@@ -24,6 +24,7 @@ type AuthClient interface {
 	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 	ResetPassword(ctx context.Context, email string) (recipient string, err *ce.Error)
+	IsPasswordResetTokenValid(ctx context.Context, token string) (valid bool, err *ce.Error)
 }
 
 type authClient struct {
@@ -219,6 +220,23 @@ func (c *authClient) ResetPassword(ctx context.Context, email string) (string, *
 		)
 	}
 	return resp.GetEmail(), nil
+}
+
+func (c *authClient) IsPasswordResetTokenValid(ctx context.Context, token string) (bool, *ce.Error) {
+	resp, err := c.client.IsPasswordResetTokenValid(
+		ctx,
+		&apis.IsPasswordResetTokenValidRequest{
+			Token: token,
+		},
+	)
+	if err != nil {
+		return false, ce.ToError(
+			err,
+		).Append(
+			authServiceField,
+		)
+	}
+	return resp.GetIsValid(), nil
 }
 
 func (c *authClient) toAuth(a *apis.Auth) *models.Auth {

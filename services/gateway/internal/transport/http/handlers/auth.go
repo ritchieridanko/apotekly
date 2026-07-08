@@ -563,6 +563,35 @@ func (h *AuthHandler) ResetPassword(ctx *gin.Context) {
 	)
 }
 
+func (h *AuthHandler) IsPasswordResetTokenValid(ctx *gin.Context) {
+	var params dtos.IsPasswordResetTokenValidRequest
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+
+	valid, err := h.ac.IsPasswordResetTokenValid(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		params.Token,
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"OK",
+		dtos.IsPasswordResetTokenValidResponse{
+			IsValid: valid,
+		},
+		nil,
+	)
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *dtos.Auth {
 	if a == nil {
 		return nil

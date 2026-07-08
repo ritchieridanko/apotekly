@@ -20,6 +20,10 @@ type (
 		Email string `form:"email" binding:"required"`
 	}
 
+	IsPasswordResetTokenValidRequest struct {
+		Token string `form:"token" binding:"required"`
+	}
+
 	ResetPasswordRequest struct {
 		Email string `json:"email" binding:"required"`
 	}
@@ -58,6 +62,10 @@ type (
 
 	IsEmailAvailableResponse struct {
 		IsAvailable bool `json:"is_available"`
+	}
+
+	IsPasswordResetTokenValidResponse struct {
+		IsValid bool `json:"is_valid"`
 	}
 
 	ResendVerificationResponse struct {
