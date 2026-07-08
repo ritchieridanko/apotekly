@@ -34,6 +34,7 @@ type AuthUsecase interface {
 	ConfirmEmailChange(ctx context.Context, emailChangeToken string) (err *ce.Error)
 	ChangePassword(ctx context.Context, req *models.ChangePasswordReq) (err *ce.Error)
 	ResetPassword(ctx context.Context, email string) (recipient string, err *ce.Error)
+	ConfirmPasswordReset(ctx context.Context, req *models.ConfirmPasswordResetReq) (err *ce.Error)
 	IsPasswordResetTokenValid(ctx context.Context, token string) (valid bool, err *ce.Error)
 }
 
@@ -970,6 +971,83 @@ func (u *authUsecase) ResetPassword(ctx context.Context, email string) (string, 
 	)
 
 	return em, nil
+}
+
+func (u *authUsecase) ConfirmPasswordReset(ctx context.Context, req *models.ConfirmPasswordResetReq) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.ConfirmPasswordReset")
+	defer span.End()
+
+	// Data Normalization
+	token := strings.TrimSpace(req.PasswordResetToken)
+
+	// Data Validation
+	if token == "" {
+		return ce.NewError(ce.CodeInvalidPayload, "Password reset token is required", nil)
+	}
+	if ok, why := u.validator.Password(req.NewPassword); !ok {
+		return ce.NewError(ce.CodeInvalidPayload, why, nil)
+	}
+
+	// Password Reset Token Consumption
+	authID, err := u.tr.UsePasswordReset(ctx, token)
+	if err != nil {
+		return err
+	}
+
+	authIDField := logger.NewField("auth_id", authID)
+
+	// New Password Hashing
+	// NOTE: Fail to hash new password re-creates the password reset token
+	hash, hashErr := u.bcrypt.Hash(req.NewPassword)
+	if hashErr != nil {
+		err := u.tr.CreatePasswordReset(
+			ctx,
+			&models.CreatePasswordResetToken{
+				AuthID:   authID,
+				Token:    token,
+				Duration: u.passwordResetToken,
+			},
+		)
+		if err != nil {
+			return err.Append(authIDField)
+		}
+		return ce.NewError(
+			ce.CodeBCryptHashingFailed,
+			ce.MsgInternalServer,
+			hashErr,
+			authIDField,
+		)
+	}
+
+	// Password Update
+	// NOTE: Fail to update password re-creates the password reset token
+	err = u.ar.UpdatePassword(ctx, authID, hash)
+	if err != nil && err.Code() == ce.CodeAuthNotFound {
+		u.logger.Warn(
+			ctx,
+			"consumed password reset token. failed to update password",
+			authIDField,
+			logger.NewField("error_code", err.Code()),
+			logger.NewField("error", err.Unwrap()),
+		)
+		return nil
+	}
+	if err != nil {
+		createErr := u.tr.CreatePasswordReset(
+			ctx,
+			&models.CreatePasswordResetToken{
+				AuthID:   authID,
+				Token:    token,
+				Duration: u.passwordResetToken,
+			},
+		)
+		if createErr != nil {
+			return createErr.Append(authIDField)
+		}
+		return err.Append(authIDField)
+	}
+
+	return nil
 }
 
 func (u *authUsecase) IsPasswordResetTokenValid(ctx context.Context, token string) (bool, *ce.Error) {

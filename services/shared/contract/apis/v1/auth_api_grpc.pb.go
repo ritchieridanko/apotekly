@@ -31,6 +31,7 @@ const (
 	AuthService_ConfirmEmailChange_FullMethodName        = "/auth.v1.AuthService/ConfirmEmailChange"
 	AuthService_ChangePassword_FullMethodName            = "/auth.v1.AuthService/ChangePassword"
 	AuthService_ResetPassword_FullMethodName             = "/auth.v1.AuthService/ResetPassword"
+	AuthService_ConfirmPasswordReset_FullMethodName      = "/auth.v1.AuthService/ConfirmPasswordReset"
 	AuthService_IsPasswordResetTokenValid_FullMethodName = "/auth.v1.AuthService/IsPasswordResetTokenValid"
 )
 
@@ -49,6 +50,7 @@ type AuthServiceClient interface {
 	ConfirmEmailChange(ctx context.Context, in *ConfirmEmailChangeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
+	ConfirmPasswordReset(ctx context.Context, in *ConfirmPasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	IsPasswordResetTokenValid(ctx context.Context, in *IsPasswordResetTokenValidRequest, opts ...grpc.CallOption) (*IsPasswordResetTokenValidResponse, error)
 }
 
@@ -170,6 +172,16 @@ func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPassword
 	return out, nil
 }
 
+func (c *authServiceClient) ConfirmPasswordReset(ctx context.Context, in *ConfirmPasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_ConfirmPasswordReset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) IsPasswordResetTokenValid(ctx context.Context, in *IsPasswordResetTokenValidRequest, opts ...grpc.CallOption) (*IsPasswordResetTokenValidResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IsPasswordResetTokenValidResponse)
@@ -195,6 +207,7 @@ type AuthServiceServer interface {
 	ConfirmEmailChange(context.Context, *ConfirmEmailChangeRequest) (*emptypb.Empty, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
+	ConfirmPasswordReset(context.Context, *ConfirmPasswordResetRequest) (*emptypb.Empty, error)
 	IsPasswordResetTokenValid(context.Context, *IsPasswordResetTokenValidRequest) (*IsPasswordResetTokenValidResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -238,6 +251,9 @@ func (UnimplementedAuthServiceServer) ChangePassword(context.Context, *ChangePas
 }
 func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) ConfirmPasswordReset(context.Context, *ConfirmPasswordResetRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmPasswordReset not implemented")
 }
 func (UnimplementedAuthServiceServer) IsPasswordResetTokenValid(context.Context, *IsPasswordResetTokenValidRequest) (*IsPasswordResetTokenValidResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsPasswordResetTokenValid not implemented")
@@ -461,6 +477,24 @@ func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ConfirmPasswordReset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmPasswordResetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ConfirmPasswordReset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ConfirmPasswordReset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ConfirmPasswordReset(ctx, req.(*ConfirmPasswordResetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_IsPasswordResetTokenValid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IsPasswordResetTokenValidRequest)
 	if err := dec(in); err != nil {
@@ -529,6 +563,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "ConfirmPasswordReset",
+			Handler:    _AuthService_ConfirmPasswordReset_Handler,
 		},
 		{
 			MethodName: "IsPasswordResetTokenValid",

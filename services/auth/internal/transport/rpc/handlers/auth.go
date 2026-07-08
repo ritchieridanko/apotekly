@@ -157,6 +157,20 @@ func (h *AuthHandler) ResetPassword(ctx context.Context, req *apis.ResetPassword
 	}, nil
 }
 
+func (h *AuthHandler) ConfirmPasswordReset(ctx context.Context, req *apis.ConfirmPasswordResetRequest) (*emptypb.Empty, error) {
+	err := h.au.ConfirmPasswordReset(
+		ctx,
+		&models.ConfirmPasswordResetReq{
+			PasswordResetToken: req.GetPasswordResetToken(),
+			NewPassword:        req.GetNewPassword(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
 func (h *AuthHandler) IsPasswordResetTokenValid(ctx context.Context, req *apis.IsPasswordResetTokenValidRequest) (*apis.IsPasswordResetTokenValidResponse, error) {
 	valid, err := h.au.IsPasswordResetTokenValid(ctx, req.GetToken())
 	if err != nil {

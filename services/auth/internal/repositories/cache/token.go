@@ -17,6 +17,7 @@ type TokenCache interface {
 	CreateEmailChange(ctx context.Context, data *models.CreateEmailChangeToken) (err *ce.Error)
 	UseEmailChange(ctx context.Context, token string) (authID uint64, newEmail string, err *ce.Error)
 	CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) (err *ce.Error)
+	UsePasswordReset(ctx context.Context, token string) (authID uint64, err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 	IsPasswordResetValid(ctx context.Context, token string) (valid bool, err *ce.Error)
@@ -186,6 +187,54 @@ func (c *tokenCache) CreatePasswordReset(ctx context.Context, data *models.Creat
 	}
 
 	return nil
+}
+
+func (c *tokenCache) UsePasswordReset(ctx context.Context, token string) (uint64, *ce.Error) {
+	pares := constants.CachePrefixPasswordReset
+	script := `
+		local authID = redis.call("GET", KEYS[1])
+		if authID then
+			redis.call("DEL", KEYS[1])
+			redis.call("DEL", KEYS[2] .. ":" .. authID)
+			return authID
+		end
+		return nil
+	`
+
+	res, err := c.cache.Evaluate(
+		ctx, "s:usepar", script,
+		[]string{
+			pares + ":" + token, // KEYS[1]
+			pares,               // KEYS[2]
+		},
+		nil,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to use password reset token: %w", err)
+		if errors.Is(err, ce.ErrCacheNoResult) {
+			return 0, ce.NewError(
+				ce.CodeInvalidToken,
+				ce.MsgInvalidToken,
+				wrappedErr,
+			)
+		}
+		return 0, ce.NewError(
+			ce.CodeCacheScriptExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	authID, err := utils.ToUint64(res)
+	if err != nil {
+		return 0, ce.NewError(
+			ce.CodeTypeConversionFailed,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to use password reset token: %w", err),
+		)
+	}
+
+	return authID, nil
 }
 
 func (c *tokenCache) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {

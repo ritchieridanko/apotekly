@@ -12,6 +12,7 @@ type TokenRepository interface {
 	CreateEmailChange(ctx context.Context, data *models.CreateEmailChangeToken) (err *ce.Error)
 	UseEmailChange(ctx context.Context, token string) (authID uint64, newEmail string, err *ce.Error)
 	CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) (err *ce.Error)
+	UsePasswordReset(ctx context.Context, token string) (authID uint64, err *ce.Error)
 	CreateVerification(ctx context.Context, data *models.CreateVerificationToken) (err *ce.Error)
 	UseVerification(ctx context.Context, token string) (authID uint64, err *ce.Error)
 	IsPasswordResetValid(ctx context.Context, token string) (valid bool, err *ce.Error)
@@ -35,6 +36,10 @@ func (r *tokenRepository) UseEmailChange(ctx context.Context, token string) (uin
 
 func (r *tokenRepository) CreatePasswordReset(ctx context.Context, data *models.CreatePasswordResetToken) *ce.Error {
 	return r.cache.CreatePasswordReset(ctx, data)
+}
+
+func (r *tokenRepository) UsePasswordReset(ctx context.Context, token string) (uint64, *ce.Error) {
+	return r.cache.UsePasswordReset(ctx, token)
 }
 
 func (r *tokenRepository) CreateVerification(ctx context.Context, data *models.CreateVerificationToken) *ce.Error {

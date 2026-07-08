@@ -11,6 +11,11 @@ type (
 		NewPassword string
 	}
 
+	ConfirmPasswordResetReq struct {
+		PasswordResetToken string
+		NewPassword        string
+	}
+
 	CreateSessionReq struct {
 		AuthID          uint64
 		Role            string
