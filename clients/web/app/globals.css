@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@custom-variant filled (&:not(:placeholder-shown));
+
+:root {
+  --dark: #171717;
+  --light: #ffffff;
+  --primary: #244DA3;
+}
+
+@theme inline {
+  --font-mono: var(--font-jet-brains-mono);
+  --font-sans: var(--font-ubuntu);
+}
+
+body {
+  box-sizing: border-box;
+}
