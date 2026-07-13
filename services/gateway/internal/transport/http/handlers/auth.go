@@ -259,6 +259,14 @@ func (h *AuthHandler) RotateAuthToken(ctx *gin.Context) {
 		token,
 	)
 	if rotateErr != nil {
+		if rotateErr.Code() == ce.CodeUnauthenticated {
+			h.cookie.Unset(
+				ctx,
+				constants.CookieKeyRefreshToken,
+				"/",
+			)
+		}
+
 		rotateErr.Bind(ctx)
 		return
 	}
@@ -372,6 +380,14 @@ func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
 		},
 	)
 	if verifyErr != nil {
+		if verifyErr.Code() == ce.CodeUnauthenticated {
+			h.cookie.Unset(
+				ctx,
+				constants.CookieKeyRefreshToken,
+				"/",
+			)
+		}
+
 		verifyErr.Bind(ctx)
 		return
 	}

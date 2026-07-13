@@ -12,6 +12,7 @@ import (
 
 type Config struct {
 	App     cfg.App        `mapstructure:"app"`
+	Client  cfg.Client     `mapstructure:"client"`
 	Server  cfg.HTTPServer `mapstructure:"server"`
 	Service Service        `mapstructure:"service"`
 	Tracer  cfg.Tracer     `mapstructure:"tracer"`
@@ -48,9 +49,16 @@ func Init(path string) (*Config, error) {
 	}
 
 	cfg.App.Env = env
+	cfg.Client.Addr = cfg.Client.Host + ":" + strconv.Itoa(cfg.Client.Port)
 	cfg.Server.Addr = cfg.Server.Host + ":" + strconv.Itoa(cfg.Server.Port)
 	cfg.Service.Auth.Addr = cfg.Service.Auth.Host + ":" + strconv.Itoa(cfg.Service.Auth.Port)
 	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
+
+	if env == "prod" {
+		cfg.Client.Addr = "https://" + cfg.Client.Addr
+	} else {
+		cfg.Client.Addr = "http://" + cfg.Client.Addr
+	}
 
 	return &cfg, nil
 }

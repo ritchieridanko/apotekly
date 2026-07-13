@@ -332,8 +332,8 @@ func (u *authUsecase) RotateAuthToken(ctx context.Context, refreshToken string) 
 	// Data Validation
 	if token == "" {
 		return nil, ce.NewError(
-			ce.CodeUnauthenticated,
-			ce.MsgUnauthenticated,
+			ce.CodeInvalidSession,
+			ce.MsgInvalidSession,
 			errors.New("refresh token is empty"),
 		)
 	}
@@ -342,6 +342,9 @@ func (u *authUsecase) RotateAuthToken(ctx context.Context, refreshToken string) 
 	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
 		// Session Fetching
 		s, err := u.su.GetSession(ctx, token)
+		if err != nil && err.Code() == ce.CodeSessionNotFound {
+			return ce.NewError(ce.CodeInvalidSession, ce.MsgInvalidSession, err.Unwrap())
+		}
 		if err != nil {
 			return err
 		}
@@ -362,8 +365,8 @@ func (u *authUsecase) RotateAuthToken(ctx context.Context, refreshToken string) 
 		a, err := u.ar.GetByID(ctx, s.AuthID)
 		if err != nil && err.Code() == ce.CodeAuthNotFound {
 			return ce.NewError(
-				ce.CodeAuthNotRegistered,
-				ce.MsgInvalidCredentials,
+				ce.CodeInvalidSession,
+				ce.MsgInvalidSession,
 				err.Unwrap(),
 				authIDField,
 			)
@@ -382,6 +385,14 @@ func (u *authUsecase) RotateAuthToken(ctx context.Context, refreshToken string) 
 				RefreshToken:    token,
 			},
 		)
+		if err != nil && err.Code() == ce.CodeSessionNotFound {
+			return ce.NewError(
+				ce.CodeInvalidSession,
+				ce.MsgInvalidSession,
+				err.Unwrap(),
+				err.Fields()...,
+			)
+		}
 		return err
 	})
 
@@ -498,8 +509,8 @@ func (u *authUsecase) VerifyEmail(ctx context.Context, req *models.VerifyEmailRe
 	// Data Validation
 	if refreshToken == "" {
 		return nil, nil, ce.NewError(
-			ce.CodeUnauthenticated,
-			ce.MsgUnauthenticated,
+			ce.CodeInvalidSession,
+			ce.MsgInvalidSession,
 			errors.New("refresh token is empty"),
 			authIDField,
 		)
@@ -548,7 +559,7 @@ func (u *authUsecase) VerifyEmail(ctx context.Context, req *models.VerifyEmailRe
 	if err != nil && err.Code() == ce.CodeAuthNotFound {
 		return nil, nil, ce.NewError(
 			ce.CodeAuthNotRegistered,
-			ce.MsgInvalidCredentials,
+			ce.MsgInvalidSession,
 			err.Unwrap(),
 			authIDField,
 		)

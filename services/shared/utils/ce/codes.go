@@ -45,6 +45,7 @@ const (
 	CodeInvalidParams           errCode = "ERR_INVALID_PARAMS"
 	CodeInvalidPayload          errCode = "ERR_INVALID_PAYLOAD"
 	CodeInvalidRequestMetadata  errCode = "ERR_INVALID_REQUEST_METADATA"
+	CodeInvalidSession          errCode = "ERR_INVALID_SESSION"
 	CodeInvalidToken            errCode = "ERR_INVALID_TOKEN"
 	CodeJSONRawEncodingFailed   errCode = "ERR_JSON_RAW_ENCODING_FAILED"
 	CodeJSONUnmarshallingFailed errCode = "ERR_JSON_UNMARSHALLING_FAILED"

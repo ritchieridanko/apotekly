@@ -45,7 +45,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	ah := handlers.NewAuthHandler(ac, v, c)
 
 	// Router
-	r := router.Init(cfg.App.Name, j, l, ah)
+	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, ah)
 
 	// Server
 	srv := server.Init(&cfg.Server, r, l)

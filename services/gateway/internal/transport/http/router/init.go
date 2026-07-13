@@ -15,9 +15,11 @@ type Router struct {
 	router *gin.Engine
 }
 
-func Init(appName string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler) *Router {
+func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler) *Router {
 	r := gin.New()
 	r.ContextWithFallback = true
+
+	r.Use(middlewares.CORS(clientAddr))
 
 	r.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(

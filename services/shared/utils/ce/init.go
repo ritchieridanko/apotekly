@@ -91,6 +91,7 @@ func (e *Error) ToGRPCErr() error {
 	case
 		CodeAuthNotRegistered,
 		CodeEmailNotRegistered,
+		CodeInvalidSession,
 		CodeOAuthRegularSignIn,
 		CodeSessionExpired,
 		CodeSessionNotOwned,
