@@ -1,3 +1,3 @@
-import { checkEmailAvailability, signIn, signUp } from "./auth";
+import { checkEmailAvailability, resetPassword, signIn, signUp } from "./auth";
 
-export { checkEmailAvailability, signIn, signUp };
+export { checkEmailAvailability, resetPassword, signIn, signUp };

@@ -1,15 +1,23 @@
 import type {
   CheckEmailAvailabilityAPIResponse,
+  ResetPasswordAPIRequest,
+  ResetPasswordAPIResponse,
   RotateAuthTokenAPIResponse,
   SignInAPIRequest,
   SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
 } from "./api";
-import type { SignInFormErrors, SignUpFormErrors } from "./form";
+import type {
+  ForgotPasswordFormErrors,
+  SignInFormErrors,
+  SignUpFormErrors,
+} from "./form";
 
 export type {
   CheckEmailAvailabilityAPIResponse,
+  ResetPasswordAPIRequest,
+  ResetPasswordAPIResponse,
   RotateAuthTokenAPIResponse,
   SignInAPIRequest,
   SignInAPIResponse,
@@ -17,4 +25,4 @@ export type {
   SignUpAPIResponse,
 };
 
-export type { SignInFormErrors, SignUpFormErrors };
+export type { ForgotPasswordFormErrors, SignInFormErrors, SignUpFormErrors };

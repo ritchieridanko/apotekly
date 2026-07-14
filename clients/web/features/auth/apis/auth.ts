@@ -1,5 +1,7 @@
 import {
   CheckEmailAvailabilityAPIResponse,
+  ResetPasswordAPIRequest,
+  ResetPasswordAPIResponse,
   SignInAPIRequest,
   SignInAPIResponse,
   SignUpAPIRequest,
@@ -15,6 +17,19 @@ const checkEmailAvailability = async (email: string): Promise<boolean> => {
     { method: "GET" },
   );
   return res.data?.is_available ?? false;
+};
+
+const resetPassword = async (
+  form: ResetPasswordAPIRequest,
+): Promise<ResetPasswordAPIResponse | undefined> => {
+  const res = await api<APIResponse<ResetPasswordAPIResponse>>(
+    `${PREFIX}/password/reset`,
+    {
+      method: "POST",
+      body: form,
+    },
+  );
+  return res.data;
 };
 
 const signIn = async (
@@ -37,4 +52,4 @@ const signUp = async (
   return res.data;
 };
 
-export { checkEmailAvailability, signIn, signUp };
+export { checkEmailAvailability, resetPassword, signIn, signUp };

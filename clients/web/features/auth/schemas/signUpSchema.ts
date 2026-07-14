@@ -23,7 +23,7 @@ const signUpSchema = z.object({
       /[!@#$%^&*()_+\-={};:'"\\|,.<>/?]/,
       "Password must include at least one special character",
     ),
-  confirmPassword: z.string().trim(),
+  confirmPassword: z.string().trim().min(1, "Password is invalid"),
 });
 
 type SignUpForm = z.infer<typeof signUpSchema>;
