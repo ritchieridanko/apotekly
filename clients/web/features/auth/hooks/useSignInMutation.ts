@@ -1,23 +1,28 @@
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 
-import { signUp } from "@/features/auth/apis";
-import { SignUpForm } from "@/features/auth/schemas";
+import { signIn } from "@/features/auth/apis";
+import { SignInForm } from "@/features/auth/schemas";
 import { useAuthStore } from "@/features/auth/stores";
-import { SignUpAPIResponse } from "@/features/auth/types";
+import { SignInAPIResponse } from "@/features/auth/types";
 
 // TODO:
 // (1) Toast Notification
 
 const ENV: string = process.env.NEXT_PUBLIC_APP_ENV ?? "dev";
 
-const useSignUpMutation = () => {
+const useSignInMutation = () => {
   const { setAuth, setAccessToken } = useAuthStore();
 
   return useMutation({
-    mutationFn: (form: SignUpForm) =>
-      signUp({ email: form.email, password: form.password }),
-    onSuccess: (data: SignUpAPIResponse | undefined) => {
+    mutationFn: ({
+      form,
+      persisted,
+    }: {
+      form: SignInForm;
+      persisted: boolean;
+    }) => signIn({ email: form.email, password: form.password }),
+    onSuccess: (data: SignInAPIResponse | undefined, { persisted }) => {
       if (data?.auth) {
         setAuth({
           email: data.auth.email,
@@ -28,14 +33,17 @@ const useSignUpMutation = () => {
       if (data?.access_token?.token) {
         setAccessToken(data.access_token.token);
 
-        const seconds: number = data.access_token.expires_in_seconds;
-        const expiryDate: Date = new Date(Date.now() + seconds * 1000);
-
-        Cookies.set("access_token", data.access_token.token, {
-          expires: expiryDate,
+        const options: Cookies.CookieAttributes = {
           secure: ENV === "prod",
           sameSite: "strict",
-        });
+        };
+
+        if (persisted) {
+          const seconds: number = data.access_token.expires_in_seconds;
+          options.expires = new Date(Date.now() + seconds * 1000);
+        }
+
+        Cookies.set("access_token", data.access_token.token, options);
       }
 
       // TODO (1)
@@ -54,4 +62,4 @@ const useSignUpMutation = () => {
   });
 };
 
-export default useSignUpMutation;
+export default useSignInMutation;

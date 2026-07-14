@@ -1,16 +1,20 @@
 import type {
   CheckEmailAvailabilityAPIResponse,
   RotateAuthTokenAPIResponse,
+  SignInAPIRequest,
+  SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
 } from "./api";
-import type { SignUpFormErrors } from "./form";
+import type { SignInFormErrors, SignUpFormErrors } from "./form";
 
 export type {
   CheckEmailAvailabilityAPIResponse,
   RotateAuthTokenAPIResponse,
+  SignInAPIRequest,
+  SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
 };
 
-export type { SignUpFormErrors };
+export type { SignInFormErrors, SignUpFormErrors };

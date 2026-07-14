@@ -7,6 +7,7 @@ const signUpSchema = z.object({
   email: z.email("Email is invalid").trim(),
   password: z
     .string()
+    .trim()
     .min(
       PASSWORD_MIN_LENGTH,
       `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
@@ -21,8 +22,7 @@ const signUpSchema = z.object({
     .regex(
       /[!@#$%^&*()_+\-={};:'"\\|,.<>/?]/,
       "Password must include at least one special character",
-    )
-    .trim(),
+    ),
   confirmPassword: z.string().trim(),
 });
 

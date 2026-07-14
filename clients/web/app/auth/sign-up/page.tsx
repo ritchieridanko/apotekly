@@ -38,7 +38,7 @@ const SignUp: React.FC = () => {
         label="Email"
         placeholder="Enter your email here"
         value={form.email}
-        onChange={(e) => setEmail(e)}
+        onChange={(v) => setEmail(v)}
         isDisabled={isSigningUp}
         isLoading={isSigningUp}
         validLabel={
@@ -50,7 +50,7 @@ const SignUp: React.FC = () => {
         label="Password"
         placeholder="Enter your password here"
         value={form.password}
-        onChange={(e) => setPassword(e)}
+        onChange={(v) => setPassword(v)}
         isDisabled={isSigningUp}
         isLoading={isSigningUp}
         withSecurity
@@ -61,7 +61,7 @@ const SignUp: React.FC = () => {
         label="Confirm Password"
         placeholder="Enter your password here"
         value={form.confirmPassword}
-        onChange={(e) => setConfirmPassword(e)}
+        onChange={(v) => setConfirmPassword(v)}
         isDisabled={isSigningUp}
         isLoading={isSigningUp}
         withSecurity

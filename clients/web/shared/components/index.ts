@@ -1,4 +1,4 @@
 import Logo from "./Logo";
-import { Button, Link, TextField } from "./ui";
+import { Button, CheckBox, Link, TextField } from "./ui";
 
-export { Button, Link, Logo, TextField };
+export { Button, CheckBox, Link, Logo, TextField };

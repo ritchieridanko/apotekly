@@ -1,5 +1,7 @@
 import {
   CheckEmailAvailabilityAPIResponse,
+  SignInAPIRequest,
+  SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
 } from "@/features/auth/types";
@@ -15,6 +17,16 @@ const checkEmailAvailability = async (email: string): Promise<boolean> => {
   return res.data?.is_available ?? false;
 };
 
+const signIn = async (
+  form: SignInAPIRequest,
+): Promise<SignInAPIResponse | undefined> => {
+  const res = await api<APIResponse<SignInAPIResponse>>(`${PREFIX}/signin`, {
+    method: "POST",
+    body: form,
+  });
+  return res.data;
+};
+
 const signUp = async (
   form: SignUpAPIRequest,
 ): Promise<SignUpAPIResponse | undefined> => {
@@ -25,4 +37,4 @@ const signUp = async (
   return res.data;
 };
 
-export { checkEmailAvailability, signUp };
+export { checkEmailAvailability, signIn, signUp };

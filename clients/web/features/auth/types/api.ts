@@ -17,6 +17,16 @@ interface RotateAuthTokenAPIResponse {
   access_token?: AccessTokenAPIResponse;
 }
 
+interface SignInAPIRequest {
+  email: string;
+  password: string;
+}
+
+interface SignInAPIResponse {
+  auth?: AuthAPIResponse;
+  access_token?: AccessTokenAPIResponse;
+}
+
 interface SignUpAPIRequest {
   email: string;
   password: string;
@@ -30,6 +40,8 @@ interface SignUpAPIResponse {
 export type {
   CheckEmailAvailabilityAPIResponse,
   RotateAuthTokenAPIResponse,
+  SignInAPIRequest,
+  SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
 };
