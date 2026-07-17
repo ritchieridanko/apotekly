@@ -1,3 +1,17 @@
-import { checkEmailAvailability, resetPassword, signIn, signUp } from "./auth";
+import {
+  checkEmailAvailability,
+  checkPasswordResetTokenValidity,
+  confirmPasswordReset,
+  resetPassword,
+  signIn,
+  signUp,
+} from "./auth";
 
-export { checkEmailAvailability, resetPassword, signIn, signUp };
+export {
+  checkEmailAvailability,
+  checkPasswordResetTokenValidity,
+  confirmPasswordReset,
+  resetPassword,
+  signIn,
+  signUp,
+};

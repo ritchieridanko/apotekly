@@ -1,5 +1,5 @@
 import debounce from "lodash/debounce";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ZodSafeParseResult } from "zod";
 
 import { useForgotPasswordMutation } from "@/features/auth/hooks";
@@ -17,26 +17,32 @@ const useForgotPasswordForm = () => {
   const [form, setForm] = useState<ForgotPasswordForm>({ email: "" });
   const [errors, setErrors] = useState<ForgotPasswordFormErrors>({});
 
-  const validate = useRef(
-    debounce(
-      async (
-        field: keyof ForgotPasswordForm,
-        value: string,
-        setErrors: React.Dispatch<
-          React.SetStateAction<ForgotPasswordFormErrors>
-        >,
-      ) => {
-        const res: ZodSafeParseResult<string> =
-          forgotPasswordSchema.shape[field].safeParse(value);
+  const validate = useMemo(
+    () =>
+      debounce(
+        async (
+          field: keyof ForgotPasswordForm,
+          value: string,
+          setErrors: React.Dispatch<
+            React.SetStateAction<ForgotPasswordFormErrors>
+          >,
+        ) => {
+          const res: ZodSafeParseResult<string> =
+            forgotPasswordSchema.shape[field].safeParse(value);
 
-        setErrors((prev) => ({
-          ...prev,
-          [field]: res.success ? undefined : res.error.issues[0]?.message,
-        }));
-      },
-      DEBOUNCING_DELAY,
-    ),
-  ).current;
+          setErrors((prev) => ({
+            ...prev,
+            [field]: res.success ? undefined : res.error.issues[0]?.message,
+          }));
+        },
+        DEBOUNCING_DELAY,
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    return () => validate.cancel();
+  }, [validate]);
 
   const update = useCallback(
     (field: keyof ForgotPasswordForm, value: string) => {
@@ -52,14 +58,19 @@ const useForgotPasswordForm = () => {
     (email: string) => update("email", email),
     [update],
   );
+  const clearForm = useCallback(() => setForm({ email: "" }), []);
 
-  const handleForgotPassword = useCallback(() => {
+  const handleForgotPassword = () => {
     const res: ZodSafeParseResult<ForgotPasswordForm> =
       forgotPasswordSchema.safeParse(form);
 
     if (res.success) {
       setErrors({});
-      forgotPassword(form);
+      forgotPassword(form, {
+        onSuccess: () => {
+          clearForm();
+        },
+      });
     } else {
       const newErrors: ForgotPasswordFormErrors = {};
 
@@ -71,7 +82,7 @@ const useForgotPasswordForm = () => {
 
       setErrors(newErrors);
     }
-  }, [form, forgotPassword]);
+  };
 
   return {
     form,

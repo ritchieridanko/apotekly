@@ -1,17 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { resetPassword } from "@/features/auth/apis";
-import { ForgotPasswordForm } from "@/features/auth/schemas";
-import { ResetPasswordAPIResponse } from "@/features/auth/types";
+import { confirmPasswordReset } from "@/features/auth/apis";
+import { ResetPasswordForm } from "@/features/auth/schemas";
 
 // TODO:
 // (1) Toast Notification
 
-const useForgotPasswordMutation = () => {
+const useResetPasswordMutation = () => {
   return useMutation({
-    mutationFn: (form: ForgotPasswordForm) =>
-      resetPassword({ email: form.email }),
-    onSuccess: (data: APIResponse<ResetPasswordAPIResponse>) => {
+    mutationFn: ({ form, token }: { form: ResetPasswordForm; token: string }) =>
+      confirmPasswordReset({ token: token, new_password: form.password }),
+    onSuccess: (data: APIResponse) => {
       // TODO (1)
       //
       // toast.success(data.message);
@@ -28,4 +27,4 @@ const useForgotPasswordMutation = () => {
   });
 };
 
-export default useForgotPasswordMutation;
+export default useResetPasswordMutation;

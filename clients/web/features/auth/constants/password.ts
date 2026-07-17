@@ -1,0 +1,4 @@
+const PASSWORD_MAX_LENGTH: number = 50;
+const PASSWORD_MIN_LENGTH: number = 8;
+
+export { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH };

@@ -19,13 +19,12 @@ const RedirectLink: React.FC<RedirectLinkProps> = ({
   isDisabled = false,
   isLoading = false,
   customStyle,
-}) => {
+}: RedirectLinkProps) => {
   const router = useRouter();
 
   return (
     <Link
       onClick={() => router.push(to)}
-      inNewTab
       isDisabled={isDisabled || isLoading}
       variant={{ color: "primary", isDisabled: isDisabled || isLoading }}
       customStyle={customStyle}

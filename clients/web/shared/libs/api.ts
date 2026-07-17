@@ -1,11 +1,11 @@
-import Cookies from "js-cookie";
-
 import { useAuthStore } from "@/features/auth/stores";
 import { RotateAuthTokenAPIResponse } from "@/features/auth/types";
-
-const BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/v1";
-const ENV: string = process.env.NEXT_PUBLIC_APP_ENV ?? "dev";
+import {
+  API_BASE_URL,
+  APP_ENV,
+  getLocalRememberMe,
+  setCookieAccessToken,
+} from "@/shared/utils";
 
 class APIError extends Error {
   constructor(
@@ -43,7 +43,7 @@ const fetcher = async (
     }
   }
 
-  return fetch(`${BASE_URL}${path}`, {
+  return fetch(`${API_BASE_URL}${path}`, {
     ...options,
     credentials: "include",
     headers: headers,
@@ -79,12 +79,14 @@ const api = async <T>(path: string, options: APIOptions = {}): Promise<T> => {
   if (!res.ok) {
     if (res.status === 401 && payload.message === "Unauthenticated") {
       const { setAccessToken, clearAuth } = useAuthStore.getState();
+      const rememberMe: boolean = getLocalRememberMe();
 
       try {
         if (!isRefreshing) {
-          isRefreshing = fetcher("/auth/refresh", { method: "POST" }).then(
-            (res) => parse<RotateAuthTokenAPIResponse>(res),
-          );
+          isRefreshing = fetcher("/auth/refresh", {
+            method: "POST",
+            body: { remember_me: rememberMe },
+          }).then((res) => parse<RotateAuthTokenAPIResponse>(res));
         }
 
         const refreshPayload = await isRefreshing;
@@ -96,17 +98,20 @@ const api = async <T>(path: string, options: APIOptions = {}): Promise<T> => {
           throw new APIError(refreshPayload.status, refreshPayload.message);
         }
 
-        setAccessToken(refreshPayload.data.access_token.token);
+        const token: string = refreshPayload.data.access_token.token;
+        setAccessToken(token);
 
-        const seconds: number =
-          refreshPayload.data.access_token.expires_in_seconds;
-        const expiryDate: Date = new Date(Date.now() + seconds * 1000);
-
-        Cookies.set("access_token", refreshPayload.data.access_token.token, {
-          expires: expiryDate,
-          secure: ENV === "prod",
+        const attributes: Cookies.CookieAttributes = {
+          secure: APP_ENV === "prod",
           sameSite: "Strict",
-        });
+        };
+        if (rememberMe) {
+          const seconds: number =
+            refreshPayload.data.access_token.expires_in_seconds;
+          attributes.expires = new Date(Date.now() + seconds * 1000);
+        }
+
+        setCookieAccessToken(token, attributes);
 
         // Retry the original request
         res = await fetcher(path, options);

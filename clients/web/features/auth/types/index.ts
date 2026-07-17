@@ -1,5 +1,7 @@
 import type {
   CheckEmailAvailabilityAPIResponse,
+  CheckPasswordResetTokenValidityAPIResponse,
+  ConfirmPasswordResetAPIRequest,
   ResetPasswordAPIRequest,
   ResetPasswordAPIResponse,
   RotateAuthTokenAPIResponse,
@@ -10,12 +12,15 @@ import type {
 } from "./api";
 import type {
   ForgotPasswordFormErrors,
+  ResetPasswordFormErrors,
   SignInFormErrors,
   SignUpFormErrors,
 } from "./form";
 
 export type {
   CheckEmailAvailabilityAPIResponse,
+  CheckPasswordResetTokenValidityAPIResponse,
+  ConfirmPasswordResetAPIRequest,
   ResetPasswordAPIRequest,
   ResetPasswordAPIResponse,
   RotateAuthTokenAPIResponse,
@@ -25,4 +30,9 @@ export type {
   SignUpAPIResponse,
 };
 
-export type { ForgotPasswordFormErrors, SignInFormErrors, SignUpFormErrors };
+export type {
+  ForgotPasswordFormErrors,
+  ResetPasswordFormErrors,
+  SignInFormErrors,
+  SignUpFormErrors,
+};

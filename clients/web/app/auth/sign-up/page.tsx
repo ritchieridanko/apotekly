@@ -8,8 +8,8 @@ import {
   RedirectLink,
   TextField,
 } from "@/features/auth/components";
+import { PASSWORD_MAX_LENGTH } from "@/features/auth/constants";
 import { useSignUpForm } from "@/features/auth/hooks";
-import { PASSWORD_MAX_LENGTH } from "@/features/auth/schemas";
 import { Apple, Google } from "@/shared/assets/images";
 import { Logo } from "@/shared/components";
 import { ROUTES } from "@/shared/constants";

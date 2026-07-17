@@ -13,7 +13,7 @@ const checkBox = tv({
       primary: "border-2",
     },
     size: {
-      sm: "size-4 rounded-sm",
+      sm: "size-3.5 md:size-4 rounded-sm",
     },
     isChecked: {
       true: "bg-(--primary) border-(--primary)",

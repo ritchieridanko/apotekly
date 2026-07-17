@@ -1,15 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 
 import { signIn } from "@/features/auth/apis";
 import { SignInForm } from "@/features/auth/schemas";
 import { useAuthStore } from "@/features/auth/stores";
 import { SignInAPIResponse } from "@/features/auth/types";
+import { APP_ENV, setCookieAccessToken } from "@/shared/utils";
 
 // TODO:
 // (1) Toast Notification
-
-const ENV: string = process.env.NEXT_PUBLIC_APP_ENV ?? "dev";
 
 const useSignInMutation = () => {
   const { setAuth, setAccessToken } = useAuthStore();
@@ -17,38 +15,43 @@ const useSignInMutation = () => {
   return useMutation({
     mutationFn: ({
       form,
-      persisted,
+      rememberMe,
     }: {
       form: SignInForm;
-      persisted: boolean;
-    }) => signIn({ email: form.email, password: form.password }),
-    onSuccess: (data: SignInAPIResponse | undefined, { persisted }) => {
-      if (data?.auth) {
+      rememberMe: boolean;
+    }) =>
+      signIn({
+        email: form.email,
+        password: form.password,
+        remember_me: rememberMe,
+      }),
+    onSuccess: (data: APIResponse<SignInAPIResponse>, { rememberMe }) => {
+      if (data.data?.auth) {
         setAuth({
-          email: data.auth.email,
-          role: data.auth.role,
-          isEmailVerified: data.auth.is_email_verified,
+          email: data.data.auth.email,
+          role: data.data.auth.role,
+          isEmailVerified: data.data.auth.is_email_verified,
         });
       }
-      if (data?.access_token?.token) {
-        setAccessToken(data.access_token.token);
+      if (data.data?.access_token) {
+        const token: string = data.data.access_token.token;
+        setAccessToken(token);
 
-        const options: Cookies.CookieAttributes = {
-          secure: ENV === "prod",
-          sameSite: "strict",
+        const attributes: Cookies.CookieAttributes = {
+          secure: APP_ENV === "prod",
+          sameSite: "Strict",
         };
-
-        if (persisted) {
-          const seconds: number = data.access_token.expires_in_seconds;
-          options.expires = new Date(Date.now() + seconds * 1000);
+        if (rememberMe) {
+          const seconds: number = data.data.access_token.expires_in_seconds;
+          attributes.expires = new Date(Date.now() + seconds * 1000);
         }
 
-        Cookies.set("access_token", data.access_token.token, options);
+        setCookieAccessToken(token, attributes);
       }
 
       // TODO (1)
       //
-      // toast.success("...");
+      // toast.success(data.message);
     },
     onError: (error: Error) => {
       // TODO (1)

@@ -10,6 +10,7 @@ const ICON_SIZE: Record<number, string> = {
   10: "size-9 md:size-10",
   11: "size-10 md:size-11",
   12: "size-11 md:size-12",
+  20: "size-19 md:size-20",
 };
 
 export const setIconSize = (size: number): string => ICON_SIZE[size];

@@ -5,8 +5,7 @@ import {
   PASSWORD_MIN_LENGTH,
 } from "@/features/auth/constants";
 
-const signUpSchema = z.object({
-  email: z.email("Email is invalid").trim(),
+const resetPasswordSchema = z.object({
   password: z
     .string()
     .trim()
@@ -28,6 +27,6 @@ const signUpSchema = z.object({
   confirmPassword: z.string().trim().min(1, "Password is invalid"),
 });
 
-type SignUpForm = z.infer<typeof signUpSchema>;
+type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
-export { signUpSchema, type SignUpForm };
+export { resetPasswordSchema, type ResetPasswordForm };

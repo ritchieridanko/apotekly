@@ -1,10 +1,11 @@
 import debounce from "lodash/debounce";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ZodSafeParseResult } from "zod";
 
 import { useSignInMutation } from "@/features/auth/hooks";
 import { signInSchema, type SignInForm } from "@/features/auth/schemas";
 import type { SignInFormErrors } from "@/features/auth/types";
+import { setLocalRememberMe } from "@/shared/utils";
 
 const DEBOUNCING_DELAY: number = 300; // 300ms
 
@@ -18,24 +19,30 @@ const useSignInForm = () => {
   const [errors, setErrors] = useState<SignInFormErrors>({});
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
-  const validate = useRef(
-    debounce(
-      async (
-        field: keyof SignInForm,
-        value: string,
-        setErrors: React.Dispatch<React.SetStateAction<SignInFormErrors>>,
-      ) => {
-        const res: ZodSafeParseResult<string> =
-          signInSchema.shape[field].safeParse(value);
+  const validate = useMemo(
+    () =>
+      debounce(
+        async (
+          field: keyof SignInForm,
+          value: string,
+          setErrors: React.Dispatch<React.SetStateAction<SignInFormErrors>>,
+        ) => {
+          const res: ZodSafeParseResult<string> =
+            signInSchema.shape[field].safeParse(value);
 
-        setErrors((prev) => ({
-          ...prev,
-          [field]: res.success ? undefined : res.error.issues[0]?.message,
-        }));
-      },
-      DEBOUNCING_DELAY,
-    ),
-  ).current;
+          setErrors((prev) => ({
+            ...prev,
+            [field]: res.success ? undefined : res.error.issues[0]?.message,
+          }));
+        },
+        DEBOUNCING_DELAY,
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    return () => validate.cancel();
+  }, [validate]);
 
   const update = useCallback(
     (field: keyof SignInForm, value: string) => {
@@ -56,12 +63,19 @@ const useSignInForm = () => {
     [update],
   );
 
-  const handleSignIn = useCallback(() => {
+  const handleSignIn = () => {
     const res: ZodSafeParseResult<SignInForm> = signInSchema.safeParse(form);
 
     if (res.success) {
       setErrors({});
-      signIn({ form, persisted: rememberMe });
+      signIn(
+        { form: form, rememberMe: rememberMe },
+        {
+          onSuccess: () => {
+            setLocalRememberMe(rememberMe);
+          },
+        },
+      );
     } else {
       const newErrors: SignInFormErrors = {};
 
@@ -73,7 +87,7 @@ const useSignInForm = () => {
 
       setErrors(newErrors);
     }
-  }, [form, rememberMe, signIn]);
+  };
 
   return {
     form,

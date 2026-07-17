@@ -33,12 +33,12 @@ const ForgotPassword: React.FC = () => {
         invalidLabel={errors.email}
       />
       <AuthButton
-        label="Reset Password"
+        label="Request Password Reset"
         onClick={() => handleForgotPassword()}
         isDisabled={isForgettingPassword}
         loading={{
           isLoading: isForgettingPassword,
-          label: "Resetting Password...",
+          label: "Requesting...",
         }}
       />
       <p className="w-full font-sans font-normal text-(--dark) text-sm md:text-base text-center">

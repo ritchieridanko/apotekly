@@ -1,5 +1,7 @@
 import React from "react";
 
+import { APP_NAME } from "@/shared/utils";
+
 interface LogoProps {
   size: "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "8xl";
 }
@@ -23,7 +25,7 @@ const Logo: React.FC<LogoProps> = ({ size }: LogoProps) => {
         ${textSize[size]}
       `}
     >
-      {process.env.NEXT_PUBLIC_APP_NAME}
+      {APP_NAME}
     </h1>
   );
 };

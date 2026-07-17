@@ -1,13 +1,14 @@
 const ROUTES = {
   HOME: "/",
   AUTH: {
+    FORGOT_PASSWORD: "/auth/forgot-password",
+    RESET_PASSWORD: "/auth/reset-password",
     SIGN_IN: "/auth/sign-in",
     SIGN_UP: "/auth/sign-up",
-    FORGOT_PASSWORD: "/auth/forgot-password",
   },
   LEGAL: {
-    TOS: "/legal/terms-of-service",
     PRIVACY_POLICY: "/legal/privacy-policy",
+    TOS: "/legal/terms-of-service",
   },
 } as const;
 

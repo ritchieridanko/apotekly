@@ -13,6 +13,15 @@ interface CheckEmailAvailabilityAPIResponse {
   is_available: boolean;
 }
 
+interface CheckPasswordResetTokenValidityAPIResponse {
+  is_valid: boolean;
+}
+
+interface ConfirmPasswordResetAPIRequest {
+  token: string;
+  new_password: string;
+}
+
 interface ResetPasswordAPIRequest {
   email: string;
 }
@@ -28,6 +37,7 @@ interface RotateAuthTokenAPIResponse {
 interface SignInAPIRequest {
   email: string;
   password: string;
+  remember_me: boolean;
 }
 
 interface SignInAPIResponse {
@@ -47,6 +57,8 @@ interface SignUpAPIResponse {
 
 export type {
   CheckEmailAvailabilityAPIResponse,
+  CheckPasswordResetTokenValidityAPIResponse,
+  ConfirmPasswordResetAPIRequest,
   ResetPasswordAPIRequest,
   ResetPasswordAPIResponse,
   RotateAuthTokenAPIResponse,

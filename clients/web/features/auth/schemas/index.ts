@@ -2,16 +2,18 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordForm,
 } from "./forgotPasswordSchema";
-import { signInSchema, type SignInForm } from "./signInSchema";
 import {
-  PASSWORD_MIN_LENGTH,
-  PASSWORD_MAX_LENGTH,
+  resetPasswordSchema,
+  type ResetPasswordForm,
+} from "./resetPasswordSchema";
+import { signInSchema, type SignInForm } from "./signInSchema";
+import { signUpSchema, type SignUpForm } from "./signUpSchema";
+
+export type { ForgotPasswordForm, ResetPasswordForm, SignInForm, SignUpForm };
+
+export {
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  signInSchema,
   signUpSchema,
-  type SignUpForm,
-} from "./signUpSchema";
-
-export { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH };
-
-export type { ForgotPasswordForm, SignInForm, SignUpForm };
-
-export { forgotPasswordSchema, signInSchema, signUpSchema };
+};

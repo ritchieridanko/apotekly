@@ -26,7 +26,9 @@ const CheckBox: React.FC<CheckBoxProps> = ({
       isDisabled={isDisabled || isLoading}
       variant={{ color: "primary", size: "sm", isChecked: isChecked }}
     >
-      <p className="font-sans font-normal text-(--dark) text-base">{label}</p>
+      <p className="font-sans font-normal text-(--dark) text-sm md:text-base">
+        {label}
+      </p>
     </CB>
   );
 };
