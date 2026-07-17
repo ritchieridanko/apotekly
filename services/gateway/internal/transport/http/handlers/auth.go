@@ -122,12 +122,17 @@ func (h *AuthHandler) SignIn(ctx *gin.Context) {
 		return
 	}
 	if at != nil && at.RefreshToken != nil {
+		var duration int
+		if payload.RememberMe {
+			duration = int(at.RefreshToken.ExpiresInSeconds)
+		}
+
 		h.cookie.Set(
 			ctx,
 			constants.CookieKeyRefreshToken,
 			at.RefreshToken.Token,
 			"/",
-			int(at.RefreshToken.ExpiresInSeconds),
+			duration,
 		)
 	}
 
@@ -230,6 +235,12 @@ func (h *AuthHandler) IsEmailAvailable(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) RotateAuthToken(ctx *gin.Context) {
+	var payload dtos.RotateAuthTokenRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
 	refreshToken, err := ctx.Cookie(constants.CookieKeyRefreshToken)
 	if errors.Is(err, ce.ErrCookieNotFound) {
 		ce.NewError(ce.CodeRefreshTokenNotFound, ce.MsgInvalidSession, err).Bind(ctx)
@@ -271,12 +282,17 @@ func (h *AuthHandler) RotateAuthToken(ctx *gin.Context) {
 		return
 	}
 	if at != nil && at.RefreshToken != nil {
+		var duration int
+		if payload.RememberMe {
+			duration = int(at.RefreshToken.ExpiresInSeconds)
+		}
+
 		h.cookie.Set(
 			ctx,
 			constants.CookieKeyRefreshToken,
 			at.RefreshToken.Token,
 			"/",
-			int(at.RefreshToken.ExpiresInSeconds),
+			duration,
 		)
 	}
 
@@ -328,9 +344,13 @@ func (h *AuthHandler) ResendVerification(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
-	var params dtos.VerifyEmailRequest
-	if err := ctx.ShouldBindQuery(&params); err != nil {
+	var req dtos.VerifyEmailRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
 		return
 	}
 
@@ -376,7 +396,7 @@ func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
 		),
 		&models.VerifyEmailReq{
 			RefreshToken:      token,
-			VerificationToken: params.VerificationToken,
+			VerificationToken: req.VerificationToken,
 		},
 	)
 	if verifyErr != nil {
@@ -392,12 +412,17 @@ func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
 		return
 	}
 	if at != nil && at.RefreshToken != nil {
+		var duration int
+		if req.RememberMe {
+			duration = int(at.RefreshToken.ExpiresInSeconds)
+		}
+
 		h.cookie.Set(
 			ctx,
 			constants.CookieKeyRefreshToken,
 			at.RefreshToken.Token,
 			"/",
-			int(at.RefreshToken.ExpiresInSeconds),
+			duration,
 		)
 	}
 

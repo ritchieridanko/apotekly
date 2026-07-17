@@ -33,9 +33,14 @@ type (
 		Email string `json:"email" binding:"required"`
 	}
 
+	RotateAuthTokenRequest struct {
+		RememberMe bool `json:"remember_me"`
+	}
+
 	SignInRequest struct {
-		Email    string `json:"email" binding:"required"`
-		Password string `json:"password" binding:"required"`
+		Email      string `json:"email" binding:"required"`
+		Password   string `json:"password" binding:"required"`
+		RememberMe bool   `json:"remember_me"`
 	}
 
 	SignUpRequest struct {
@@ -45,6 +50,7 @@ type (
 
 	VerifyEmailRequest struct {
 		VerificationToken string `form:"token" binding:"required"`
+		RememberMe        bool   `json:"remember_me"`
 	}
 )
 
