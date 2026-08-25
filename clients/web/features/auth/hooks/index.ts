@@ -6,6 +6,7 @@ import useSignInForm from "./useSignInForm";
 import useSignInMutation from "./useSignInMutation";
 import useSignUpForm from "./useSignUpForm";
 import useSignUpMutation from "./useSignUpMutation";
+import useVerifyEmailMutation from "./useVerifyEmailMutation";
 
 export {
   useForgotPasswordForm,
@@ -19,4 +20,5 @@ export {
   useResetPasswordMutation,
   useSignInMutation,
   useSignUpMutation,
+  useVerifyEmailMutation,
 };

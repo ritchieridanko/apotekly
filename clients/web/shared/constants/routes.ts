@@ -5,6 +5,7 @@ const ROUTES = {
     RESET_PASSWORD: "/auth/reset-password",
     SIGN_IN: "/auth/sign-in",
     SIGN_UP: "/auth/sign-up",
+    VERIFY_EMAIL: "/auth/verify-email",
   },
   LEGAL: {
     PRIVACY_POLICY: "/legal/privacy-policy",

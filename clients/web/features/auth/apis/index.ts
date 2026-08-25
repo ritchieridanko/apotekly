@@ -5,6 +5,7 @@ import {
   resetPassword,
   signIn,
   signUp,
+  verifyEmail,
 } from "./auth";
 
 export {
@@ -14,4 +15,5 @@ export {
   resetPassword,
   signIn,
   signUp,
+  verifyEmail,
 };

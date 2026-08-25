@@ -55,6 +55,15 @@ interface SignUpAPIResponse {
   access_token?: AccessTokenAPIResponse;
 }
 
+interface VerifyEmailAPIRequest {
+  remember_me: boolean;
+}
+
+interface VerifyEmailAPIResponse {
+  auth?: AuthAPIResponse;
+  access_token?: AccessTokenAPIResponse;
+}
+
 export type {
   CheckEmailAvailabilityAPIResponse,
   CheckPasswordResetTokenValidityAPIResponse,
@@ -66,4 +75,6 @@ export type {
   SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
+  VerifyEmailAPIRequest,
+  VerifyEmailAPIResponse,
 };

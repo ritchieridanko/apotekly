@@ -8,6 +8,8 @@ import {
   SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
+  VerifyEmailAPIRequest,
+  VerifyEmailAPIResponse,
 } from "@/features/auth/types";
 import { api } from "@/shared/libs/api";
 
@@ -71,6 +73,20 @@ const signUp = async (
   });
 };
 
+const verifyEmail = async (
+  token: string,
+  form: VerifyEmailAPIRequest,
+): Promise<APIResponse<VerifyEmailAPIResponse>> => {
+  return await api<APIResponse<VerifyEmailAPIResponse>>(
+    `${PREFIX}/email/verification/confirm?token=${encodeURIComponent(token)}`,
+    {
+      method: "POST",
+      body: form,
+      requiresAuth: true,
+    },
+  );
+};
+
 export {
   checkEmailAvailability,
   checkPasswordResetTokenValidity,
@@ -78,4 +94,5 @@ export {
   resetPassword,
   signIn,
   signUp,
+  verifyEmail,
 };

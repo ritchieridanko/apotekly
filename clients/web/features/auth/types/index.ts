@@ -9,6 +9,8 @@ import type {
   SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
+  VerifyEmailAPIRequest,
+  VerifyEmailAPIResponse,
 } from "./api";
 import type {
   ForgotPasswordFormErrors,
@@ -28,6 +30,8 @@ export type {
   SignInAPIResponse,
   SignUpAPIRequest,
   SignUpAPIResponse,
+  VerifyEmailAPIRequest,
+  VerifyEmailAPIResponse,
 };
 
 export type {

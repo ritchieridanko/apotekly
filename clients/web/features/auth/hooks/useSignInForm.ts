@@ -9,7 +9,11 @@ import { setLocalRememberMe } from "@/shared/utils";
 
 const DEBOUNCING_DELAY: number = 300; // 300ms
 
-const useSignInForm = () => {
+interface UseSignInFormProps {
+  onSuccess?: () => void;
+}
+
+const useSignInForm = ({ onSuccess }: UseSignInFormProps = {}) => {
   const { mutate: signIn, isPending } = useSignInMutation();
 
   const [form, setForm] = useState<SignInForm>({
@@ -73,6 +77,7 @@ const useSignInForm = () => {
         {
           onSuccess: () => {
             setLocalRememberMe(rememberMe);
+            onSuccess?.();
           },
         },
       );

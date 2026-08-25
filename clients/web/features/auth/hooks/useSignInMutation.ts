@@ -10,7 +10,8 @@ import { APP_ENV, setCookieAccessToken } from "@/shared/utils";
 // (1) Toast Notification
 
 const useSignInMutation = () => {
-  const { setAuth, setAccessToken } = useAuthStore();
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const setAccessToken = useAuthStore((s) => s.setAccessToken);
 
   return useMutation({
     mutationFn: ({
