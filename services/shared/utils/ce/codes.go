@@ -72,6 +72,7 @@ const (
 	CodeUnauthenticated         errCode = "ERR_UNAUTHENTICATED"
 	CodeUnknown                 errCode = "ERR_UNKNOWN"
 	CodeURLGenerationFailed     errCode = "ERR_URL_GENERATION_FAILED"
+	CodeUserAlreadyExists       errCode = "ERR_USER_ALREADY_EXISTS"
 	CodeUUIDGenerationFailed    errCode = "ERR_UUID_GENERATION_FAILED"
 	CodeWrongPassword           errCode = "ERR_WRONG_PASSWORD"
 )
@@ -98,4 +99,5 @@ const (
 	MsgSessionNotFound        string = "Session not found"
 	MsgUnauthenticated        string = "Unauthenticated"
 	MsgUnauthorized           string = "Unauthorized"
+	MsgUserAlreadyExists      string = "User profile already exists"
 )

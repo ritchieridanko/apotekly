@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+service UserService {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  optional string sex = 3;
+  google.protobuf.Timestamp birthdate = 4;
+  optional string phone = 5;
+  optional string profile_picture = 6;
+  optional string profile_banner = 7;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  optional string sex = 2;
+  google.protobuf.Timestamp birthdate = 3;
+  optional string phone = 4;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}

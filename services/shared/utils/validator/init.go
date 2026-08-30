@@ -3,6 +3,7 @@ package validator
 import (
 	"net"
 	"strconv"
+	"time"
 	"unicode/utf8"
 )
 
@@ -10,6 +11,13 @@ type Validator struct{}
 
 func Init() *Validator {
 	return &Validator{}
+}
+
+func (v *Validator) Birthdate(value time.Time) (bool, string) {
+	if value.After(time.Now().UTC()) {
+		return false, "Birthdate is invalid: " + value.Format("2 Jan 2006")
+	}
+	return true, ""
 }
 
 func (v *Validator) Email(value string) (bool, string) {
@@ -22,6 +30,17 @@ func (v *Validator) Email(value string) (bool, string) {
 func (v *Validator) IPAddress(value string) (bool, string) {
 	if ip := net.ParseIP(value); ip == nil {
 		return false, "IP Address is invalid: " + value
+	}
+	return true, ""
+}
+
+func (v *Validator) Name(value string) (bool, string) {
+	length := len(value)
+	if length < nameMinLength {
+		return false, "Name must be at least " + strconv.Itoa(nameMinLength) + " characters"
+	}
+	if length > nameMaxLength {
+		return false, "Name must not exceed " + strconv.Itoa(nameMaxLength) + " characters"
 	}
 	return true, ""
 }
@@ -48,6 +67,20 @@ func (v *Validator) Password(value string) (bool, string) {
 	}
 	if len([]byte(value)) > bcryptMaxBytes {
 		return false, "Password too long"
+	}
+	return true, ""
+}
+
+func (v *Validator) Phone(value string) (bool, string) {
+	if !rgxPhone.MatchString(value) {
+		return false, "Phone is invalid: " + value
+	}
+	return true, ""
+}
+
+func (v *Validator) Sex(value string) (bool, string) {
+	if value != "male" && value != "female" {
+		return false, "Sex is invalid: " + value
 	}
 	return true, ""
 }
