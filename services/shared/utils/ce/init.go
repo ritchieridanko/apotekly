@@ -71,7 +71,8 @@ func (e *Error) ToGRPCErr() error {
 	case
 		CodeAuthNotFound,
 		CodeNotFound,
-		CodeSessionNotFound:
+		CodeSessionNotFound,
+		CodeUserNotFound:
 		return status.Error(codes.NotFound, e.message)
 	case
 		CodeAlreadyExists,

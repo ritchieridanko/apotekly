@@ -16,6 +16,7 @@ import (
 
 type UserUsecase interface {
 	CreateUser(ctx context.Context, req *models.CreateUserReq) (u *models.User, err *ce.Error)
+	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
 }
 
 type userUsecase struct {
@@ -90,5 +91,28 @@ func (u *userUsecase) CreateUser(ctx context.Context, req *models.CreateUserReq)
 		return nil, err.Append(authIDField)
 	}
 
+	return user, nil
+}
+
+func (u *userUsecase) GetMe(ctx context.Context) (*models.User, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "user.usecase.GetMe")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// User Fetching
+	user, err := u.ur.GetByAuthID(ctx, authCtx.AuthID)
+	if err != nil {
+		return nil, err.Append(authIDField)
+	}
 	return user, nil
 }

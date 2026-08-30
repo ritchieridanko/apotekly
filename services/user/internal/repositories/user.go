@@ -10,6 +10,7 @@ import (
 
 type UserRepository interface {
 	Create(ctx context.Context, data *models.CreateUser) (u *models.User, err *ce.Error)
+	GetByAuthID(ctx context.Context, authID uint64) (u *models.User, err *ce.Error)
 }
 
 type userRepository struct {
@@ -22,4 +23,8 @@ func NewUserRepository(db database.UserDatabase) UserRepository {
 
 func (r *userRepository) Create(ctx context.Context, data *models.CreateUser) (*models.User, *ce.Error) {
 	return r.database.Create(ctx, data)
+}
+
+func (r *userRepository) GetByAuthID(ctx context.Context, authID uint64) (*models.User, *ce.Error) {
+	return r.database.GetByAuthID(ctx, authID)
 }

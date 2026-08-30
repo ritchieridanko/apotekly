@@ -73,6 +73,7 @@ const (
 	CodeUnknown                 errCode = "ERR_UNKNOWN"
 	CodeURLGenerationFailed     errCode = "ERR_URL_GENERATION_FAILED"
 	CodeUserAlreadyExists       errCode = "ERR_USER_ALREADY_EXISTS"
+	CodeUserNotFound            errCode = "ERR_USER_NOT_FOUND"
 	CodeUUIDGenerationFailed    errCode = "ERR_UUID_GENERATION_FAILED"
 	CodeWrongPassword           errCode = "ERR_WRONG_PASSWORD"
 )
@@ -100,4 +101,5 @@ const (
 	MsgUnauthenticated        string = "Unauthenticated"
 	MsgUnauthorized           string = "Unauthorized"
 	MsgUserAlreadyExists      string = "User profile already exists"
+	MsgUserNotFound           string = "User profile not found"
 )

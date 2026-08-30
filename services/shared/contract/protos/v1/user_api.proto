@@ -2,12 +2,14 @@ syntax = "proto3";
 
 package user.v1;
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
 
 service UserService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
+  rpc GetMe (google.protobuf.Empty) returns (GetMeResponse);
 }
 
 message User {
@@ -28,5 +30,9 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
+  User user = 1;
+}
+
+message GetMeResponse {
   User user = 1;
 }

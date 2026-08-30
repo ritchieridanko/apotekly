@@ -9,6 +9,7 @@ package apis
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -226,11 +227,55 @@ func (x *CreateUserResponse) GetUser() *User {
 	return nil
 }
 
+type GetMeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeResponse) Reset() {
+	*x = GetMeResponse{}
+	mi := &file_v1_user_api_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeResponse) ProtoMessage() {}
+
+func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_api_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeResponse.ProtoReflect.Descriptor instead.
+func (*GetMeResponse) Descriptor() ([]byte, []int) {
+	return file_v1_user_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetMeResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 var File_v1_user_api_proto protoreflect.FileDescriptor
 
 const file_v1_user_api_proto_rawDesc = "" +
 	"\n" +
-	"\x11v1/user_api.proto\x12\auser.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\x02\n" +
+	"\x11v1/user_api.proto\x12\auser.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\x02\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x15\n" +
@@ -251,10 +296,13 @@ const file_v1_user_api_proto_rawDesc = "" +
 	"\x04_sexB\b\n" +
 	"\x06_phone\"7\n" +
 	"\x12CreateUserResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2T\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"2\n" +
+	"\rGetMeResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\x8d\x01\n" +
 	"\vUserService\x12E\n" +
 	"\n" +
-	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\x127\n" +
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x16.user.v1.GetMeResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_user_api_proto_rawDescOnce sync.Once
@@ -268,24 +316,29 @@ func file_v1_user_api_proto_rawDescGZIP() []byte {
 	return file_v1_user_api_proto_rawDescData
 }
 
-var file_v1_user_api_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_v1_user_api_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_v1_user_api_proto_goTypes = []any{
 	(*User)(nil),                  // 0: user.v1.User
 	(*CreateUserRequest)(nil),     // 1: user.v1.CreateUserRequest
 	(*CreateUserResponse)(nil),    // 2: user.v1.CreateUserResponse
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*GetMeResponse)(nil),         // 3: user.v1.GetMeResponse
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 5: google.protobuf.Empty
 }
 var file_v1_user_api_proto_depIdxs = []int32{
-	3, // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
-	3, // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
+	4, // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
+	4, // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
 	0, // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
-	1, // 3: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
-	2, // 4: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0, // 3: user.v1.GetMeResponse.user:type_name -> user.v1.User
+	1, // 4: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
+	5, // 5: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
+	2, // 6: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
+	3, // 7: user.v1.UserService.GetMe:output_type -> user.v1.GetMeResponse
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_v1_user_api_proto_init() }
@@ -301,7 +354,7 @@ func file_v1_user_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_user_api_proto_rawDesc), len(file_v1_user_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/user/internal/models"
 	"github.com/ritchieridanko/apotekly/services/user/internal/usecases"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type UserHandler struct {
@@ -32,6 +33,14 @@ func (h *UserHandler) CreateUser(ctx context.Context, req *apis.CreateUserReques
 		return nil, err
 	}
 	return &apis.CreateUserResponse{User: h.toUser(u)}, nil
+}
+
+func (h *UserHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.GetMeResponse, error) {
+	u, err := h.uu.GetMe(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.GetMeResponse{User: h.toUser(u)}, nil
 }
 
 func (h *UserHandler) toUser(u *models.User) *apis.User {
