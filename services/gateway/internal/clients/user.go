@@ -16,6 +16,7 @@ var userServiceField logger.Field = logger.NewField("service", "user")
 type UserClient interface {
 	CreateUser(ctx context.Context, req *models.CreateUserReq) (u *models.User, err *ce.Error)
 	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
+	UpdateUser(ctx context.Context, req *models.UpdateUserReq) (u *models.User, err *ce.Error)
 }
 
 type userClient struct {
@@ -48,6 +49,26 @@ func (c *userClient) CreateUser(ctx context.Context, req *models.CreateUserReq) 
 
 func (c *userClient) GetMe(ctx context.Context) (*models.User, *ce.Error) {
 	resp, err := c.client.GetMe(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			userServiceField,
+		)
+	}
+	return c.toUser(resp.GetUser()), nil
+}
+
+func (c *userClient) UpdateUser(ctx context.Context, req *models.UpdateUserReq) (*models.User, *ce.Error) {
+	resp, err := c.client.UpdateUser(
+		ctx,
+		&apis.UpdateUserRequest{
+			Name:      req.Name,
+			Sex:       req.Sex,
+			Birthdate: utils.ToTimestamp(req.Birthdate),
+			Phone:     req.Phone,
+		},
+	)
 	if err != nil {
 		return nil, ce.ToError(
 			err,

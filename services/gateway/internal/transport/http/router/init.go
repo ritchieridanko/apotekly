@@ -103,6 +103,9 @@ func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers
 
 		// Get Me
 		user.GET("/me", middlewares.Auth(j), uh.GetMe)
+
+		// Update
+		user.PATCH("/me", middlewares.Auth(j), uh.UpdateUser)
 	}
 
 	return &Router{router: r}

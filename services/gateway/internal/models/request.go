@@ -43,4 +43,11 @@ type (
 		Birthdate *time.Time
 		Phone     *string
 	}
+
+	UpdateUserReq struct {
+		Name      *string
+		Sex       *string
+		Birthdate *time.Time
+		Phone     *string
+	}
 )

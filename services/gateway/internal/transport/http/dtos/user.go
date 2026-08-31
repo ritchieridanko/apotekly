@@ -10,6 +10,13 @@ type (
 		Birthdate *time.Time `json:"birthdate" time_format:"2006-01-02"`
 		Phone     *string    `json:"phone"`
 	}
+
+	UpdateUserRequest struct {
+		Name      *string    `json:"name"`
+		Sex       *string    `json:"sex"`
+		Birthdate *time.Time `json:"birthdate" time_format:"2006-01-02"`
+		Phone     *string    `json:"phone"`
+	}
 )
 
 // Responses
@@ -29,6 +36,10 @@ type (
 	}
 
 	GetMeResponse struct {
+		User *User `json:"user,omitempty"`
+	}
+
+	UpdateUserResponse struct {
 		User *User `json:"user,omitempty"`
 	}
 )

@@ -102,6 +102,52 @@ func (h *UserHandler) GetMe(ctx *gin.Context) {
 	)
 }
 
+func (h *UserHandler) UpdateUser(ctx *gin.Context) {
+	var payload dtos.UpdateUserRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	u, err := h.uc.UpdateUser(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		&models.UpdateUserReq{
+			Name:      payload.Name,
+			Sex:       payload.Sex,
+			Birthdate: payload.Birthdate,
+			Phone:     payload.Phone,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"User updated successfully",
+		dtos.UpdateUserResponse{User: h.toUser(u)},
+		nil,
+	)
+}
+
 func (h *UserHandler) toUser(u *models.User) *dtos.User {
 	if u == nil {
 		return nil
