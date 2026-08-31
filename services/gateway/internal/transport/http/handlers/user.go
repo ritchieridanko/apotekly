@@ -68,6 +68,40 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 	)
 }
 
+func (h *UserHandler) GetMe(ctx *gin.Context) {
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	u, err := h.uc.GetMe(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"User retrieved successfully",
+		dtos.GetMeResponse{User: h.toUser(u)},
+		nil,
+	)
+}
+
 func (h *UserHandler) toUser(u *models.User) *dtos.User {
 	if u == nil {
 		return nil

@@ -27,4 +27,8 @@ type (
 	CreateUserResponse struct {
 		User *User `json:"user,omitempty"`
 	}
+
+	GetMeResponse struct {
+		User *User `json:"user,omitempty"`
+	}
 )

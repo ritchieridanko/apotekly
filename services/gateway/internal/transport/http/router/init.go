@@ -100,6 +100,9 @@ func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers
 	{
 		// Create
 		user.POST("", middlewares.Auth(j), uh.CreateUser)
+
+		// Get Me
+		user.GET("/me", middlewares.Auth(j), uh.GetMe)
 	}
 
 	return &Router{router: r}
