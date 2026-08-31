@@ -10,6 +10,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 service UserService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
   rpc GetMe (google.protobuf.Empty) returns (GetMeResponse);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
 }
 
 message User {
@@ -34,5 +35,16 @@ message CreateUserResponse {
 }
 
 message GetMeResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  optional string name = 1;
+  optional string sex = 2;
+  google.protobuf.Timestamp birthdate = 3;
+  optional string phone = 4;
+}
+
+message UpdateUserResponse {
   User user = 1;
 }

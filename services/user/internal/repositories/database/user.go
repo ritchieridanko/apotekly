@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	db "github.com/ritchieridanko/apotekly/services/shared/infra/database"
@@ -14,6 +16,7 @@ import (
 type UserDatabase interface {
 	Create(ctx context.Context, data *models.CreateUser) (u *models.User, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (u *models.User, err *ce.Error)
+	Update(ctx context.Context, authID uint64, data *models.UpdateUser) (u *models.User, err *ce.Error)
 }
 
 type userDatabase struct {
@@ -107,6 +110,84 @@ func (d *userDatabase) GetByAuthID(ctx context.Context, authID uint64) (*models.
 	)
 	if err != nil {
 		wrappedErr := fmt.Errorf("failed to get user by auth id: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeUserNotFound,
+				ce.MsgUserNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &u, nil
+}
+
+func (d *userDatabase) Update(ctx context.Context, authID uint64, data *models.UpdateUser) (*models.User, *ce.Error) {
+	setClauses := []string{}
+	args := []any{}
+	argPos := 1
+
+	if data.Name != nil {
+		setClauses = append(setClauses, "name = $"+strconv.Itoa(argPos))
+		args = append(args, *data.Name)
+		argPos++
+	}
+	if data.Sex != nil {
+		setClauses = append(setClauses, "sex = $"+strconv.Itoa(argPos))
+		args = append(args, *data.Sex)
+		argPos++
+	}
+	if data.Birthdate != nil {
+		setClauses = append(setClauses, "birthdate = $"+strconv.Itoa(argPos))
+		args = append(args, *data.Birthdate)
+		argPos++
+	}
+	if data.Phone != nil {
+		setClauses = append(setClauses, "phone = $"+strconv.Itoa(argPos))
+		args = append(args, *data.Phone)
+		argPos++
+	}
+	if len(setClauses) == 0 {
+		return nil, ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, nil)
+	}
+
+	setClauses = append(setClauses, "updated_at = NOW()")
+	args = append(args, authID)
+	query := fmt.Sprintf(
+		`
+			UPDATE
+				users
+			SET
+				%s
+			WHERE
+				auth_id = $%d
+			RETURNING
+				id, name, sex, birthdate, phone,
+				profile_picture, profile_banner
+		`,
+		strings.Join(setClauses, ", "), argPos,
+	)
+
+	var u models.User
+	err := d.database.Query(
+		ctx, query,
+		args...,
+	).Scan(
+		&u.ID,
+		&u.Name,
+		&u.Sex,
+		&u.Birthdate,
+		&u.Phone,
+		&u.ProfilePicture,
+		&u.ProfileBanner,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to update user: %w", err)
 		if errors.Is(err, ce.ErrDBQueryNoRows) {
 			return nil, ce.NewError(
 				ce.CodeUserNotFound,

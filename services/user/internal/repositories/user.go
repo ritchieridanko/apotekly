@@ -11,6 +11,7 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, data *models.CreateUser) (u *models.User, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (u *models.User, err *ce.Error)
+	Update(ctx context.Context, authID uint64, data *models.UpdateUser) (u *models.User, err *ce.Error)
 }
 
 type userRepository struct {
@@ -27,4 +28,8 @@ func (r *userRepository) Create(ctx context.Context, data *models.CreateUser) (*
 
 func (r *userRepository) GetByAuthID(ctx context.Context, authID uint64) (*models.User, *ce.Error) {
 	return r.database.GetByAuthID(ctx, authID)
+}
+
+func (r *userRepository) Update(ctx context.Context, authID uint64, data *models.UpdateUser) (*models.User, *ce.Error) {
+	return r.database.Update(ctx, authID, data)
 }

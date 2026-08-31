@@ -28,4 +28,11 @@ type (
 		Birthdate *time.Time
 		Phone     *string
 	}
+
+	UpdateUser struct {
+		Name      *string
+		Sex       *string
+		Birthdate *time.Time
+		Phone     *string
+	}
 )

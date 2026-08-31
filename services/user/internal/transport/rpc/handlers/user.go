@@ -43,6 +43,22 @@ func (h *UserHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.GetM
 	return &apis.GetMeResponse{User: h.toUser(u)}, nil
 }
 
+func (h *UserHandler) UpdateUser(ctx context.Context, req *apis.UpdateUserRequest) (*apis.UpdateUserResponse, error) {
+	u, err := h.uu.UpdateUser(
+		ctx,
+		&models.UpdateUserReq{
+			Name:      req.Name,
+			Sex:       req.Sex,
+			Birthdate: utils.ToTime(req.Birthdate),
+			Phone:     req.Phone,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.UpdateUserResponse{User: h.toUser(u)}, nil
+}
+
 func (h *UserHandler) toUser(u *models.User) *apis.User {
 	if u == nil {
 		return nil

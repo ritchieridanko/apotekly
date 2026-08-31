@@ -17,6 +17,7 @@ import (
 type UserUsecase interface {
 	CreateUser(ctx context.Context, req *models.CreateUserReq) (u *models.User, err *ce.Error)
 	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
+	UpdateUser(ctx context.Context, req *models.UpdateUserReq) (u *models.User, err *ce.Error)
 }
 
 type userUsecase struct {
@@ -114,5 +115,65 @@ func (u *userUsecase) GetMe(ctx context.Context) (*models.User, *ce.Error) {
 	if err != nil {
 		return nil, err.Append(authIDField)
 	}
+	return user, nil
+}
+
+func (u *userUsecase) UpdateUser(ctx context.Context, req *models.UpdateUserReq) (*models.User, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "user.usecase.UpdateUser")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Normalization
+	name := utils.TrimSpacePtr(req.Name)
+	sex := utils.ToLowerPtr(utils.TrimSpacePtr(req.Sex))
+	phone := utils.TrimSpacePtr(req.Phone)
+
+	// Data Validation
+	if name != nil {
+		if ok, why := u.validator.Name(*name); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if sex != nil {
+		if ok, why := u.validator.Sex(*sex); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if req.Birthdate != nil {
+		if ok, why := u.validator.Birthdate(*req.Birthdate); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if phone != nil {
+		if ok, why := u.validator.Phone(*phone); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+
+	// User Update
+	user, err := u.ur.Update(
+		ctx,
+		authCtx.AuthID,
+		&models.UpdateUser{
+			Name:      name,
+			Sex:       sex,
+			Birthdate: req.Birthdate,
+			Phone:     phone,
+		},
+	)
+	if err != nil {
+		return nil, err.Append(authIDField)
+	}
+
 	return user, nil
 }

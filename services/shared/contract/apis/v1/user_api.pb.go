@@ -271,6 +271,118 @@ func (x *GetMeResponse) GetUser() *User {
 	return nil
 }
 
+type UpdateUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Sex           *string                `protobuf:"bytes,2,opt,name=sex,proto3,oneof" json:"sex,omitempty"`
+	Birthdate     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=birthdate,proto3" json:"birthdate,omitempty"`
+	Phone         *string                `protobuf:"bytes,4,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserRequest) Reset() {
+	*x = UpdateUserRequest{}
+	mi := &file_v1_user_api_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserRequest) ProtoMessage() {}
+
+func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_api_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserRequest.ProtoReflect.Descriptor instead.
+func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
+	return file_v1_user_api_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateUserRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *UpdateUserRequest) GetSex() string {
+	if x != nil && x.Sex != nil {
+		return *x.Sex
+	}
+	return ""
+}
+
+func (x *UpdateUserRequest) GetBirthdate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Birthdate
+	}
+	return nil
+}
+
+func (x *UpdateUserRequest) GetPhone() string {
+	if x != nil && x.Phone != nil {
+		return *x.Phone
+	}
+	return ""
+}
+
+type UpdateUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserResponse) Reset() {
+	*x = UpdateUserResponse{}
+	mi := &file_v1_user_api_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserResponse) ProtoMessage() {}
+
+func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_api_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserResponse.ProtoReflect.Descriptor instead.
+func (*UpdateUserResponse) Descriptor() ([]byte, []int) {
+	return file_v1_user_api_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateUserResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 var File_v1_user_api_proto protoreflect.FileDescriptor
 
 const file_v1_user_api_proto_rawDesc = "" +
@@ -298,11 +410,23 @@ const file_v1_user_api_proto_rawDesc = "" +
 	"\x12CreateUserResponse\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"2\n" +
 	"\rGetMeResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\x8d\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\xb3\x01\n" +
+	"\x11UpdateUserRequest\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x15\n" +
+	"\x03sex\x18\x02 \x01(\tH\x01R\x03sex\x88\x01\x01\x128\n" +
+	"\tbirthdate\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tbirthdate\x12\x19\n" +
+	"\x05phone\x18\x04 \x01(\tH\x02R\x05phone\x88\x01\x01B\a\n" +
+	"\x05_nameB\x06\n" +
+	"\x04_sexB\b\n" +
+	"\x06_phone\"7\n" +
+	"\x12UpdateUserResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xd4\x01\n" +
 	"\vUserService\x12E\n" +
 	"\n" +
 	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\x127\n" +
-	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x16.user.v1.GetMeResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x16.user.v1.GetMeResponse\x12E\n" +
+	"\n" +
+	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_user_api_proto_rawDescOnce sync.Once
@@ -316,29 +440,35 @@ func file_v1_user_api_proto_rawDescGZIP() []byte {
 	return file_v1_user_api_proto_rawDescData
 }
 
-var file_v1_user_api_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_v1_user_api_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_v1_user_api_proto_goTypes = []any{
 	(*User)(nil),                  // 0: user.v1.User
 	(*CreateUserRequest)(nil),     // 1: user.v1.CreateUserRequest
 	(*CreateUserResponse)(nil),    // 2: user.v1.CreateUserResponse
 	(*GetMeResponse)(nil),         // 3: user.v1.GetMeResponse
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 5: google.protobuf.Empty
+	(*UpdateUserRequest)(nil),     // 4: user.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),    // 5: user.v1.UpdateUserResponse
+	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 7: google.protobuf.Empty
 }
 var file_v1_user_api_proto_depIdxs = []int32{
-	4, // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
-	4, // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
+	6, // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
+	6, // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
 	0, // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
 	0, // 3: user.v1.GetMeResponse.user:type_name -> user.v1.User
-	1, // 4: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
-	5, // 5: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
-	2, // 6: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
-	3, // 7: user.v1.UserService.GetMe:output_type -> user.v1.GetMeResponse
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	6, // 4: user.v1.UpdateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
+	0, // 5: user.v1.UpdateUserResponse.user:type_name -> user.v1.User
+	1, // 6: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
+	7, // 7: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
+	4, // 8: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
+	2, // 9: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
+	3, // 10: user.v1.UserService.GetMe:output_type -> user.v1.GetMeResponse
+	5, // 11: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
+	9, // [9:12] is the sub-list for method output_type
+	6, // [6:9] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_v1_user_api_proto_init() }
@@ -348,13 +478,14 @@ func file_v1_user_api_proto_init() {
 	}
 	file_v1_user_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_user_api_proto_msgTypes[1].OneofWrappers = []any{}
+	file_v1_user_api_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_user_api_proto_rawDesc), len(file_v1_user_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
