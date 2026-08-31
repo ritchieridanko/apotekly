@@ -1,5 +1,8 @@
 package models
 
+import "time"
+
+// Auth Service
 type (
 	ChangeEmailReq struct {
 		Password string
@@ -29,5 +32,15 @@ type (
 	VerifyEmailReq struct {
 		RefreshToken      string
 		VerificationToken string
+	}
+)
+
+// User Service
+type (
+	CreateUserReq struct {
+		Name      string
+		Sex       *string
+		Birthdate *time.Time
+		Phone     *string
 	}
 )

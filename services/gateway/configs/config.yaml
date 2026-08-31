@@ -18,6 +18,10 @@ service:
     name: "auth-service"
     host: "localhost"
     port: 50051
+  user:
+    name: "user-service"
+    host: "localhost"
+    port: 50052
 
 tracer:
   host: "localhost"

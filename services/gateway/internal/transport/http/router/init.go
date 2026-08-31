@@ -15,7 +15,7 @@ type Router struct {
 	router *gin.Engine
 }
 
-func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler) *Router {
+func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler, uh *handlers.UserHandler) *Router {
 	r := gin.New()
 	r.ContextWithFallback = true
 
@@ -93,6 +93,13 @@ func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers
 				reset.GET("/valid", ah.IsPasswordResetTokenValid)
 			}
 		}
+	}
+
+	// USER ENDPOINTS
+	user := v1.Group("/users")
+	{
+		// Create
+		user.POST("", middlewares.Auth(j), uh.CreateUser)
 	}
 
 	return &Router{router: r}
