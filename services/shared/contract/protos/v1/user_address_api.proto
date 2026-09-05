@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+service AddressService {
+  rpc CreateAddress (CreateAddressRequest) returns (CreateAddressResponse);
+}
+
+message Address {
+  uint64 id = 1;
+  string label = 2;
+	string recipient = 3;
+	string phone = 4;
+	optional string notes = 5;
+  bool is_primary = 6;
+	string country = 7;
+	optional string subdivision_1 = 8;
+	optional string subdivision_2 = 9;
+	optional string subdivision_3 = 10;
+	optional string subdivision_4 = 11;
+	string street = 12;
+	string postal_code = 13;
+  double latitude = 14;
+  double longitude = 15;
+  google.protobuf.Timestamp created_at = 16;
+	google.protobuf.Timestamp updated_at = 17;
+}
+
+message CreateAddressRequest {
+  string label = 1;
+	string recipient = 2;
+	string phone = 3;
+	optional string notes = 4;
+  bool is_primary = 5;
+	string country = 6;
+	optional string subdivision_1 = 7;
+	optional string subdivision_2 = 8;
+	optional string subdivision_3 = 9;
+	optional string subdivision_4 = 10;
+	string street = 11;
+	string postal_code = 12;
+  double latitude = 13;
+  double longitude = 14;
+}
+
+message CreateAddressResponse {
+  Address address = 1;
+  Address old_primary_address = 2;
+}

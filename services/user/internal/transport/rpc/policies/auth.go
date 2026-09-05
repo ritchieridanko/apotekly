@@ -24,7 +24,11 @@ func (p *AuthPolicy) IsRoleAuthorized(role string) bool {
 }
 
 var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
+	// User
 	"/user.v1.UserService/CreateUser": {authenticated: true},
 	"/user.v1.UserService/GetMe":      {authenticated: true},
 	"/user.v1.UserService/UpdateUser": {authenticated: true},
+
+	// Address
+	"/user.v1.AddressService/CreateAddress": {authenticated: true},
 }

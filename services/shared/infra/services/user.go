@@ -13,8 +13,9 @@ import (
 )
 
 type UserService struct {
-	conn   *grpc.ClientConn
-	client apis.UserServiceClient
+	conn    *grpc.ClientConn
+	user    apis.UserServiceClient
+	address apis.AddressServiceClient
 }
 
 func NewUserService(cfg *configs.Service, l *zap.Logger) (*UserService, error) {
@@ -36,13 +37,18 @@ func NewUserService(cfg *configs.Service, l *zap.Logger) (*UserService, error) {
 		strings.ToUpper(cfg.Name), cfg.Host, cfg.Port,
 	)
 	return &UserService{
-		conn:   conn,
-		client: apis.NewUserServiceClient(conn),
+		conn:    conn,
+		user:    apis.NewUserServiceClient(conn),
+		address: apis.NewAddressServiceClient(conn),
 	}, nil
 }
 
-func (s *UserService) Client() apis.UserServiceClient {
-	return s.client
+func (s *UserService) UserClient() apis.UserServiceClient {
+	return s.user
+}
+
+func (s *UserService) AddressClient() apis.AddressServiceClient {
+	return s.address
 }
 
 func (s *UserService) Close() error {

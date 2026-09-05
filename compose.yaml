@@ -33,6 +33,14 @@ services:
         condition: service_started
       auth-service:
         condition: service_started
+      user-service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://${GATEWAY_SERVICE_HOST}:${GATEWAY_SERVICE_PORT}/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   # ---------- Auth ----------
   auth-service:
@@ -97,8 +105,10 @@ services:
       - auth_db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${AUTH_DATABASE_USER} -d ${AUTH_DATABASE_NAME}"]
-      interval: 5s
-      retries: 5
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
 
   auth-migrator:
     image: apotekly-auth-migrator
@@ -191,8 +201,10 @@ services:
       - notification_db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${NOTIFICATION_DATABASE_USER} -d ${NOTIFICATION_DATABASE_NAME}"]
-      interval: 5s
-      retries: 5
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
 
   notification-migrator:
     image: apotekly-notification-migrator
@@ -272,8 +284,10 @@ services:
       - user_db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${USER_DATABASE_USER} -d ${USER_DATABASE_NAME}"]
-      interval: 5s
-      retries: 5
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
 
   user-migrator:
     image: apotekly-user-migrator

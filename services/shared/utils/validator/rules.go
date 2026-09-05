@@ -12,10 +12,23 @@ var (
 )
 
 const (
-	bcryptMaxBytes     int = 72
-	nameMaxLength      int = 100
-	nameMinLength      int = 3
-	passwordMaxLength  int = 50
-	passwordMinLength  int = 8
-	userAgentMaxLength int = 512
+	bcryptMaxBytes       int = 72
+	labelMaxLength       int = 50
+	labelMinLength       int = 3
+	nameMaxLength        int = 100
+	nameMinLength        int = 3
+	notesMaxLength       int = 100
+	passwordMaxLength    int = 50
+	passwordMinLength    int = 8
+	postalCodeMaxLength  int = 6
+	postalCodeMinLength  int = 4
+	streetMaxLength      int = 250
+	streetMinLength      int = 3
+	subdivisionMaxLength int = 250
+	userAgentMaxLength   int = 512
+
+	maxLatitude  float64 = 90
+	minLatitude  float64 = -90
+	maxLongitude float64 = 180
+	minLongitude float64 = -180
 )

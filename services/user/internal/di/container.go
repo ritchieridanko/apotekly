@@ -14,19 +14,24 @@ import (
 )
 
 type Container struct {
-	config   *configs.Config
-	database *infdb.Database
-	logger   *logger.Logger
+	config     *configs.Config
+	database   *infdb.Database
+	transactor *infdb.Transactor
+	logger     *logger.Logger
 
 	udb database.UserDatabase
+	adb database.AddressDatabase
 
 	ur repositories.UserRepository
+	ar repositories.AddressRepository
 
 	validator *validator.Validator
 
 	uu usecases.UserUsecase
+	au usecases.AddressUsecase
 
 	uh *handlers.UserHandler
+	ah *handlers.AddressHandler
 
 	server *server.Server
 }
@@ -34,36 +39,46 @@ type Container struct {
 func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	// Infra
 	db := infdb.NewDatabase(inf.Database())
+	tx := infdb.NewTransactor(inf.Database())
 	l := logger.NewLogger(inf.Logger())
 
 	// Databases
 	udb := database.NewUserDatabase(db)
+	adb := database.NewAddressDatabase(db)
 
 	// Repositories
 	ur := repositories.NewUserRepository(udb)
+	ar := repositories.NewAddressRepository(adb)
 
 	// Utils
 	v := validator.Init()
 
 	// Usecases
 	uu := usecases.NewUserUsecase(cfg.App.Name, ur, v, l)
+	au := usecases.NewAddressUsecase(cfg.App.Name, ar, tx, v, l)
 
 	// Handlers
 	uh := handlers.NewUserHandler(uu)
+	ah := handlers.NewAddressHandler(au)
 
 	// Server
-	srv := server.Init(&cfg.Server, l, uh)
+	srv := server.Init(&cfg.Server, l, uh, ah)
 
 	return &Container{
-		config:    cfg,
-		database:  db,
-		logger:    l,
-		udb:       udb,
-		ur:        ur,
-		validator: v,
-		uu:        uu,
-		uh:        uh,
-		server:    srv,
+		config:     cfg,
+		database:   db,
+		transactor: tx,
+		logger:     l,
+		udb:        udb,
+		adb:        adb,
+		ur:         ur,
+		ar:         ar,
+		validator:  v,
+		uu:         uu,
+		au:         au,
+		uh:         uh,
+		ah:         ah,
+		server:     srv,
 	}
 }
 

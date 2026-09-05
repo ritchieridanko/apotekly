@@ -19,9 +19,10 @@ type Server struct {
 	server *grpc.Server
 	logger *logger.Logger
 	uh     *handlers.UserHandler
+	ah     *handlers.AddressHandler
 }
 
-func Init(cfg *configs.GRPCServer, l *logger.Logger, uh *handlers.UserHandler) *Server {
+func Init(cfg *configs.GRPCServer, l *logger.Logger, uh *handlers.UserHandler, ah *handlers.AddressHandler) *Server {
 	srv := grpc.NewServer(
 		grpc.StatsHandler(
 			otelgrpc.NewServerHandler(),
@@ -35,12 +36,14 @@ func Init(cfg *configs.GRPCServer, l *logger.Logger, uh *handlers.UserHandler) *
 	)
 
 	apis.RegisterUserServiceServer(srv, uh)
+	apis.RegisterAddressServiceServer(srv, ah)
 
 	return &Server{
 		config: cfg,
 		server: srv,
 		logger: l,
 		uh:     uh,
+		ah:     ah,
 	}
 }
 
