@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/ritchieridanko/apotekly/services/gateway/configs"
-	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/services"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/tracer"
@@ -53,12 +52,12 @@ func (i *Infra) Logger() *zap.Logger {
 	return i.logger
 }
 
-func (i *Infra) AuthService() apis.AuthServiceClient {
-	return i.as.Client()
+func (i *Infra) AuthService() *services.AuthService {
+	return i.as
 }
 
-func (i *Infra) UserService() apis.UserServiceClient {
-	return i.us.Client()
+func (i *Infra) UserService() *services.UserService {
+	return i.us
 }
 
 func (i *Infra) Close() error {

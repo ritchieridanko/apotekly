@@ -15,7 +15,15 @@ type Router struct {
 	router *gin.Engine
 }
 
-func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers.AuthHandler, uh *handlers.UserHandler) *Router {
+func Init(
+	appName,
+	clientAddr string,
+	j *jwt.JWT,
+	l *logger.Logger,
+	ah *handlers.AuthHandler,
+	uh *handlers.UserHandler,
+	uah *handlers.AddressHandler,
+) *Router {
 	r := gin.New()
 	r.ContextWithFallback = true
 
@@ -101,11 +109,22 @@ func Init(appName, clientAddr string, j *jwt.JWT, l *logger.Logger, ah *handlers
 		// Create
 		user.POST("", middlewares.Auth(j), uh.CreateUser)
 
-		// Get Me
-		user.GET("/me", middlewares.Auth(j), uh.GetMe)
+		// Me
+		me := user.Group("/me")
+		{
+			// Fetch
+			me.GET("", middlewares.Auth(j), uh.GetMe)
 
-		// Update
-		user.PATCH("/me", middlewares.Auth(j), uh.UpdateUser)
+			// Update
+			me.PATCH("", middlewares.Auth(j), uh.UpdateUser)
+
+			// Addresses
+			address := me.Group("/addresses")
+			{
+				// Create
+				address.POST("", middlewares.Auth(j), uah.CreateAddress)
+			}
+		}
 	}
 
 	return &Router{router: r}

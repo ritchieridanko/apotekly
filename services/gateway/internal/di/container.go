@@ -17,15 +17,17 @@ type Container struct {
 	config *configs.Config
 	logger *logger.Logger
 
-	ac clients.AuthClient
-	uc clients.UserClient
+	ac  clients.AuthClient
+	uc  clients.UserClient
+	uac clients.AddressClient
 
 	cookie    *cookie.Cookie
 	jwt       *jwt.JWT
 	validator *validator.Validator
 
-	ah *handlers.AuthHandler
-	uh *handlers.UserHandler
+	ah  *handlers.AuthHandler
+	uh  *handlers.UserHandler
+	uah *handlers.AddressHandler
 
 	router *router.Router
 	server *server.Server
@@ -36,8 +38,9 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	l := logger.NewLogger(inf.Logger())
 
 	// Clients
-	ac := clients.NewAuthClient(inf.AuthService())
-	uc := clients.NewUserClient(inf.UserService())
+	ac := clients.NewAuthClient(inf.AuthService().AuthClient())
+	uc := clients.NewUserClient(inf.UserService().UserClient())
+	uac := clients.NewAddressClient(inf.UserService().AddressClient())
 
 	// Utils
 	c := cookie.Init(cfg.App.Env, "")
@@ -47,9 +50,10 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	// Handlers
 	ah := handlers.NewAuthHandler(ac, v, c)
 	uh := handlers.NewUserHandler(uc)
+	uah := handlers.NewAddressHandler(uac)
 
 	// Router
-	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, ah, uh)
+	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, ah, uh, uah)
 
 	// Server
 	srv := server.Init(&cfg.Server, r, l)
@@ -59,11 +63,13 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		logger:    l,
 		ac:        ac,
 		uc:        uc,
+		uac:       uac,
 		cookie:    c,
 		jwt:       j,
 		validator: v,
 		ah:        ah,
 		uh:        uh,
+		uah:       uah,
 		router:    r,
 		server:    srv,
 	}
