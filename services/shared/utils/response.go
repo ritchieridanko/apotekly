@@ -18,19 +18,20 @@ type (
 		RequestID string    `json:"request_id"`
 		Page      *int      `json:"page,omitempty"`
 		PageSize  *int      `json:"page_size,omitempty"`
-		Total     *int      `json:"total,omitempty"`
+		Total     *int64    `json:"total,omitempty"`
 		Timestamp time.Time `json:"timestamp"`
 	}
 
 	ResponseMetadata struct {
 		Page     int
 		PageSize int
-		Total    int
+		Total    int64
 	}
 )
 
 func SetHTTPResponse[T any](ctx *gin.Context, status int, message string, data T, rm *ResponseMetadata) {
-	var page, pageSize, total *int
+	var page, pageSize *int
+	var total *int64
 	if rm != nil {
 		page, pageSize, total = &rm.Page, &rm.PageSize, &rm.Total
 	}

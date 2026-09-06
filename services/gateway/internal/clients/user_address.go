@@ -14,6 +14,7 @@ var addressServiceField logger.Field = logger.NewField("service", "user.address"
 
 type AddressClient interface {
 	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, oldPrimary *models.Address, err *ce.Error)
+	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
 }
 
 type addressClient struct {
@@ -52,6 +53,33 @@ func (c *addressClient) CreateAddress(ctx context.Context, req *models.CreateAdd
 		)
 	}
 	return c.toAddress(resp.GetAddress()), c.toAddress(resp.GetOldPrimaryAddress()), nil
+}
+
+func (c *addressClient) GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) ([]models.Address, int64, *ce.Error) {
+	resp, err := c.client.GetAllAddresses(
+		ctx,
+		&apis.GetAllAddressesRequest{
+			Page:     req.Page,
+			PageSize: req.PageSize,
+		},
+	)
+	if err != nil {
+		return nil, 0, ce.ToError(
+			err,
+		).Append(
+			addressServiceField,
+		)
+	}
+
+	as := make([]models.Address, 0, len(resp.GetAddresses()))
+	for _, a := range resp.GetAddresses() {
+		if a == nil {
+			continue
+		}
+		as = append(as, *c.toAddress(a))
+	}
+
+	return as, resp.GetTotal(), nil
 }
 
 func (c *addressClient) toAddress(a *apis.Address) *models.Address {

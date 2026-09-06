@@ -14,6 +14,11 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
 )
 
+const (
+	defaultPageSize int = 10
+	maxPageSize     int = 100
+)
+
 type AddressHandler struct {
 	uac clients.AddressClient
 }
@@ -78,6 +83,70 @@ func (h *AddressHandler) CreateAddress(ctx *gin.Context) {
 			OldPrimaryAddress: h.toAddress(oldPrimary),
 		},
 		nil,
+	)
+}
+
+func (h *AddressHandler) GetAllAddresses(ctx *gin.Context) {
+	var params dtos.GetAllAddressesRequest
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+	if params.Page < 1 {
+		params.Page = 1
+	}
+	if params.PageSize <= 0 {
+		params.PageSize = defaultPageSize
+	}
+	if params.PageSize > maxPageSize {
+		params.PageSize = maxPageSize
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	as, total, err := h.uac.GetAllAddresses(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		&models.GetAllAddressesReq{
+			Page:     int32(params.Page),
+			PageSize: int32(params.PageSize),
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	addresses := make([]dtos.Address, 0, len(as))
+	for _, a := range as {
+		addresses = append(addresses, *h.toAddress(&a))
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Addresses retrieved successfully",
+		dtos.GetAllAddressesResponse{
+			Addresses: addresses,
+		},
+		&utils.ResponseMetadata{
+			Page:     params.Page,
+			PageSize: params.PageSize,
+			Total:    total,
+		},
 	)
 }
 

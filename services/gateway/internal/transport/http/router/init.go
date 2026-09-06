@@ -123,6 +123,9 @@ func Init(
 			{
 				// Create
 				address.POST("", middlewares.Auth(j), uah.CreateAddress)
+
+				// Fetch All
+				address.GET("", middlewares.Auth(j), uah.GetAllAddresses)
 			}
 		}
 	}

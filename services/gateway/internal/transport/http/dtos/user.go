@@ -35,6 +35,10 @@ type (
 		Latitude     float64 `json:"latitude" binding:"required"`
 		Longitude    float64 `json:"longitude" binding:"required"`
 	}
+
+	GetAllAddressesRequest struct {
+		PaginationParams
+	}
 )
 
 // Responses
@@ -85,5 +89,9 @@ type (
 	CreateAddressResponse struct {
 		Address           *Address `json:"address,omitempty"`
 		OldPrimaryAddress *Address `json:"old_primary_address,omitempty"`
+	}
+
+	GetAllAddressesResponse struct {
+		Addresses []Address `json:"addresses"`
 	}
 )

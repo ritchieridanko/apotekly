@@ -68,4 +68,9 @@ type (
 		Latitude     float64
 		Longitude    float64
 	}
+
+	GetAllAddressesReq struct {
+		Page     int32
+		PageSize int32
+	}
 )
