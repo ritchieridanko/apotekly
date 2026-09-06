@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/ritchieridanko/apotekly/services/shared/utils"
+)
 
 // User
 type (
@@ -36,5 +40,9 @@ type (
 		PostalCode   string
 		Latitude     float64
 		Longitude    float64
+	}
+
+	GetAllAddressesReq struct {
+		utils.OffsetPagination
 	}
 )

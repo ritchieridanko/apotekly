@@ -12,6 +12,7 @@ import (
 
 type AddressDatabase interface {
 	Create(ctx context.Context, data *models.CreateAddress) (a *models.Address, err *ce.Error)
+	GetAll(ctx context.Context, authID uint64, params *models.GetAllAddresses) (as []models.Address, total int64, err *ce.Error)
 	UnsetPrimary(ctx context.Context, authID uint64) (a *models.Address, err *ce.Error)
 }
 
@@ -86,6 +87,105 @@ func (d *addressDatabase) Create(ctx context.Context, data *models.CreateAddress
 	}
 
 	return &a, nil
+}
+
+func (d *addressDatabase) GetAll(ctx context.Context, authID uint64, params *models.GetAllAddresses) ([]models.Address, int64, *ce.Error) {
+	query := `
+		SELECT
+			id, label, recipient, phone, notes, is_primary, country,
+			subdivision_1, subdivision_2, subdivision_3, subdivision_4,
+			street, postal_code, latitude, longitude, created_at, updated_at,
+
+			COUNT(*) OVER() AS total
+		FROM
+			addresses
+		WHERE
+			auth_id = $1
+		ORDER BY
+			is_primary DESC,
+			updated_at DESC,
+			id DESC
+		LIMIT
+			$2
+		OFFSET
+			$3
+	`
+
+	rows, err := d.database.QueryAll(
+		ctx, query,
+		authID,
+		params.PageSize,
+		params.Offset(),
+	)
+	if err != nil {
+		return nil, 0, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to get all addresses: %w", err),
+		)
+	}
+	defer rows.Close()
+
+	var total int64
+	as := make([]models.Address, 0, params.PageSize)
+
+	for rows.Next() {
+		var a models.Address
+		err := rows.Scan(
+			&a.ID,
+			&a.Label,
+			&a.Recipient,
+			&a.Phone,
+			&a.Notes,
+			&a.IsPrimary,
+			&a.Country,
+			&a.Subdivision1,
+			&a.Subdivision2,
+			&a.Subdivision3,
+			&a.Subdivision4,
+			&a.Street,
+			&a.PostalCode,
+			&a.Latitude,
+			&a.Longitude,
+			&a.CreatedAt,
+			&a.UpdatedAt,
+			&total,
+		)
+		if err != nil {
+			return nil, 0, ce.NewError(
+				ce.CodeDBQueryExec,
+				ce.MsgInternalServer,
+				fmt.Errorf("failed to get all addresses: %w", err),
+			)
+		}
+
+		as = append(as, a)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to get all addresses: %w", err),
+		)
+	}
+	if len(as) == 0 {
+		err := d.database.Query(
+			ctx,
+			"SELECT COUNT(*) FROM addresses WHERE auth_id = $1",
+			authID,
+		).Scan(
+			&total,
+		)
+		if err != nil {
+			return nil, 0, ce.NewError(
+				ce.CodeDBQueryExec,
+				ce.MsgInternalServer,
+				fmt.Errorf("failed to get all addresses: %w", err),
+			)
+		}
+	}
+
+	return as, total, nil
 }
 
 func (d *addressDatabase) UnsetPrimary(ctx context.Context, authID uint64) (*models.Address, *ce.Error) {

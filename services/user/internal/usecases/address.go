@@ -15,8 +15,14 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
+const (
+	defaultPageSize int = 10
+	maxPageSize     int = 100
+)
+
 type AddressUsecase interface {
 	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, oldPrimary *models.Address, err *ce.Error)
+	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
 }
 
 type addressUsecase struct {
@@ -168,4 +174,50 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 	}
 
 	return a, oldPrimaryAddress, nil
+}
+
+func (u *addressUsecase) GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) ([]models.Address, int64, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "address.usecase.GetAllAddresses")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, 0, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Validation
+	page := req.Page
+	pageSize := req.PageSize
+	if page < 1 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = defaultPageSize
+	}
+	if pageSize > maxPageSize {
+		pageSize = maxPageSize
+	}
+
+	// All Addresses Fetching
+	as, total, err := u.ar.GetAll(
+		ctx,
+		authCtx.AuthID,
+		&models.GetAllAddresses{
+			OffsetPagination: utils.OffsetPagination{
+				Page:     page,
+				PageSize: pageSize,
+			},
+		},
+	)
+	if err != nil {
+		return nil, 0, err.Append(authIDField)
+	}
+
+	return as, total, nil
 }

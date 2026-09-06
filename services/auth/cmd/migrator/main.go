@@ -10,8 +10,16 @@ import (
 
 func main() {
 	fu := flag.Bool("up", false, "Apply all up migrations")
-	fd := flag.Int("down", 0, "Apply N down migrations")
+	fd := flag.Int("down", -1, "Apply N down migrations")
 	flag.Parse()
+
+	// Flags Validation
+	if *fu && *fd >= 0 {
+		log.Fatalln("[FATAL]: failed to apply migrations: -up and -down cannot be used together")
+	}
+	if !*fu && *fd < 0 {
+		log.Fatalln("[FATAL]: failed to apply migrations: specify either -up or -down")
+	}
 
 	// Config Initialization
 	cfg, err := configs.Init("./configs")
@@ -31,15 +39,14 @@ func main() {
 	}(m)
 
 	// DB Migrations Execution
-	if *fu {
+	switch {
+	case *fu:
 		if err := m.Up(); err != nil {
 			log.Fatalln("[FATAL]:", err)
 		}
-	} else if *fd >= 0 {
+	case *fd >= 0:
 		if err := m.Down(*fd); err != nil {
 			log.Fatalln("[FATAL]:", err)
 		}
-	} else {
-		log.Fatalln("[FATAL]: failed to apply migrations: no action specified")
 	}
 }

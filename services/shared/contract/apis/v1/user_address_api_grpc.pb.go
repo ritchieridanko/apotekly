@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AddressService_CreateAddress_FullMethodName = "/user.v1.AddressService/CreateAddress"
+	AddressService_CreateAddress_FullMethodName   = "/user.v1.AddressService/CreateAddress"
+	AddressService_GetAllAddresses_FullMethodName = "/user.v1.AddressService/GetAllAddresses"
 )
 
 // AddressServiceClient is the client API for AddressService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AddressServiceClient interface {
 	CreateAddress(ctx context.Context, in *CreateAddressRequest, opts ...grpc.CallOption) (*CreateAddressResponse, error)
+	GetAllAddresses(ctx context.Context, in *GetAllAddressesRequest, opts ...grpc.CallOption) (*GetAllAddressesResponse, error)
 }
 
 type addressServiceClient struct {
@@ -47,11 +49,22 @@ func (c *addressServiceClient) CreateAddress(ctx context.Context, in *CreateAddr
 	return out, nil
 }
 
+func (c *addressServiceClient) GetAllAddresses(ctx context.Context, in *GetAllAddressesRequest, opts ...grpc.CallOption) (*GetAllAddressesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllAddressesResponse)
+	err := c.cc.Invoke(ctx, AddressService_GetAllAddresses_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AddressServiceServer is the server API for AddressService service.
 // All implementations must embed UnimplementedAddressServiceServer
 // for forward compatibility.
 type AddressServiceServer interface {
 	CreateAddress(context.Context, *CreateAddressRequest) (*CreateAddressResponse, error)
+	GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error)
 	mustEmbedUnimplementedAddressServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedAddressServiceServer struct{}
 
 func (UnimplementedAddressServiceServer) CreateAddress(context.Context, *CreateAddressRequest) (*CreateAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAddress not implemented")
+}
+func (UnimplementedAddressServiceServer) GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllAddresses not implemented")
 }
 func (UnimplementedAddressServiceServer) mustEmbedUnimplementedAddressServiceServer() {}
 func (UnimplementedAddressServiceServer) testEmbeddedByValue()                        {}
@@ -104,6 +120,24 @@ func _AddressService_CreateAddress_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AddressService_GetAllAddresses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllAddressesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AddressServiceServer).GetAllAddresses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AddressService_GetAllAddresses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AddressServiceServer).GetAllAddresses(ctx, req.(*GetAllAddressesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AddressService_ServiceDesc is the grpc.ServiceDesc for AddressService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var AddressService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAddress",
 			Handler:    _AddressService_CreateAddress_Handler,
+		},
+		{
+			MethodName: "GetAllAddresses",
+			Handler:    _AddressService_GetAllAddresses_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

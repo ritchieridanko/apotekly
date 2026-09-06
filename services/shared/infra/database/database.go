@@ -31,6 +31,10 @@ func (d *Database) Query(ctx context.Context, query string, args ...any) pgx.Row
 	return d.executor(ctx).QueryRow(ctx, query, args...)
 }
 
+func (d *Database) QueryAll(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
+	return d.executor(ctx).Query(ctx, query, args...)
+}
+
 func (d *Database) WithinTx(ctx context.Context) bool {
 	return fromCtx(ctx) != nil
 }

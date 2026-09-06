@@ -47,6 +47,30 @@ func (h *AddressHandler) CreateAddress(ctx context.Context, req *apis.CreateAddr
 	}, nil
 }
 
+func (h *AddressHandler) GetAllAddresses(ctx context.Context, req *apis.GetAllAddressesRequest) (*apis.GetAllAddressesResponse, error) {
+	as, total, err := h.au.GetAllAddresses(
+		ctx,
+		&models.GetAllAddressesReq{
+			OffsetPagination: utils.OffsetPagination{
+				Page:     int(req.GetPage()),
+				PageSize: int(req.GetPageSize()),
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	addresses := make([]*apis.Address, 0, len(as))
+	for _, a := range as {
+		addresses = append(addresses, h.toAddress(&a))
+	}
+	return &apis.GetAllAddressesResponse{
+		Addresses: addresses,
+		Total:     total,
+	}, nil
+}
+
 func (h *AddressHandler) toAddress(a *models.Address) *apis.Address {
 	if a == nil {
 		return nil

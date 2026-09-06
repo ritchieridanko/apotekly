@@ -8,6 +8,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 
 service AddressService {
   rpc CreateAddress (CreateAddressRequest) returns (CreateAddressResponse);
+	rpc GetAllAddresses (GetAllAddressesRequest) returns (GetAllAddressesResponse);
 }
 
 message Address {
@@ -50,4 +51,14 @@ message CreateAddressRequest {
 message CreateAddressResponse {
   Address address = 1;
   Address old_primary_address = 2;
+}
+
+message GetAllAddressesRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message GetAllAddressesResponse {
+	repeated Address addresses = 1;
+	int64 total = 2;
 }

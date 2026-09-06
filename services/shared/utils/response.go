@@ -6,26 +6,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type httpResponse[T any] struct {
-	Status   int                   `json:"status"`
-	Message  string                `json:"message"`
-	Data     T                     `json:"data,omitempty"`
-	Metadata *httpResponseMetadata `json:"metadata,omitempty"`
-}
+type (
+	httpResponse[T any] struct {
+		Status   int                   `json:"status"`
+		Message  string                `json:"message"`
+		Data     T                     `json:"data,omitempty"`
+		Metadata *httpResponseMetadata `json:"metadata,omitempty"`
+	}
 
-type httpResponseMetadata struct {
-	RequestID string    `json:"request_id"`
-	Page      *int      `json:"page,omitempty"`
-	PageSize  *int      `json:"page_size,omitempty"`
-	Total     *int      `json:"total,omitempty"`
-	Timestamp time.Time `json:"timestamp"`
-}
+	httpResponseMetadata struct {
+		RequestID string    `json:"request_id"`
+		Page      *int      `json:"page,omitempty"`
+		PageSize  *int      `json:"page_size,omitempty"`
+		Total     *int      `json:"total,omitempty"`
+		Timestamp time.Time `json:"timestamp"`
+	}
 
-type ResponseMetadata struct {
-	Page     int
-	PageSize int
-	Total    int
-}
+	ResponseMetadata struct {
+		Page     int
+		PageSize int
+		Total    int
+	}
+)
 
 func SetHTTPResponse[T any](ctx *gin.Context, status int, message string, data T, rm *ResponseMetadata) {
 	var page, pageSize, total *int
