@@ -68,6 +68,33 @@ func (h *AddressHandler) GetAllAddresses(ctx context.Context, req *apis.GetAllAd
 	}, nil
 }
 
+func (h *AddressHandler) UpdateAddress(ctx context.Context, req *apis.UpdateAddressRequest) (*apis.UpdateAddressResponse, error) {
+	a, err := h.au.UpdateAddress(
+		ctx,
+		&models.UpdateAddressReq{
+			AddressID: req.GetAddressId(),
+
+			Label:        req.Label,
+			Recipient:    req.Recipient,
+			Phone:        req.Phone,
+			Notes:        req.Notes,
+			Country:      req.Country,
+			Subdivision1: req.Subdivision_1,
+			Subdivision2: req.Subdivision_2,
+			Subdivision3: req.Subdivision_3,
+			Subdivision4: req.Subdivision_4,
+			Street:       req.Street,
+			PostalCode:   req.PostalCode,
+			Latitude:     req.Latitude,
+			Longitude:    req.Longitude,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.UpdateAddressResponse{Address: h.toAddress(a)}, nil
+}
+
 func (h *AddressHandler) SetPrimaryAddress(ctx context.Context, req *apis.SetPrimaryAddressRequest) (*apis.SetPrimaryAddressResponse, error) {
 	a, err := h.au.SetPrimaryAddress(ctx, req.GetAddressId())
 	if err != nil {

@@ -9,6 +9,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 service AddressService {
   rpc CreateAddress (CreateAddressRequest) returns (CreateAddressResponse);
 	rpc GetAllAddresses (GetAllAddressesRequest) returns (GetAllAddressesResponse);
+	rpc UpdateAddress (UpdateAddressRequest) returns (UpdateAddressResponse);
 	rpc SetPrimaryAddress (SetPrimaryAddressRequest) returns (SetPrimaryAddressResponse);
 }
 
@@ -61,6 +62,30 @@ message GetAllAddressesRequest {
 message GetAllAddressesResponse {
 	repeated Address addresses = 1;
 	int64 total = 2;
+}
+
+message UpdateAddressRequest {
+	// Params
+	uint64 address_id = 1;
+
+	// Data
+	optional string label = 2;
+	optional string recipient = 3;
+	optional string phone = 4;
+	optional string notes = 5;
+	optional string country = 6;
+	optional string subdivision_1 = 7;
+	optional string subdivision_2 = 8;
+	optional string subdivision_3 = 9;
+	optional string subdivision_4 = 10;
+	optional string street = 11;
+	optional string postal_code = 12;
+	optional double latitude = 13;
+	optional double longitude = 14;
+}
+
+message UpdateAddressResponse {
+	Address address = 1;
 }
 
 message SetPrimaryAddressRequest {
