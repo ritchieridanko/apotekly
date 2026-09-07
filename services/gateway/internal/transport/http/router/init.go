@@ -50,15 +50,22 @@ func Init(
 	// AUTH ENDPOINTS
 	auth := v1.Group("/auth")
 	{
+		// Sign Up
 		auth.POST("/signup", ah.SignUp)
+
+		// Sign In
 		auth.POST("/signin", ah.SignIn)
+
+		// Sign Out
 		auth.POST("/signout", middlewares.Auth(j), ah.SignOut)
+
+		// Rotate Token
 		auth.POST("/refresh", ah.RotateAuthToken)
 
 		// Emails
 		email := auth.Group("/email")
 		{
-			// Availability
+			// Check Availability
 			email.GET("/available", ah.IsEmailAvailable)
 
 			// Verifications
@@ -74,7 +81,7 @@ func Init(
 			// Changes
 			change := email.Group("/change")
 			{
-				// Change
+				// Request
 				change.POST("", middlewares.Auth(j), ah.ChangeEmail)
 
 				// Confirm
@@ -91,13 +98,13 @@ func Init(
 			// Resets
 			reset := password.Group("/reset")
 			{
-				// Reset
+				// Request
 				reset.POST("", ah.ResetPassword)
 
 				// Confirm
 				reset.POST("/confirm", ah.ConfirmPasswordReset)
 
-				// Validity
+				// Check Validity
 				reset.GET("/valid", ah.IsPasswordResetTokenValid)
 			}
 		}
@@ -126,6 +133,9 @@ func Init(
 
 				// Fetch All
 				address.GET("", middlewares.Auth(j), uah.GetAllAddresses)
+
+				// Set Primary
+				address.PUT("/:address_id/primary", middlewares.Auth(j), uah.SetPrimaryAddress)
 			}
 		}
 	}

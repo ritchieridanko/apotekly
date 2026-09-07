@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -46,7 +47,7 @@ func (h *AddressHandler) CreateAddress(ctx *gin.Context) {
 		return
 	}
 
-	a, oldPrimary, err := h.uac.CreateAddress(
+	a, err := h.uac.CreateAddress(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
 			constants.MDKeyAuthID,
@@ -79,8 +80,7 @@ func (h *AddressHandler) CreateAddress(ctx *gin.Context) {
 		http.StatusCreated,
 		"Address created successfully",
 		dtos.CreateAddressResponse{
-			Address:           h.toAddress(a),
-			OldPrimaryAddress: h.toAddress(oldPrimary),
+			Address: h.toAddress(a),
 		},
 		nil,
 	)
@@ -147,6 +147,56 @@ func (h *AddressHandler) GetAllAddresses(ctx *gin.Context) {
 			PageSize: params.PageSize,
 			Total:    total,
 		},
+	)
+}
+
+func (h *AddressHandler) SetPrimaryAddress(ctx *gin.Context) {
+	id := ctx.Param("address_id")
+	addressID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ce.NewError(
+			ce.CodeInvalidParams,
+			"Invalid address id: "+id,
+			fmt.Errorf("failed to convert address_id (%v) to uint64: %w", id, err),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	a, setErr := h.uac.SetPrimaryAddress(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		addressID,
+	)
+	if setErr != nil {
+		setErr.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Address set primary successfully",
+		dtos.SetPrimaryAddressResponse{
+			Address: h.toAddress(a),
+		},
+		nil,
 	)
 }
 

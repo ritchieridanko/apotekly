@@ -87,11 +87,14 @@ type (
 	}
 
 	CreateAddressResponse struct {
-		Address           *Address `json:"address,omitempty"`
-		OldPrimaryAddress *Address `json:"old_primary_address,omitempty"`
+		Address *Address `json:"address,omitempty"`
 	}
 
 	GetAllAddressesResponse struct {
 		Addresses []Address `json:"addresses"`
+	}
+
+	SetPrimaryAddressResponse struct {
+		Address *Address `json:"address,omitempty"`
 	}
 )

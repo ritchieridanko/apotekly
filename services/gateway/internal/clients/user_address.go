@@ -13,8 +13,9 @@ import (
 var addressServiceField logger.Field = logger.NewField("service", "user.address")
 
 type AddressClient interface {
-	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, oldPrimary *models.Address, err *ce.Error)
+	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, err *ce.Error)
 	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
+	SetPrimaryAddress(ctx context.Context, addressID uint64) (a *models.Address, err *ce.Error)
 }
 
 type addressClient struct {
@@ -25,7 +26,7 @@ func NewAddressClient(c apis.AddressServiceClient) AddressClient {
 	return &addressClient{client: c}
 }
 
-func (c *addressClient) CreateAddress(ctx context.Context, req *models.CreateAddressReq) (*models.Address, *models.Address, *ce.Error) {
+func (c *addressClient) CreateAddress(ctx context.Context, req *models.CreateAddressReq) (*models.Address, *ce.Error) {
 	resp, err := c.client.CreateAddress(
 		ctx,
 		&apis.CreateAddressRequest{
@@ -46,13 +47,13 @@ func (c *addressClient) CreateAddress(ctx context.Context, req *models.CreateAdd
 		},
 	)
 	if err != nil {
-		return nil, nil, ce.ToError(
+		return nil, ce.ToError(
 			err,
 		).Append(
 			addressServiceField,
 		)
 	}
-	return c.toAddress(resp.GetAddress()), c.toAddress(resp.GetOldPrimaryAddress()), nil
+	return c.toAddress(resp.GetAddress()), nil
 }
 
 func (c *addressClient) GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) ([]models.Address, int64, *ce.Error) {
@@ -80,6 +81,23 @@ func (c *addressClient) GetAllAddresses(ctx context.Context, req *models.GetAllA
 	}
 
 	return as, resp.GetTotal(), nil
+}
+
+func (c *addressClient) SetPrimaryAddress(ctx context.Context, addressID uint64) (*models.Address, *ce.Error) {
+	resp, err := c.client.SetPrimaryAddress(
+		ctx,
+		&apis.SetPrimaryAddressRequest{
+			AddressId: addressID,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			addressServiceField,
+		)
+	}
+	return c.toAddress(resp.GetAddress()), nil
 }
 
 func (c *addressClient) toAddress(a *apis.Address) *models.Address {
