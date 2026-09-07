@@ -39,6 +39,22 @@ type (
 	GetAllAddressesRequest struct {
 		PaginationParams
 	}
+
+	UpdateAddressRequest struct {
+		Label        *string  `json:"label"`
+		Recipient    *string  `json:"recipient"`
+		Phone        *string  `json:"phone"`
+		Notes        *string  `json:"notes"`
+		Country      *string  `json:"country"`
+		Subdivision1 *string  `json:"subdivision_1"`
+		Subdivision2 *string  `json:"subdivision_2"`
+		Subdivision3 *string  `json:"subdivision_3"`
+		Subdivision4 *string  `json:"subdivision_4"`
+		Street       *string  `json:"street"`
+		PostalCode   *string  `json:"postal_code"`
+		Latitude     *float64 `json:"latitude"`
+		Longitude    *float64 `json:"longitude"`
+	}
 )
 
 // Responses
@@ -92,6 +108,10 @@ type (
 
 	GetAllAddressesResponse struct {
 		Addresses []Address `json:"addresses"`
+	}
+
+	UpdateAddressResponse struct {
+		Address *Address `json:"address,omitempty"`
 	}
 
 	SetPrimaryAddressResponse struct {

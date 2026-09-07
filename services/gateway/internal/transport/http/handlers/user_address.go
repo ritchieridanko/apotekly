@@ -150,6 +150,78 @@ func (h *AddressHandler) GetAllAddresses(ctx *gin.Context) {
 	)
 }
 
+func (h *AddressHandler) UpdateAddress(ctx *gin.Context) {
+	id := ctx.Param("address_id")
+	addressID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ce.NewError(
+			ce.CodeInvalidParams,
+			"Invalid address id: "+id,
+			fmt.Errorf("failed to convert address_id (%v) to uint64: %w", id, err),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	var payload dtos.UpdateAddressRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	a, updateErr := h.uac.UpdateAddress(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		&models.UpdateAddressReq{
+			AddressID: addressID,
+
+			Label:        payload.Label,
+			Recipient:    payload.Recipient,
+			Phone:        payload.Phone,
+			Notes:        payload.Notes,
+			Country:      payload.Country,
+			Subdivision1: payload.Subdivision1,
+			Subdivision2: payload.Subdivision2,
+			Subdivision3: payload.Subdivision3,
+			Subdivision4: payload.Subdivision4,
+			Street:       payload.Street,
+			PostalCode:   payload.PostalCode,
+			Latitude:     payload.Latitude,
+			Longitude:    payload.Longitude,
+		},
+	)
+	if updateErr != nil {
+		updateErr.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Address updated successfully",
+		dtos.UpdateAddressResponse{
+			Address: h.toAddress(a),
+		},
+		nil,
+	)
+}
+
 func (h *AddressHandler) SetPrimaryAddress(ctx *gin.Context) {
 	id := ctx.Param("address_id")
 	addressID, err := strconv.ParseUint(id, 10, 64)

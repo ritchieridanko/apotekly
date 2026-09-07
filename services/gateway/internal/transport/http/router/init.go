@@ -134,6 +134,9 @@ func Init(
 				// Fetch All
 				address.GET("", middlewares.Auth(j), uah.GetAllAddresses)
 
+				// Update
+				address.PATCH("/:address_id", middlewares.Auth(j), uah.UpdateAddress)
+
 				// Set Primary
 				address.PUT("/:address_id/primary", middlewares.Auth(j), uah.SetPrimaryAddress)
 			}

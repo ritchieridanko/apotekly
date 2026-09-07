@@ -15,6 +15,7 @@ var addressServiceField logger.Field = logger.NewField("service", "user.address"
 type AddressClient interface {
 	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, err *ce.Error)
 	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
+	UpdateAddress(ctx context.Context, req *models.UpdateAddressReq) (a *models.Address, err *ce.Error)
 	SetPrimaryAddress(ctx context.Context, addressID uint64) (a *models.Address, err *ce.Error)
 }
 
@@ -81,6 +82,37 @@ func (c *addressClient) GetAllAddresses(ctx context.Context, req *models.GetAllA
 	}
 
 	return as, resp.GetTotal(), nil
+}
+
+func (c *addressClient) UpdateAddress(ctx context.Context, req *models.UpdateAddressReq) (*models.Address, *ce.Error) {
+	resp, err := c.client.UpdateAddress(
+		ctx,
+		&apis.UpdateAddressRequest{
+			AddressId: req.AddressID,
+
+			Label:         req.Label,
+			Recipient:     req.Recipient,
+			Phone:         req.Phone,
+			Notes:         req.Notes,
+			Country:       req.Country,
+			Subdivision_1: req.Subdivision1,
+			Subdivision_2: req.Subdivision2,
+			Subdivision_3: req.Subdivision3,
+			Subdivision_4: req.Subdivision4,
+			Street:        req.Street,
+			PostalCode:    req.PostalCode,
+			Latitude:      req.Latitude,
+			Longitude:     req.Longitude,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			addressServiceField,
+		)
+	}
+	return c.toAddress(resp.GetAddress()), nil
 }
 
 func (c *addressClient) SetPrimaryAddress(ctx context.Context, addressID uint64) (*models.Address, *ce.Error) {
