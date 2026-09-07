@@ -22,6 +22,7 @@ var (
 
 // Internal Error Codes
 const (
+	CodeAddressNotFound         errCode = "ERR_ADDRESS_NOT_FOUND"
 	CodeAlreadyExists           errCode = "ERR_ALREADY_EXISTS"
 	CodeAuthNotFound            errCode = "ERR_AUTH_NOT_FOUND"
 	CodeAuthNotRegistered       errCode = "ERR_AUTH_NOT_REGISTERED"
@@ -80,6 +81,7 @@ const (
 
 // External Error Messages
 const (
+	MsgAddressNotFound        string = "Address not found"
 	MsgAuthNotFound           string = "Auth not found"
 	MsgEmailAlreadyRegistered string = "Email is already registered"
 	MsgEmailAlreadyVerified   string = "Email is already verified"

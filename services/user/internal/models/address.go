@@ -47,6 +47,12 @@ type (
 	}
 
 	GetAllAddresses struct {
+		AuthID uint64
 		utils.OffsetPagination
+	}
+
+	SetPrimaryAddress struct {
+		AuthID    uint64
+		AddressID uint64
 	}
 )

@@ -19,7 +19,7 @@ func NewAddressHandler(au usecases.AddressUsecase) *AddressHandler {
 }
 
 func (h *AddressHandler) CreateAddress(ctx context.Context, req *apis.CreateAddressRequest) (*apis.CreateAddressResponse, error) {
-	a, oldPrimary, err := h.au.CreateAddress(
+	a, err := h.au.CreateAddress(
 		ctx,
 		&models.CreateAddressReq{
 			Label:        req.GetLabel(),
@@ -41,10 +41,7 @@ func (h *AddressHandler) CreateAddress(ctx context.Context, req *apis.CreateAddr
 	if err != nil {
 		return nil, err
 	}
-	return &apis.CreateAddressResponse{
-		Address:           h.toAddress(a),
-		OldPrimaryAddress: h.toAddress(oldPrimary),
-	}, nil
+	return &apis.CreateAddressResponse{Address: h.toAddress(a)}, nil
 }
 
 func (h *AddressHandler) GetAllAddresses(ctx context.Context, req *apis.GetAllAddressesRequest) (*apis.GetAllAddressesResponse, error) {
@@ -69,6 +66,14 @@ func (h *AddressHandler) GetAllAddresses(ctx context.Context, req *apis.GetAllAd
 		Addresses: addresses,
 		Total:     total,
 	}, nil
+}
+
+func (h *AddressHandler) SetPrimaryAddress(ctx context.Context, req *apis.SetPrimaryAddressRequest) (*apis.SetPrimaryAddressResponse, error) {
+	a, err := h.au.SetPrimaryAddress(ctx, req.GetAddressId())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.SetPrimaryAddressResponse{Address: h.toAddress(a)}, nil
 }
 
 func (h *AddressHandler) toAddress(a *models.Address) *apis.Address {

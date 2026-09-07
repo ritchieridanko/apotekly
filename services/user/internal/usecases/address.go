@@ -21,8 +21,9 @@ const (
 )
 
 type AddressUsecase interface {
-	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, oldPrimary *models.Address, err *ce.Error)
+	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, err *ce.Error)
 	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
+	SetPrimaryAddress(ctx context.Context, addressID uint64) (a *models.Address, err *ce.Error)
 }
 
 type addressUsecase struct {
@@ -49,13 +50,13 @@ func NewAddressUsecase(
 	}
 }
 
-func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAddressReq) (*models.Address, *models.Address, *ce.Error) {
+func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAddressReq) (*models.Address, *ce.Error) {
 	ctx, span := otel.Tracer(u.appName).Start(ctx, "address.usecase.CreateAddress")
 	defer span.End()
 
 	authCtx := utils.CtxAuth(ctx)
 	if authCtx == nil {
-		return nil, nil, ce.NewError(
+		return nil, ce.NewError(
 			ce.CodeMissingContextValue,
 			ce.MsgInternalServer,
 			errors.New("auth missing from context"),
@@ -79,70 +80,67 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 
 	// Data Validation
 	if ok, why := u.validator.AddrLabel(label); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.AddrRecipient(recipient); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.Phone(phone); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if notes != nil {
 		if ok, why := u.validator.AddrNotes(*notes); !ok {
-			return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
 	if ok, why := u.validator.Country(country); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if subdivision1 != nil {
 		if ok, why := u.validator.AddrSubdivision(*subdivision1); !ok {
-			return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
 	if subdivision2 != nil {
 		if ok, why := u.validator.AddrSubdivision(*subdivision2); !ok {
-			return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
 	if subdivision3 != nil {
 		if ok, why := u.validator.AddrSubdivision(*subdivision3); !ok {
-			return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
 	if subdivision4 != nil {
 		if ok, why := u.validator.AddrSubdivision(*subdivision4); !ok {
-			return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
 	if ok, why := u.validator.AddrStreet(street); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.PostalCode(postalCode); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.Latitude(req.Latitude); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.Longitude(req.Longitude); !ok {
-		return nil, nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 
-	var a, oldPrimaryAddress *models.Address
-	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+	var a *models.Address
+	err := u.transactor.WithTx(ctx, func(ctx context.Context) (err *ce.Error) {
 		// Primary Address Unsetting (if any)
 		if req.IsPrimary {
-			address, err := u.ar.UnsetPrimary(ctx, authCtx.AuthID)
+			_, err = u.ar.UnsetPrimary(ctx, authCtx.AuthID)
 			if err != nil {
 				return err
-			}
-			if address != nil {
-				oldPrimaryAddress = address
 			}
 		}
 
 		// Address Creation
-		address, err := u.ar.Create(
+		a, err = u.ar.Create(
 			ctx,
 			&models.CreateAddress{
 				AuthID:       authCtx.AuthID,
@@ -162,18 +160,13 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 				Longitude:    req.Longitude,
 			},
 		)
-		if err != nil {
-			return err
-		}
-
-		a = address
-		return nil
+		return err
 	})
 	if err != nil {
-		return nil, nil, err.Append(authIDField)
+		return nil, err.Append(authIDField)
 	}
 
-	return a, oldPrimaryAddress, nil
+	return a, nil
 }
 
 func (u *addressUsecase) GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) ([]models.Address, int64, *ce.Error) {
@@ -207,8 +200,8 @@ func (u *addressUsecase) GetAllAddresses(ctx context.Context, req *models.GetAll
 	// All Addresses Fetching
 	as, total, err := u.ar.GetAll(
 		ctx,
-		authCtx.AuthID,
 		&models.GetAllAddresses{
+			AuthID: authCtx.AuthID,
 			OffsetPagination: utils.OffsetPagination{
 				Page:     page,
 				PageSize: pageSize,
@@ -220,4 +213,50 @@ func (u *addressUsecase) GetAllAddresses(ctx context.Context, req *models.GetAll
 	}
 
 	return as, total, nil
+}
+
+func (u *addressUsecase) SetPrimaryAddress(ctx context.Context, addressID uint64) (*models.Address, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "address.usecase.SetPrimaryAddress")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	var a *models.Address
+	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Primary Address Unsetting (if any)
+		// NOTE: Idempotent scenario (oldPrimary.ID == addressID) does not fail SetPrimaryAddress usecase
+		//       But would still return error to cancel the transaction
+		oldPrimary, err := u.ar.UnsetPrimary(ctx, authCtx.AuthID)
+		if err != nil {
+			return err
+		}
+		if oldPrimary != nil && oldPrimary.ID == addressID {
+			a = oldPrimary
+			return ce.NewError("idempotent", "", nil)
+		}
+
+		// New Primary Address Setting
+		a, err = u.ar.SetPrimary(
+			ctx,
+			&models.SetPrimaryAddress{
+				AuthID:    authCtx.AuthID,
+				AddressID: addressID,
+			},
+		)
+		return err
+	})
+	if err != nil && err.Code() != "idempotent" {
+		return nil, err.Append(authIDField)
+	}
+
+	return a, nil
 }

@@ -69,6 +69,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeTokenNotOwned:
 		return status.Error(codes.InvalidArgument, e.message)
 	case
+		CodeAddressNotFound,
 		CodeAuthNotFound,
 		CodeNotFound,
 		CodeSessionNotFound,

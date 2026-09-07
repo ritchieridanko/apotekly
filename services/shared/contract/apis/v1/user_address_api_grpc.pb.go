@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AddressService_CreateAddress_FullMethodName   = "/user.v1.AddressService/CreateAddress"
-	AddressService_GetAllAddresses_FullMethodName = "/user.v1.AddressService/GetAllAddresses"
+	AddressService_CreateAddress_FullMethodName     = "/user.v1.AddressService/CreateAddress"
+	AddressService_GetAllAddresses_FullMethodName   = "/user.v1.AddressService/GetAllAddresses"
+	AddressService_SetPrimaryAddress_FullMethodName = "/user.v1.AddressService/SetPrimaryAddress"
 )
 
 // AddressServiceClient is the client API for AddressService service.
@@ -29,6 +30,7 @@ const (
 type AddressServiceClient interface {
 	CreateAddress(ctx context.Context, in *CreateAddressRequest, opts ...grpc.CallOption) (*CreateAddressResponse, error)
 	GetAllAddresses(ctx context.Context, in *GetAllAddressesRequest, opts ...grpc.CallOption) (*GetAllAddressesResponse, error)
+	SetPrimaryAddress(ctx context.Context, in *SetPrimaryAddressRequest, opts ...grpc.CallOption) (*SetPrimaryAddressResponse, error)
 }
 
 type addressServiceClient struct {
@@ -59,12 +61,23 @@ func (c *addressServiceClient) GetAllAddresses(ctx context.Context, in *GetAllAd
 	return out, nil
 }
 
+func (c *addressServiceClient) SetPrimaryAddress(ctx context.Context, in *SetPrimaryAddressRequest, opts ...grpc.CallOption) (*SetPrimaryAddressResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetPrimaryAddressResponse)
+	err := c.cc.Invoke(ctx, AddressService_SetPrimaryAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AddressServiceServer is the server API for AddressService service.
 // All implementations must embed UnimplementedAddressServiceServer
 // for forward compatibility.
 type AddressServiceServer interface {
 	CreateAddress(context.Context, *CreateAddressRequest) (*CreateAddressResponse, error)
 	GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error)
+	SetPrimaryAddress(context.Context, *SetPrimaryAddressRequest) (*SetPrimaryAddressResponse, error)
 	mustEmbedUnimplementedAddressServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedAddressServiceServer) CreateAddress(context.Context, *CreateA
 }
 func (UnimplementedAddressServiceServer) GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllAddresses not implemented")
+}
+func (UnimplementedAddressServiceServer) SetPrimaryAddress(context.Context, *SetPrimaryAddressRequest) (*SetPrimaryAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetPrimaryAddress not implemented")
 }
 func (UnimplementedAddressServiceServer) mustEmbedUnimplementedAddressServiceServer() {}
 func (UnimplementedAddressServiceServer) testEmbeddedByValue()                        {}
@@ -138,6 +154,24 @@ func _AddressService_GetAllAddresses_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AddressService_SetPrimaryAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetPrimaryAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AddressServiceServer).SetPrimaryAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AddressService_SetPrimaryAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AddressServiceServer).SetPrimaryAddress(ctx, req.(*SetPrimaryAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AddressService_ServiceDesc is the grpc.ServiceDesc for AddressService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var AddressService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllAddresses",
 			Handler:    _AddressService_GetAllAddresses_Handler,
+		},
+		{
+			MethodName: "SetPrimaryAddress",
+			Handler:    _AddressService_SetPrimaryAddress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
