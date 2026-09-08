@@ -16,6 +16,7 @@ type AddressClient interface {
 	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, err *ce.Error)
 	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
 	UpdateAddress(ctx context.Context, req *models.UpdateAddressReq) (a *models.Address, err *ce.Error)
+	DeleteAddress(ctx context.Context, addressID uint64) (err *ce.Error)
 	SetPrimaryAddress(ctx context.Context, addressID uint64) (a *models.Address, err *ce.Error)
 }
 
@@ -113,6 +114,23 @@ func (c *addressClient) UpdateAddress(ctx context.Context, req *models.UpdateAdd
 		)
 	}
 	return c.toAddress(resp.GetAddress()), nil
+}
+
+func (c *addressClient) DeleteAddress(ctx context.Context, addressID uint64) *ce.Error {
+	_, err := c.client.DeleteAddress(
+		ctx,
+		&apis.DeleteAddressRequest{
+			AddressId: addressID,
+		},
+	)
+	if err != nil {
+		return ce.ToError(
+			err,
+		).Append(
+			addressServiceField,
+		)
+	}
+	return nil
 }
 
 func (c *addressClient) SetPrimaryAddress(ctx context.Context, addressID uint64) (*models.Address, *ce.Error) {

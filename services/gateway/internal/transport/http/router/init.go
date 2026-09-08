@@ -139,6 +139,9 @@ func Init(
 
 				// Set Primary
 				address.PUT("/:address_id/primary", middlewares.Auth(j), uah.SetPrimaryAddress)
+
+				// Delete
+				address.DELETE("/:address_id", middlewares.Auth(j), uah.DeleteAddress)
 			}
 		}
 	}

@@ -222,6 +222,48 @@ func (h *AddressHandler) UpdateAddress(ctx *gin.Context) {
 	)
 }
 
+func (h *AddressHandler) DeleteAddress(ctx *gin.Context) {
+	id := ctx.Param("address_id")
+	addressID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		ce.NewError(
+			ce.CodeInvalidParams,
+			"Invalid address id: "+id,
+			fmt.Errorf("failed to convert address_id (%v) to uint64: %w", id, err),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	delErr := h.uac.DeleteAddress(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		addressID,
+	)
+	if delErr != nil {
+		delErr.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse[any](ctx, http.StatusNoContent, "", nil, nil)
+}
+
 func (h *AddressHandler) SetPrimaryAddress(ctx *gin.Context) {
 	id := ctx.Param("address_id")
 	addressID, err := strconv.ParseUint(id, 10, 64)
