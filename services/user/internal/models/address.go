@@ -72,6 +72,11 @@ type (
 		Longitude    *float64
 	}
 
+	DeleteAddress struct {
+		AuthID    uint64
+		AddressID uint64
+	}
+
 	SetPrimaryAddress struct {
 		AuthID    uint64
 		AddressID uint64

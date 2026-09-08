@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,6 +23,7 @@ const (
 	AddressService_CreateAddress_FullMethodName     = "/user.v1.AddressService/CreateAddress"
 	AddressService_GetAllAddresses_FullMethodName   = "/user.v1.AddressService/GetAllAddresses"
 	AddressService_UpdateAddress_FullMethodName     = "/user.v1.AddressService/UpdateAddress"
+	AddressService_DeleteAddress_FullMethodName     = "/user.v1.AddressService/DeleteAddress"
 	AddressService_SetPrimaryAddress_FullMethodName = "/user.v1.AddressService/SetPrimaryAddress"
 )
 
@@ -32,6 +34,7 @@ type AddressServiceClient interface {
 	CreateAddress(ctx context.Context, in *CreateAddressRequest, opts ...grpc.CallOption) (*CreateAddressResponse, error)
 	GetAllAddresses(ctx context.Context, in *GetAllAddressesRequest, opts ...grpc.CallOption) (*GetAllAddressesResponse, error)
 	UpdateAddress(ctx context.Context, in *UpdateAddressRequest, opts ...grpc.CallOption) (*UpdateAddressResponse, error)
+	DeleteAddress(ctx context.Context, in *DeleteAddressRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SetPrimaryAddress(ctx context.Context, in *SetPrimaryAddressRequest, opts ...grpc.CallOption) (*SetPrimaryAddressResponse, error)
 }
 
@@ -73,6 +76,16 @@ func (c *addressServiceClient) UpdateAddress(ctx context.Context, in *UpdateAddr
 	return out, nil
 }
 
+func (c *addressServiceClient) DeleteAddress(ctx context.Context, in *DeleteAddressRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AddressService_DeleteAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *addressServiceClient) SetPrimaryAddress(ctx context.Context, in *SetPrimaryAddressRequest, opts ...grpc.CallOption) (*SetPrimaryAddressResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SetPrimaryAddressResponse)
@@ -90,6 +103,7 @@ type AddressServiceServer interface {
 	CreateAddress(context.Context, *CreateAddressRequest) (*CreateAddressResponse, error)
 	GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error)
 	UpdateAddress(context.Context, *UpdateAddressRequest) (*UpdateAddressResponse, error)
+	DeleteAddress(context.Context, *DeleteAddressRequest) (*emptypb.Empty, error)
 	SetPrimaryAddress(context.Context, *SetPrimaryAddressRequest) (*SetPrimaryAddressResponse, error)
 	mustEmbedUnimplementedAddressServiceServer()
 }
@@ -109,6 +123,9 @@ func (UnimplementedAddressServiceServer) GetAllAddresses(context.Context, *GetAl
 }
 func (UnimplementedAddressServiceServer) UpdateAddress(context.Context, *UpdateAddressRequest) (*UpdateAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAddress not implemented")
+}
+func (UnimplementedAddressServiceServer) DeleteAddress(context.Context, *DeleteAddressRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAddress not implemented")
 }
 func (UnimplementedAddressServiceServer) SetPrimaryAddress(context.Context, *SetPrimaryAddressRequest) (*SetPrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetPrimaryAddress not implemented")
@@ -188,6 +205,24 @@ func _AddressService_UpdateAddress_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AddressService_DeleteAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AddressServiceServer).DeleteAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AddressService_DeleteAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AddressServiceServer).DeleteAddress(ctx, req.(*DeleteAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AddressService_SetPrimaryAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetPrimaryAddressRequest)
 	if err := dec(in); err != nil {
@@ -224,6 +259,10 @@ var AddressService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAddress",
 			Handler:    _AddressService_UpdateAddress_Handler,
+		},
+		{
+			MethodName: "DeleteAddress",
+			Handler:    _AddressService_DeleteAddress_Handler,
 		},
 		{
 			MethodName: "SetPrimaryAddress",

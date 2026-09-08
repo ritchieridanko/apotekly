@@ -12,6 +12,7 @@ type AddressRepository interface {
 	Create(ctx context.Context, data *models.CreateAddress) (a *models.Address, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllAddresses) (as []models.Address, total int64, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateAddressP, data *models.UpdateAddressD) (a *models.Address, err *ce.Error)
+	Delete(ctx context.Context, params *models.DeleteAddress) (err *ce.Error)
 	SetPrimary(ctx context.Context, params *models.SetPrimaryAddress) (a *models.Address, err *ce.Error)
 	UnsetPrimary(ctx context.Context, authID uint64) (a *models.Address, err *ce.Error)
 }
@@ -34,6 +35,10 @@ func (r *addressRepository) GetAll(ctx context.Context, params *models.GetAllAdd
 
 func (r *addressRepository) Update(ctx context.Context, params *models.UpdateAddressP, data *models.UpdateAddressD) (*models.Address, *ce.Error) {
 	return r.database.Update(ctx, params, data)
+}
+
+func (r *addressRepository) Delete(ctx context.Context, params *models.DeleteAddress) *ce.Error {
+	return r.database.Delete(ctx, params)
 }
 
 func (r *addressRepository) SetPrimary(ctx context.Context, params *models.SetPrimaryAddress) (*models.Address, *ce.Error) {

@@ -33,5 +33,6 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 	"/user.v1.AddressService/CreateAddress":     {authenticated: true},
 	"/user.v1.AddressService/GetAllAddresses":   {authenticated: true},
 	"/user.v1.AddressService/UpdateAddress":     {authenticated: true},
+	"/user.v1.AddressService/DeleteAddress":     {authenticated: true},
 	"/user.v1.AddressService/SetPrimaryAddress": {authenticated: true},
 }

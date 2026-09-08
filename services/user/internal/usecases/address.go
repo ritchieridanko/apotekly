@@ -24,6 +24,7 @@ type AddressUsecase interface {
 	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, err *ce.Error)
 	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
 	UpdateAddress(ctx context.Context, req *models.UpdateAddressReq) (a *models.Address, err *ce.Error)
+	DeleteAddress(ctx context.Context, addressID uint64) (err *ce.Error)
 	SetPrimaryAddress(ctx context.Context, addressID uint64) (a *models.Address, err *ce.Error)
 }
 
@@ -347,6 +348,36 @@ func (u *addressUsecase) UpdateAddress(ctx context.Context, req *models.UpdateAd
 	}
 
 	return a, nil
+}
+
+func (u *addressUsecase) DeleteAddress(ctx context.Context, addressID uint64) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "address.usecase.DeleteAddress")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Address Deletion
+	err := u.ar.Delete(
+		ctx,
+		&models.DeleteAddress{
+			AuthID:    authCtx.AuthID,
+			AddressID: addressID,
+		},
+	)
+	if err != nil {
+		return err.Append(authIDField)
+	}
+
+	return nil
 }
 
 func (u *addressUsecase) SetPrimaryAddress(ctx context.Context, addressID uint64) (*models.Address, *ce.Error) {

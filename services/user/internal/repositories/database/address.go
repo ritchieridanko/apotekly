@@ -16,6 +16,7 @@ type AddressDatabase interface {
 	Create(ctx context.Context, data *models.CreateAddress) (a *models.Address, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllAddresses) (as []models.Address, total int64, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateAddressP, data *models.UpdateAddressD) (a *models.Address, err *ce.Error)
+	Delete(ctx context.Context, params *models.DeleteAddress) (err *ce.Error)
 	SetPrimary(ctx context.Context, params *models.SetPrimaryAddress) (a *models.Address, err *ce.Error)
 	UnsetPrimary(ctx context.Context, authID uint64) (a *models.Address, err *ce.Error)
 }
@@ -325,6 +326,33 @@ func (d *addressDatabase) Update(ctx context.Context, params *models.UpdateAddre
 	}
 
 	return &a, nil
+}
+
+func (d *addressDatabase) Delete(ctx context.Context, params *models.DeleteAddress) *ce.Error {
+	query := "DELETE FROM addresses WHERE id = $1 AND auth_id = $2"
+
+	err := d.database.Execute(
+		ctx, query,
+		params.AddressID,
+		params.AuthID,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to delete address: %w", err)
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return ce.NewError(
+				ce.CodeAddressNotFound,
+				ce.MsgAddressNotFound,
+				wrappedErr,
+			)
+		}
+		return ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return nil
 }
 
 func (d *addressDatabase) SetPrimary(ctx context.Context, params *models.SetPrimaryAddress) (*models.Address, *ce.Error) {

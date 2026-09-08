@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/user/internal/models"
 	"github.com/ritchieridanko/apotekly/services/user/internal/usecases"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AddressHandler struct {
@@ -93,6 +94,13 @@ func (h *AddressHandler) UpdateAddress(ctx context.Context, req *apis.UpdateAddr
 		return nil, err
 	}
 	return &apis.UpdateAddressResponse{Address: h.toAddress(a)}, nil
+}
+
+func (h *AddressHandler) DeleteAddress(ctx context.Context, req *apis.DeleteAddressRequest) (*emptypb.Empty, error) {
+	if err := h.au.DeleteAddress(ctx, req.GetAddressId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (h *AddressHandler) SetPrimaryAddress(ctx context.Context, req *apis.SetPrimaryAddressRequest) (*apis.SetPrimaryAddressResponse, error) {
