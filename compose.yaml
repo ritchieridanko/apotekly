@@ -234,6 +234,56 @@ services:
       interval: 10s
       retries: 3
 
+  # ---------- Pharmacy ----------
+  pharmacy-database:
+    image: postgis/postgis:16-3.5-alpine
+    container_name: ${PHARMACY_DATABASE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${PHARMACY_DATABASE_USER}
+      - POSTGRES_PASSWORD=${PHARMACY_DATABASE_PASS}
+      - POSTGRES_DB=${PHARMACY_DATABASE_NAME}
+    volumes:
+      - pharmacy_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PHARMACY_DATABASE_USER} -d ${PHARMACY_DATABASE_NAME}"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  pharmacy-migrator:
+    image: apotekly-pharmacy-migrator
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/pharmacy/Dockerfile.migrator
+    container_name: pharmacy-migrator
+    networks:
+      - apotekly-net
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=${PHARMACY_DATABASE_HOST}
+      - DATABASE_PORT=${PHARMACY_DATABASE_PORT}
+      - DATABASE_USER=${PHARMACY_DATABASE_USER}
+      - DATABASE_PASS=${PHARMACY_DATABASE_PASS}
+      - DATABASE_NAME=${PHARMACY_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${PHARMACY_DATABASE_SSL_MODE}
+    depends_on:
+      pharmacy-database:
+        condition: service_healthy
+    entrypoint: ["./bin/migrator"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "${PHARMACY_DATABASE_HOST}"]
+      interval: 10s
+      retries: 3
+
   # ---------- User ----------
   user-service:
     image: apotekly-user-service
@@ -432,6 +482,7 @@ networks:
 
 volumes:
   auth_db_data:
+  pharmacy_db_data:
   notification_db_data:
   user_db_data:
   kafka1_data:
