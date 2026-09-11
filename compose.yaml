@@ -33,6 +33,8 @@ services:
         condition: service_started
       auth-service:
         condition: service_started
+      pharmacy-service:
+        condition: service_started
       user-service:
         condition: service_started
     healthcheck:
@@ -235,6 +237,39 @@ services:
       retries: 3
 
   # ---------- Pharmacy ----------
+  pharmacy-service:
+    image: apotekly-pharmacy-service
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/pharmacy/Dockerfile.app
+    container_name: ${PHARMACY_SERVICE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - APP_NAME=${PHARMACY_SERVICE_HOST}
+      - SERVER_HOST=${PHARMACY_SERVICE_HOST}
+      - SERVER_PORT=${PHARMACY_SERVICE_PORT}
+      - SERVER_TIMEOUT_SHUTDOWN=${PHARMACY_SERVICE_TIMEOUT_SHUTDOWN}
+      - DATABASE_HOST=${PHARMACY_DATABASE_HOST}
+      - DATABASE_PORT=${PHARMACY_DATABASE_PORT}
+      - DATABASE_USER=${PHARMACY_DATABASE_USER}
+      - DATABASE_PASS=${PHARMACY_DATABASE_PASS}
+      - DATABASE_NAME=${PHARMACY_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${PHARMACY_DATABASE_SSL_MODE}
+      - DATABASE_MAX_CONNS=${PHARMACY_DATABASE_MAX_CONNS}
+      - DATABASE_MIN_CONNS=${PHARMACY_DATABASE_MIN_CONNS}
+      - DATABASE_MAX_CONN_LIFETIME=${PHARMACY_DATABASE_MAX_CONN_LIFETIME}
+      - DATABASE_MAX_CONN_IDLE_TIME=${PHARMACY_DATABASE_MAX_CONN_IDLE_TIME}
+    depends_on:
+      pharmacy-database:
+        condition: service_healthy
+      pharmacy-migrator:
+        condition: service_completed_successfully
+
   pharmacy-database:
     image: postgis/postgis:16-3.5-alpine
     container_name: ${PHARMACY_DATABASE_HOST}

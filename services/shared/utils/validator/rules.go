@@ -8,23 +8,25 @@ var (
 	rgxNumber       *regexp.Regexp = regexp.MustCompile(`[0-9]`)
 	rgxPhone        *regexp.Regexp = regexp.MustCompile(`^0\d{7,15}$`)
 	rgxSpecialChars *regexp.Regexp = regexp.MustCompile(`[!@#$%^&*()_+\-={};:'"/\\|,.<>?]`)
+	rgxTimeRange    *regexp.Regexp = regexp.MustCompile(`^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$`)
 	rgxUppercase    *regexp.Regexp = regexp.MustCompile(`[A-Z]`)
 )
 
 const (
 	bcryptMaxBytes       int = 72
+	descMaxLength        int = 1000
 	labelMaxLength       int = 50
 	labelMinLength       int = 3
-	nameMaxLength        int = 100
+	nameMaxLength        int = 255
 	nameMinLength        int = 3
 	notesMaxLength       int = 100
 	passwordMaxLength    int = 50
 	passwordMinLength    int = 8
 	postalCodeMaxLength  int = 6
 	postalCodeMinLength  int = 4
-	streetMaxLength      int = 250
+	streetMaxLength      int = 255
 	streetMinLength      int = 3
-	subdivisionMaxLength int = 250
+	subdivisionMaxLength int = 255
 	userAgentMaxLength   int = 512
 
 	maxLatitude  float64 = 90

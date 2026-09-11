@@ -1,0 +1,47 @@
+# ---------- Build Stage ----------
+FROM golang:1.25.0-alpine3.22 AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Set work directory
+WORKDIR /app/pharmacy
+
+# Copy and download app dependencies
+COPY services/shared/go.mod services/shared/go.sum ../shared/
+COPY services/pharmacy/go.mod services/pharmacy/go.sum ./
+RUN go mod download
+
+# Copy app source
+COPY services/shared/configs ../shared/configs
+COPY services/shared/constants ../shared/constants
+COPY services/shared/contract/apis/v1 ../shared/contract/apis/v1
+COPY services/shared/infra/database ../shared/infra/database
+COPY services/shared/infra/logger ../shared/infra/logger
+COPY services/shared/infra/tracer ../shared/infra/tracer
+COPY services/shared/utils ../shared/utils
+COPY services/pharmacy/cmd/app ./cmd/app
+COPY services/pharmacy/configs ./configs
+COPY services/pharmacy/internal ./internal
+
+# Build binary
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/app cmd/app/main.go
+
+# ---------- Runtime Stage ----------
+FROM alpine:3.22
+
+# Install runtime dependencies
+RUN apk add --no-cache ca-certificates
+
+# Set work directory
+WORKDIR /root
+
+# Copy from the Build Stage
+COPY --from=builder /app/pharmacy/bin ./bin
+COPY --from=builder /app/pharmacy/configs ./configs
+
+# Expose port
+EXPOSE 50053
+
+# Set entry point
+ENTRYPOINT ["./bin/app"]

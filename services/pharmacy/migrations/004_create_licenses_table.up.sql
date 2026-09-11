@@ -7,7 +7,7 @@ CREATE TABLE licenses (
   issued_at DATE NOT NULL,
   expires_at DATE NOT NULL,
   attachment VARCHAR,
-  status VARCHAR DEFAULT 'pending', -- opts: "pending", "active", "rejected", "expired", "revoked", etc.
+  status VARCHAR NOT NULL DEFAULT 'pending', -- opts: "pending", "active", "rejected", "expired", "revoked", etc.
 
   verified_at TIMESTAMPTZ,
   verified_by UUID,

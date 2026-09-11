@@ -8,8 +8,8 @@ CREATE TABLE pharmacies (
   description TEXT,
 
   -- Status and Activity
-  status VARCHAR DEFAULT 'pending', -- opts: "pending", "accepted", "rejected", "suspended", etc.
-  is_active BOOLEAN DEFAULT FALSE,
+  status VARCHAR NOT NULL DEFAULT 'pending', -- opts: "pending", "accepted", "rejected", "suspended", etc.
+  is_active BOOLEAN NOT NULL DEFAULT FALSE,
   online_hours JSONB, -- e.g. { "mon": ["08:00-20:00"], "fri": ["08:00-12:00", "14:00-18:00"] }
 
   -- Address

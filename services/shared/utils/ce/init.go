@@ -78,6 +78,7 @@ func (e *Error) ToGRPCErr() error {
 	case
 		CodeAlreadyExists,
 		CodeEmailNotAvailable,
+		CodePharmacyAlreadyExists,
 		CodeUserAlreadyExists:
 		return status.Error(codes.AlreadyExists, e.message)
 	case

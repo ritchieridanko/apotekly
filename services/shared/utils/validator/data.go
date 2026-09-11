@@ -14,4 +14,14 @@ var (
 		"timor leste": {},
 		"vietnam":     {},
 	}
+
+	days map[string]struct{} = map[string]struct{}{
+		"sun": {},
+		"mon": {},
+		"tue": {},
+		"wed": {},
+		"thu": {},
+		"fri": {},
+		"sat": {},
+	}
 )

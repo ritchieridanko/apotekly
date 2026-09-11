@@ -1,10 +1,15 @@
 package validator
 
 import (
+	"encoding/json"
 	"net"
+	"net/url"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/ritchieridanko/apotekly/services/shared/utils"
 )
 
 type Validator struct{}
@@ -14,7 +19,7 @@ func Init() *Validator {
 }
 
 func (v *Validator) AddrLabel(value string) (bool, string) {
-	length := len(value)
+	length := utf8.RuneCountInString(value)
 	if length < labelMinLength {
 		return false, "Label must be at least " + strconv.Itoa(labelMinLength) + " characters"
 	}
@@ -25,14 +30,14 @@ func (v *Validator) AddrLabel(value string) (bool, string) {
 }
 
 func (v *Validator) AddrNotes(value string) (bool, string) {
-	if len(value) > notesMaxLength {
+	if utf8.RuneCountInString(value) > notesMaxLength {
 		return false, "Notes must not exceed " + strconv.Itoa(notesMaxLength) + " characters"
 	}
 	return true, ""
 }
 
 func (v *Validator) AddrRecipient(value string) (bool, string) {
-	length := len(value)
+	length := utf8.RuneCountInString(value)
 	if length < nameMinLength {
 		return false, "Recipient name must be at least " + strconv.Itoa(nameMinLength) + " characters"
 	}
@@ -43,7 +48,7 @@ func (v *Validator) AddrRecipient(value string) (bool, string) {
 }
 
 func (v *Validator) AddrStreet(value string) (bool, string) {
-	length := len(value)
+	length := utf8.RuneCountInString(value)
 	if length < streetMinLength {
 		return false, "Street must be at least " + strconv.Itoa(streetMinLength) + " characters"
 	}
@@ -54,7 +59,7 @@ func (v *Validator) AddrStreet(value string) (bool, string) {
 }
 
 func (v *Validator) AddrSubdivision(value string) (bool, string) {
-	if len(value) > subdivisionMaxLength {
+	if utf8.RuneCountInString(value) > subdivisionMaxLength {
 		return false, "Subdivision must not exceed " + strconv.Itoa(subdivisionMaxLength) + " characters"
 	}
 	return true, ""
@@ -68,9 +73,15 @@ func (v *Validator) Birthdate(value time.Time) (bool, string) {
 }
 
 func (v *Validator) Country(value string) (bool, string) {
-	_, ok := countries[value]
-	if !ok {
+	if _, ok := countries[value]; !ok {
 		return false, "Country is invalid: " + value
+	}
+	return true, ""
+}
+
+func (v *Validator) Description(value string) (bool, string) {
+	if utf8.RuneCountInString(value) > descMaxLength {
+		return false, "Description must not exceed " + strconv.Itoa(descMaxLength) + " characters"
 	}
 	return true, ""
 }
@@ -104,12 +115,45 @@ func (v *Validator) Longitude(value float64) (bool, string) {
 }
 
 func (v *Validator) Name(value string) (bool, string) {
-	length := len(value)
+	length := utf8.RuneCountInString(value)
 	if length < nameMinLength {
 		return false, "Name must be at least " + strconv.Itoa(nameMinLength) + " characters"
 	}
 	if length > nameMaxLength {
 		return false, "Name must not exceed " + strconv.Itoa(nameMaxLength) + " characters"
+	}
+	return true, ""
+}
+
+func (v *Validator) OnlineHours(value json.RawMessage) (bool, string) {
+	data, err := utils.FromJSONRawMessage[map[string][]string](value)
+	if err != nil {
+		return false, "Online Hours is invalid"
+	}
+	for day, hours := range *data {
+		if _, ok := days[day]; !ok {
+			return false, "Day in Online Hours is invalid: " + day
+		}
+		for _, hour := range hours {
+			why := "Range in Online Hours is invalid: " + hour
+			if !rgxTimeRange.MatchString(hour) {
+				return false, why
+			}
+
+			parts := strings.SplitN(hour, "-", 2)
+			start, err := time.Parse("15:04", parts[0])
+			if err != nil {
+				return false, why
+			}
+
+			end, err := time.Parse("15:04", parts[1])
+			if err != nil {
+				return false, why
+			}
+			if !start.Before(end) {
+				return false, why
+			}
+		}
 	}
 	return true, ""
 }
@@ -148,7 +192,7 @@ func (v *Validator) Phone(value string) (bool, string) {
 }
 
 func (v *Validator) PostalCode(value string) (bool, string) {
-	length := len(value)
+	length := utf8.RuneCountInString(value)
 	if length < postalCodeMinLength {
 		return false, "Postal code must be at least " + strconv.Itoa(postalCodeMinLength) + " characters"
 	}
@@ -165,8 +209,23 @@ func (v *Validator) Sex(value string) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) URL(value string) (bool, string) {
+	why := "URL is invalid: " + value
+	u, err := url.ParseRequestURI(value)
+	if err != nil {
+		return false, why
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return false, why
+	}
+	if u.Hostname() == "" {
+		return false, why
+	}
+	return true, ""
+}
+
 func (v *Validator) UserAgent(value string) (bool, string) {
-	if len(value) > userAgentMaxLength {
+	if utf8.RuneCountInString(value) > userAgentMaxLength {
 		return false, "User Agent must not exceed " + strconv.Itoa(userAgentMaxLength) + " characters"
 	}
 	return true, ""
