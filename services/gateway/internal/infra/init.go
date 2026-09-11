@@ -15,6 +15,7 @@ type Infra struct {
 	logger *zap.Logger
 	tracer *tracer.Tracer
 	as     *services.AuthService
+	ps     *services.PharmacyService
 	us     *services.UserService
 }
 
@@ -34,6 +35,10 @@ func Init(cfg *configs.Config) (*Infra, error) {
 	if err != nil {
 		return nil, err
 	}
+	ps, err := services.NewPharmacyService(&cfg.Service.Pharmacy, l)
+	if err != nil {
+		return nil, err
+	}
 	us, err := services.NewUserService(&cfg.Service.User, l)
 	if err != nil {
 		return nil, err
@@ -44,6 +49,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		logger: l,
 		tracer: t,
 		as:     as,
+		ps:     ps,
 		us:     us,
 	}, nil
 }
@@ -54,6 +60,10 @@ func (i *Infra) Logger() *zap.Logger {
 
 func (i *Infra) AuthService() *services.AuthService {
 	return i.as
+}
+
+func (i *Infra) PharmacyService() *services.PharmacyService {
+	return i.ps
 }
 
 func (i *Infra) UserService() *services.UserService {
@@ -69,6 +79,9 @@ func (i *Infra) Close() error {
 	}
 	if err := i.as.Close(); err != nil {
 		return fmt.Errorf("failed to close auth service connection: %w", err)
+	}
+	if err := i.ps.Close(); err != nil {
+		return fmt.Errorf("failed to close pharmacy service connection: %w", err)
 	}
 	if err := i.us.Close(); err != nil {
 		return fmt.Errorf("failed to close user service connection: %w", err)

@@ -21,6 +21,7 @@ func Init(
 	j *jwt.JWT,
 	l *logger.Logger,
 	ah *handlers.AuthHandler,
+	ph *handlers.PharmacyHandler,
 	uh *handlers.UserHandler,
 	uah *handlers.AddressHandler,
 ) *Router {
@@ -108,6 +109,13 @@ func Init(
 				reset.GET("/valid", ah.IsPasswordResetTokenValid)
 			}
 		}
+	}
+
+	// PHARMACY ENDPOINTS
+	pharmacy := v1.Group("/pharmacies")
+	{
+		// Create
+		pharmacy.POST("", middlewares.Auth(j), ph.CreatePharmacy)
 	}
 
 	// USER ENDPOINTS

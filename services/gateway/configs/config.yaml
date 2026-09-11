@@ -18,6 +18,10 @@ service:
     name: "auth-service"
     host: "localhost"
     port: 50051
+  pharmacy:
+    name: "pharmacy-service"
+    host: "localhost"
+    port: 50053
   user:
     name: "user-service"
     host: "localhost"
