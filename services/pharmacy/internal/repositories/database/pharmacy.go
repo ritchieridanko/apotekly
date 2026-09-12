@@ -13,6 +13,7 @@ import (
 
 type PharmacyDatabase interface {
 	Create(ctx context.Context, data *models.CreatePharmacy) (p *models.Pharmacy, err *ce.Error)
+	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyDatabase struct {
@@ -98,6 +99,72 @@ func (d *pharmacyDatabase) Create(ctx context.Context, data *models.CreatePharma
 			return nil, ce.NewError(
 				ce.CodePharmacyAlreadyExists,
 				ce.MsgPharmacyAlreadyExists,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &p, nil
+}
+
+func (d *pharmacyDatabase) GetByAuthID(ctx context.Context, authID uint64) (*models.Pharmacy, *ce.Error) {
+	query := `
+		SELECT
+			id, name, legal_name, description, status, online_hours, country,
+			subdivision_1, subdivision_2, subdivision_3, subdivision_4, street,
+			postal_code, latitude, longitude, email, phone, website, whatsapp,
+			profile_picture, profile_banner, verified_at, created_at, updated_at
+		FROM
+			pharmacies
+		WHERE
+			auth_id = $1
+			AND deleted_at IS NULL
+	`
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var p models.Pharmacy
+	err := d.database.Query(
+		ctx, query,
+		authID,
+	).Scan(
+		&p.ID,
+		&p.Name,
+		&p.LegalName,
+		&p.Description,
+		&p.Status,
+		&p.OnlineHours,
+		&p.Country,
+		&p.Subdivision1,
+		&p.Subdivision2,
+		&p.Subdivision3,
+		&p.Subdivision4,
+		&p.Street,
+		&p.PostalCode,
+		&p.Latitude,
+		&p.Longitude,
+		&p.Email,
+		&p.Phone,
+		&p.Website,
+		&p.Whatsapp,
+		&p.ProfilePicture,
+		&p.ProfileBanner,
+		&p.VerifiedAt,
+		&p.CreatedAt,
+		&p.UpdatedAt,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get pharmacy by auth id: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodePharmacyNotFound,
+				ce.MsgPharmacyNotFound,
 				wrappedErr,
 			)
 		}

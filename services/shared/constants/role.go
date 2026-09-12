@@ -1,5 +1,6 @@
 package constants
 
 const (
-	RoleUser string = "USER"
+	RolePharmacy string = "PHARMACY"
+	RoleUser     string = "USER"
 )

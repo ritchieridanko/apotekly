@@ -72,6 +72,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeAddressNotFound,
 		CodeAuthNotFound,
 		CodeNotFound,
+		CodePharmacyNotFound,
 		CodeSessionNotFound,
 		CodeUserNotFound:
 		return status.Error(codes.NotFound, e.message)

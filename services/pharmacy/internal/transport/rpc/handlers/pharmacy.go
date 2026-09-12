@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/usecases"
 	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type PharmacyHandler struct {
@@ -45,6 +46,14 @@ func (h *PharmacyHandler) CreatePharmacy(ctx context.Context, req *apis.CreatePh
 		return nil, err
 	}
 	return &apis.CreatePharmacyResponse{Pharmacy: h.toPharmacy(p)}, nil
+}
+
+func (h *PharmacyHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.PharmacyGetMeResponse, error) {
+	p, err := h.pu.GetMe(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.PharmacyGetMeResponse{Pharmacy: h.toPharmacy(p)}, nil
 }
 
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {

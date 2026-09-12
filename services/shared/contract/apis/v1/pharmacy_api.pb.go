@@ -9,6 +9,7 @@ package apis
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -466,11 +467,55 @@ func (x *CreatePharmacyResponse) GetPharmacy() *Pharmacy {
 	return nil
 }
 
+type PharmacyGetMeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pharmacy      *Pharmacy              `protobuf:"bytes,1,opt,name=pharmacy,proto3" json:"pharmacy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PharmacyGetMeResponse) Reset() {
+	*x = PharmacyGetMeResponse{}
+	mi := &file_v1_pharmacy_api_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PharmacyGetMeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PharmacyGetMeResponse) ProtoMessage() {}
+
+func (x *PharmacyGetMeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_pharmacy_api_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PharmacyGetMeResponse.ProtoReflect.Descriptor instead.
+func (*PharmacyGetMeResponse) Descriptor() ([]byte, []int) {
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *PharmacyGetMeResponse) GetPharmacy() *Pharmacy {
+	if x != nil {
+		return x.Pharmacy
+	}
+	return nil
+}
+
 var File_v1_pharmacy_api_proto protoreflect.FileDescriptor
 
 const file_v1_pharmacy_api_proto_rawDesc = "" +
 	"\n" +
-	"\x15v1/pharmacy_api.proto\x12\vpharmacy.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\b\n" +
+	"\x15v1/pharmacy_api.proto\x12\vpharmacy.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\b\n" +
 	"\bPharmacy\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\"\n" +
@@ -552,9 +597,12 @@ const file_v1_pharmacy_api_proto_rawDesc = "" +
 	"\b_websiteB\v\n" +
 	"\t_whatsapp\"K\n" +
 	"\x16CreatePharmacyResponse\x121\n" +
-	"\bpharmacy\x18\x01 \x01(\v2\x15.pharmacy.v1.PharmacyR\bpharmacy2l\n" +
+	"\bpharmacy\x18\x01 \x01(\v2\x15.pharmacy.v1.PharmacyR\bpharmacy\"J\n" +
+	"\x15PharmacyGetMeResponse\x121\n" +
+	"\bpharmacy\x18\x01 \x01(\v2\x15.pharmacy.v1.PharmacyR\bpharmacy2\xb1\x01\n" +
 	"\x0fPharmacyService\x12Y\n" +
-	"\x0eCreatePharmacy\x12\".pharmacy.v1.CreatePharmacyRequest\x1a#.pharmacy.v1.CreatePharmacyResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x0eCreatePharmacy\x12\".pharmacy.v1.CreatePharmacyRequest\x1a#.pharmacy.v1.CreatePharmacyResponse\x12C\n" +
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\".pharmacy.v1.PharmacyGetMeResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_pharmacy_api_proto_rawDescOnce sync.Once
@@ -568,25 +616,30 @@ func file_v1_pharmacy_api_proto_rawDescGZIP() []byte {
 	return file_v1_pharmacy_api_proto_rawDescData
 }
 
-var file_v1_pharmacy_api_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_v1_pharmacy_api_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_v1_pharmacy_api_proto_goTypes = []any{
 	(*Pharmacy)(nil),               // 0: pharmacy.v1.Pharmacy
 	(*CreatePharmacyRequest)(nil),  // 1: pharmacy.v1.CreatePharmacyRequest
 	(*CreatePharmacyResponse)(nil), // 2: pharmacy.v1.CreatePharmacyResponse
-	(*timestamppb.Timestamp)(nil),  // 3: google.protobuf.Timestamp
+	(*PharmacyGetMeResponse)(nil),  // 3: pharmacy.v1.PharmacyGetMeResponse
+	(*timestamppb.Timestamp)(nil),  // 4: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),          // 5: google.protobuf.Empty
 }
 var file_v1_pharmacy_api_proto_depIdxs = []int32{
-	3, // 0: pharmacy.v1.Pharmacy.verified_at:type_name -> google.protobuf.Timestamp
-	3, // 1: pharmacy.v1.Pharmacy.created_at:type_name -> google.protobuf.Timestamp
-	3, // 2: pharmacy.v1.Pharmacy.updated_at:type_name -> google.protobuf.Timestamp
+	4, // 0: pharmacy.v1.Pharmacy.verified_at:type_name -> google.protobuf.Timestamp
+	4, // 1: pharmacy.v1.Pharmacy.created_at:type_name -> google.protobuf.Timestamp
+	4, // 2: pharmacy.v1.Pharmacy.updated_at:type_name -> google.protobuf.Timestamp
 	0, // 3: pharmacy.v1.CreatePharmacyResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
-	1, // 4: pharmacy.v1.PharmacyService.CreatePharmacy:input_type -> pharmacy.v1.CreatePharmacyRequest
-	2, // 5: pharmacy.v1.PharmacyService.CreatePharmacy:output_type -> pharmacy.v1.CreatePharmacyResponse
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 4: pharmacy.v1.PharmacyGetMeResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
+	1, // 5: pharmacy.v1.PharmacyService.CreatePharmacy:input_type -> pharmacy.v1.CreatePharmacyRequest
+	5, // 6: pharmacy.v1.PharmacyService.GetMe:input_type -> google.protobuf.Empty
+	2, // 7: pharmacy.v1.PharmacyService.CreatePharmacy:output_type -> pharmacy.v1.CreatePharmacyResponse
+	3, // 8: pharmacy.v1.PharmacyService.GetMe:output_type -> pharmacy.v1.PharmacyGetMeResponse
+	7, // [7:9] is the sub-list for method output_type
+	5, // [5:7] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_v1_pharmacy_api_proto_init() }
@@ -602,7 +655,7 @@ func file_v1_pharmacy_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_pharmacy_api_proto_rawDesc), len(file_v1_pharmacy_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -33,4 +33,10 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 			constants.RoleUser: {},
 		},
 	},
+	"/pharmacy.v1.PharmacyService/GetMe": {
+		authenticated: true,
+		roles: map[string]struct{}{
+			constants.RolePharmacy: {},
+		},
+	},
 }

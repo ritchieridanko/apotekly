@@ -16,6 +16,7 @@ import (
 
 type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
+	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyUsecase struct {
@@ -174,5 +175,28 @@ func (u *pharmacyUsecase) CreatePharmacy(ctx context.Context, req *models.Create
 		return nil, err.Append(authIDField)
 	}
 
+	return p, nil
+}
+
+func (u *pharmacyUsecase) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "pharmacy.usecase.GetMe")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Pharmacy Fetching
+	p, err := u.pr.GetByAuthID(ctx, authCtx.AuthID)
+	if err != nil {
+		return nil, err.Append(authIDField)
+	}
 	return p, nil
 }

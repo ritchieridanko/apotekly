@@ -2,12 +2,14 @@ syntax = "proto3";
 
 package pharmacy.v1;
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
 
 service PharmacyService {
   rpc CreatePharmacy (CreatePharmacyRequest) returns (CreatePharmacyResponse);
+  rpc GetMe (google.protobuf.Empty) returns (PharmacyGetMeResponse);
 }
 
 message Pharmacy {
@@ -58,5 +60,9 @@ message CreatePharmacyRequest {
 }
 
 message CreatePharmacyResponse {
+  Pharmacy pharmacy = 1;
+}
+
+message PharmacyGetMeResponse {
   Pharmacy pharmacy = 1;
 }
