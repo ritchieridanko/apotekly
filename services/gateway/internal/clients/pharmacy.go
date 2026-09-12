@@ -8,12 +8,14 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var pharmacyServiceField logger.Field = logger.NewField("service", "pharmacy")
 
 type PharmacyClient interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
+	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyClient struct {
@@ -47,6 +49,18 @@ func (c *pharmacyClient) CreatePharmacy(ctx context.Context, req *models.CreateP
 			Whatsapp:      req.Whatsapp,
 		},
 	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			pharmacyServiceField,
+		)
+	}
+	return c.toPharmacy(resp.GetPharmacy()), nil
+}
+
+func (c *pharmacyClient) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Error) {
+	resp, err := c.client.GetMe(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil, ce.ToError(
 			err,

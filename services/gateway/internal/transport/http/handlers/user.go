@@ -97,7 +97,7 @@ func (h *UserHandler) GetMe(ctx *gin.Context) {
 		ctx,
 		http.StatusOK,
 		"User retrieved successfully",
-		dtos.GetMeResponse{User: h.toUser(u)},
+		dtos.UserGetMeResponse{User: h.toUser(u)},
 		nil,
 	)
 }

@@ -60,4 +60,8 @@ type (
 	CreatePharmacyResponse struct {
 		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
 	}
+
+	PharmacyGetMeResponse struct {
+		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+	}
 )

@@ -73,7 +73,7 @@ type (
 		User *User `json:"user,omitempty"`
 	}
 
-	GetMeResponse struct {
+	UserGetMeResponse struct {
 		User *User `json:"user,omitempty"`
 	}
 

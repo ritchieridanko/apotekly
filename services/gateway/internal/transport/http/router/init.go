@@ -116,6 +116,13 @@ func Init(
 	{
 		// Create
 		pharmacy.POST("", middlewares.Auth(j), ph.CreatePharmacy)
+
+		// Me
+		me := pharmacy.Group("/me")
+		{
+			// Fetch
+			me.GET("", middlewares.Auth(j), ph.GetMe)
+		}
 	}
 
 	// USER ENDPOINTS

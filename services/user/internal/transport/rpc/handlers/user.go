@@ -35,12 +35,12 @@ func (h *UserHandler) CreateUser(ctx context.Context, req *apis.CreateUserReques
 	return &apis.CreateUserResponse{User: h.toUser(u)}, nil
 }
 
-func (h *UserHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.GetMeResponse, error) {
+func (h *UserHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.UserGetMeResponse, error) {
 	u, err := h.uu.GetMe(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &apis.GetMeResponse{User: h.toUser(u)}, nil
+	return &apis.UserGetMeResponse{User: h.toUser(u)}, nil
 }
 
 func (h *UserHandler) UpdateUser(ctx context.Context, req *apis.UpdateUserRequest) (*apis.UpdateUserResponse, error) {

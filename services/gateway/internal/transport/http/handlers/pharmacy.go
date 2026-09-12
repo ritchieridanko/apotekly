@@ -85,6 +85,42 @@ func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
 	)
 }
 
+func (h *PharmacyHandler) GetMe(ctx *gin.Context) {
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	p, err := h.pc.GetMe(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole,
+			authCtx.Role,
+		),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Pharmacy retrieved successfully",
+		dtos.PharmacyGetMeResponse{Pharmacy: h.toPharmacy(p)},
+		nil,
+	)
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *dtos.Pharmacy {
 	if p == nil {
 		return nil

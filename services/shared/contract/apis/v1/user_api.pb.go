@@ -227,27 +227,27 @@ func (x *CreateUserResponse) GetUser() *User {
 	return nil
 }
 
-type GetMeResponse struct {
+type UserGetMeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetMeResponse) Reset() {
-	*x = GetMeResponse{}
+func (x *UserGetMeResponse) Reset() {
+	*x = UserGetMeResponse{}
 	mi := &file_v1_user_api_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetMeResponse) String() string {
+func (x *UserGetMeResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetMeResponse) ProtoMessage() {}
+func (*UserGetMeResponse) ProtoMessage() {}
 
-func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
+func (x *UserGetMeResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_user_api_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -259,12 +259,12 @@ func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetMeResponse.ProtoReflect.Descriptor instead.
-func (*GetMeResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserGetMeResponse.ProtoReflect.Descriptor instead.
+func (*UserGetMeResponse) Descriptor() ([]byte, []int) {
 	return file_v1_user_api_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetMeResponse) GetUser() *User {
+func (x *UserGetMeResponse) GetUser() *User {
 	if x != nil {
 		return x.User
 	}
@@ -408,8 +408,8 @@ const file_v1_user_api_proto_rawDesc = "" +
 	"\x04_sexB\b\n" +
 	"\x06_phone\"7\n" +
 	"\x12CreateUserResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"2\n" +
-	"\rGetMeResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"6\n" +
+	"\x11UserGetMeResponse\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\xb3\x01\n" +
 	"\x11UpdateUserRequest\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x15\n" +
@@ -420,11 +420,11 @@ const file_v1_user_api_proto_rawDesc = "" +
 	"\x04_sexB\b\n" +
 	"\x06_phone\"7\n" +
 	"\x12UpdateUserResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xd4\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xd8\x01\n" +
 	"\vUserService\x12E\n" +
 	"\n" +
-	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\x127\n" +
-	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x16.user.v1.GetMeResponse\x12E\n" +
+	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\x12;\n" +
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x1a.user.v1.UserGetMeResponse\x12E\n" +
 	"\n" +
 	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
@@ -445,7 +445,7 @@ var file_v1_user_api_proto_goTypes = []any{
 	(*User)(nil),                  // 0: user.v1.User
 	(*CreateUserRequest)(nil),     // 1: user.v1.CreateUserRequest
 	(*CreateUserResponse)(nil),    // 2: user.v1.CreateUserResponse
-	(*GetMeResponse)(nil),         // 3: user.v1.GetMeResponse
+	(*UserGetMeResponse)(nil),     // 3: user.v1.UserGetMeResponse
 	(*UpdateUserRequest)(nil),     // 4: user.v1.UpdateUserRequest
 	(*UpdateUserResponse)(nil),    // 5: user.v1.UpdateUserResponse
 	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
@@ -455,14 +455,14 @@ var file_v1_user_api_proto_depIdxs = []int32{
 	6, // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
 	6, // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
 	0, // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
-	0, // 3: user.v1.GetMeResponse.user:type_name -> user.v1.User
+	0, // 3: user.v1.UserGetMeResponse.user:type_name -> user.v1.User
 	6, // 4: user.v1.UpdateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
 	0, // 5: user.v1.UpdateUserResponse.user:type_name -> user.v1.User
 	1, // 6: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
 	7, // 7: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
 	4, // 8: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
 	2, // 9: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
-	3, // 10: user.v1.UserService.GetMe:output_type -> user.v1.GetMeResponse
+	3, // 10: user.v1.UserService.GetMe:output_type -> user.v1.UserGetMeResponse
 	5, // 11: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
 	9, // [9:12] is the sub-list for method output_type
 	6, // [6:9] is the sub-list for method input_type

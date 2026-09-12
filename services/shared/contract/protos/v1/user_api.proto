@@ -9,7 +9,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 
 service UserService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
-  rpc GetMe (google.protobuf.Empty) returns (GetMeResponse);
+  rpc GetMe (google.protobuf.Empty) returns (UserGetMeResponse);
   rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
 }
 
@@ -34,7 +34,7 @@ message CreateUserResponse {
   User user = 1;
 }
 
-message GetMeResponse {
+message UserGetMeResponse {
   User user = 1;
 }
 
