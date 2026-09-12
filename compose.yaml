@@ -319,6 +319,56 @@ services:
       interval: 10s
       retries: 3
 
+  # ---------- Product ----------
+  product-database:
+    image: postgres:16-alpine
+    container_name: ${PRODUCT_DATABASE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${PRODUCT_DATABASE_USER}
+      - POSTGRES_PASSWORD=${PRODUCT_DATABASE_PASS}
+      - POSTGRES_DB=${PRODUCT_DATABASE_NAME}
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PRODUCT_DATABASE_USER} -d ${PRODUCT_DATABASE_NAME}"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  product-migrator:
+    image: apotekly-product-migrator
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/product/Dockerfile.migrator
+    container_name: product-migrator
+    networks:
+      - apotekly-net
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=${PRODUCT_DATABASE_HOST}
+      - DATABASE_PORT=${PRODUCT_DATABASE_PORT}
+      - DATABASE_USER=${PRODUCT_DATABASE_USER}
+      - DATABASE_PASS=${PRODUCT_DATABASE_PASS}
+      - DATABASE_NAME=${PRODUCT_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${PRODUCT_DATABASE_SSL_MODE}
+    depends_on:
+      product-database:
+        condition: service_healthy
+    entrypoint: ["./bin/migrator"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "${PRODUCT_DATABASE_HOST}"]
+      interval: 10s
+      retries: 3
+
   # ---------- User ----------
   user-service:
     image: apotekly-user-service
@@ -517,8 +567,9 @@ networks:
 
 volumes:
   auth_db_data:
-  pharmacy_db_data:
   notification_db_data:
+  pharmacy_db_data:
+  product_db_data:
   user_db_data:
   kafka1_data:
   kafka2_data:
