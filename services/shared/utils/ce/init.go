@@ -121,6 +121,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeJWTGenerationFailed,
 		CodeMissingContextValue,
 		CodeMissingMetadata,
+		CodeMoneyParsingFailed,
 		CodeNoPendingEventInbox,
 		CodeOrphanedEventInbox,
 		CodePanicOccurred,

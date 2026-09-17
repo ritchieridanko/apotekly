@@ -84,7 +84,7 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 	if ok, why := u.validator.AddrLabel(label); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
-	if ok, why := u.validator.AddrRecipient(recipient); !ok {
+	if ok, why := u.validator.Name(recipient, "Recipient name"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.Phone(phone); !ok {
@@ -95,7 +95,7 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
-	if ok, why := u.validator.Country(country); !ok {
+	if ok, why := u.validator.Country(country, "Country"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if subdivision1 != nil {
@@ -118,7 +118,7 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
-	if ok, why := u.validator.AddrStreet(street); !ok {
+	if ok, why := u.validator.Name(street, "Street name"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.PostalCode(postalCode); !ok {
@@ -252,7 +252,7 @@ func (u *addressUsecase) UpdateAddress(ctx context.Context, req *models.UpdateAd
 		}
 	}
 	if recipient != nil {
-		if ok, why := u.validator.AddrRecipient(*recipient); !ok {
+		if ok, why := u.validator.Name(*recipient, "Recipient name"); !ok {
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
@@ -267,7 +267,7 @@ func (u *addressUsecase) UpdateAddress(ctx context.Context, req *models.UpdateAd
 		}
 	}
 	if country != nil {
-		if ok, why := u.validator.Country(*country); !ok {
+		if ok, why := u.validator.Country(*country, "Country"); !ok {
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
@@ -292,7 +292,7 @@ func (u *addressUsecase) UpdateAddress(ctx context.Context, req *models.UpdateAd
 		}
 	}
 	if street != nil {
-		if ok, why := u.validator.AddrStreet(*street); !ok {
+		if ok, why := u.validator.Name(*street, "Street name"); !ok {
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}

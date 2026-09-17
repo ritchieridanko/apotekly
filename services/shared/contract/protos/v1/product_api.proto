@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package product.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+service ProductService {
+  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
+}
+
+message Product {
+  string id = 1;
+  string pharmacy_id = 2;
+  string brand_name = 3;
+  string generic_name = 4;
+  optional string description = 5;
+  bool requires_rx = 6;
+  string dosage_form = 7;
+  optional string strength = 8;
+  string pack_unit = 9;
+  int32 pack_size = 10;
+  double height_cm = 11;
+  double length_cm = 12;
+  double width_cm = 13;
+  double weight_g = 14;
+  string price = 15;
+  string currency = 16;
+  int32 quantity = 17;
+  bool is_active = 18;
+  string manufactured_by = 19;
+  string manufactured_in = 20;
+  string reg_authority = 21;
+  string reg_identifier = 22;
+  google.protobuf.Timestamp created_at = 23;
+  google.protobuf.Timestamp updated_at = 24;
+}
+
+message CreateProductRequest {
+  string brand_name = 1;
+  string generic_name = 2;
+  optional string description = 3;
+  bool requires_rx = 4;
+  string dosage_form = 5;
+  optional string strength = 6;
+  string pack_unit = 7;
+  int32 pack_size = 8;
+  double height_cm = 9;
+  double length_cm = 10;
+  double width_cm = 11;
+  double weight_g = 12;
+  string price = 13;
+  string currency = 14;
+  int32 quantity = 15;
+  bool is_active = 16;
+  string manufactured_by = 17;
+  string manufactured_in = 18;
+  string reg_authority = 19;
+  string reg_identifier = 20;
+}
+
+message CreateProductResponse {
+  Product product = 1;
+}

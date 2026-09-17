@@ -5,7 +5,6 @@ CREATE TABLE products (
   -- Identity
   brand_name VARCHAR NOT NULL,
   generic_name VARCHAR NOT NULL,
-  registration_number VARCHAR NOT NULL,
   description TEXT,
   requires_rx BOOLEAN NOT NULL,
 
@@ -20,7 +19,7 @@ CREATE TABLE products (
   weight_g NUMERIC NOT NULL,
 
   -- Pharmacy-specific Information
-  price NUMERIC NOT NULL,
+  price BIGINT NOT NULL,
   currency VARCHAR NOT NULL,
   quantity INT NOT NULL DEFAULT 0,
   is_active BOOLEAN NOT NULL,
@@ -28,6 +27,10 @@ CREATE TABLE products (
   -- Manufacturer Information
   manufactured_by VARCHAR NOT NULL,
   manufactured_in VARCHAR NOT NULL,
+
+  -- Regulatory Information
+  reg_authority VARCHAR NOT NULL,
+  reg_identifier VARCHAR NOT NULL,
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

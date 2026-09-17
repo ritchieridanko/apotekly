@@ -72,11 +72,11 @@ func (u *pharmacyUsecase) CreatePharmacy(ctx context.Context, req *models.Create
 	whatsapp := utils.TrimSpacePtr(req.Whatsapp)
 
 	// Data Validation
-	if ok, why := u.validator.Name(name); !ok {
+	if ok, why := u.validator.Name(name, "Name"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if legalName != nil {
-		if ok, why := u.validator.Name(*legalName); !ok {
+		if ok, why := u.validator.Name(*legalName, "Legal name"); !ok {
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
@@ -90,7 +90,7 @@ func (u *pharmacyUsecase) CreatePharmacy(ctx context.Context, req *models.Create
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
-	if ok, why := u.validator.Country(country); !ok {
+	if ok, why := u.validator.Country(country, "Country"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if subdivision1 != nil {
@@ -113,7 +113,7 @@ func (u *pharmacyUsecase) CreatePharmacy(ctx context.Context, req *models.Create
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}
-	if ok, why := u.validator.AddrStreet(street); !ok {
+	if ok, why := u.validator.Name(street, "Street name"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if ok, why := u.validator.PostalCode(postalCode); !ok {

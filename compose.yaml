@@ -35,6 +35,8 @@ services:
         condition: service_started
       pharmacy-service:
         condition: service_started
+      product-service:
+        condition: service_started
       user-service:
         condition: service_started
     healthcheck:
@@ -320,6 +322,39 @@ services:
       retries: 3
 
   # ---------- Product ----------
+  product-service:
+    image: apotekly-product-service
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: services/product/Dockerfile.app
+    container_name: ${PRODUCT_SERVICE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - APP_NAME=${PRODUCT_SERVICE_HOST}
+      - SERVER_HOST=${PRODUCT_SERVICE_HOST}
+      - SERVER_PORT=${PRODUCT_SERVICE_PORT}
+      - SERVER_TIMEOUT_SHUTDOWN=${PRODUCT_SERVICE_TIMEOUT_SHUTDOWN}
+      - DATABASE_HOST=${PRODUCT_DATABASE_HOST}
+      - DATABASE_PORT=${PRODUCT_DATABASE_PORT}
+      - DATABASE_USER=${PRODUCT_DATABASE_USER}
+      - DATABASE_PASS=${PRODUCT_DATABASE_PASS}
+      - DATABASE_NAME=${PRODUCT_DATABASE_NAME}
+      - DATABASE_SSL_MODE=${PRODUCT_DATABASE_SSL_MODE}
+      - DATABASE_MAX_CONNS=${PRODUCT_DATABASE_MAX_CONNS}
+      - DATABASE_MIN_CONNS=${PRODUCT_DATABASE_MIN_CONNS}
+      - DATABASE_MAX_CONN_LIFETIME=${PRODUCT_DATABASE_MAX_CONN_LIFETIME}
+      - DATABASE_MAX_CONN_IDLE_TIME=${PRODUCT_DATABASE_MAX_CONN_IDLE_TIME}
+    depends_on:
+      product-database:
+        condition: service_healthy
+      product-migrator:
+        condition: service_completed_successfully
+
   product-database:
     image: postgres:16-alpine
     container_name: ${PRODUCT_DATABASE_HOST}

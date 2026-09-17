@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -10,6 +11,12 @@ import (
 )
 
 var titlecaser = cases.Title(language.English)
+
+// Round value to the specified precision
+func Round(value float64, precision int) float64 {
+	pow := math.Pow(10, float64(precision))
+	return math.Round(value*pow) / pow
+}
 
 // Convert string to all lowercase
 // NOTE: Return nil if s is nil

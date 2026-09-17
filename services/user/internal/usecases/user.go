@@ -57,7 +57,7 @@ func (u *userUsecase) CreateUser(ctx context.Context, req *models.CreateUserReq)
 	phone := utils.TrimSpacePtr(req.Phone)
 
 	// Data Validation
-	if ok, why := u.validator.Name(name); !ok {
+	if ok, why := u.validator.Name(name, "Name"); !ok {
 		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 	}
 	if sex != nil {
@@ -140,7 +140,7 @@ func (u *userUsecase) UpdateUser(ctx context.Context, req *models.UpdateUserReq)
 
 	// Data Validation
 	if name != nil {
-		if ok, why := u.validator.Name(*name); !ok {
+		if ok, why := u.validator.Name(*name, "Name"); !ok {
 			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
 		}
 	}

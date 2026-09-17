@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/metadata"
@@ -13,6 +14,7 @@ type (
 		AuthID          uint64
 		Role            string
 		IsEmailVerified bool
+		PharmacyID      *uuid.UUID
 	}
 
 	TransportContext struct {

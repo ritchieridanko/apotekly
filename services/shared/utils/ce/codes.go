@@ -53,6 +53,7 @@ const (
 	CodeJWTGenerationFailed     errCode = "ERR_JWT_GENERATION_FAILED"
 	CodeMissingContextValue     errCode = "ERR_MISSING_CONTEXT_VALUE"
 	CodeMissingMetadata         errCode = "ERR_MISSING_METADATA"
+	CodeMoneyParsingFailed      errCode = "ERR_MONEY_PARSING_FAILED"
 	CodeNoPendingEventInbox     errCode = "ERR_NO_PENDING_EVENT_INBOX"
 	CodeNotFound                errCode = "ERR_NOT_FOUND"
 	CodeOAuthEmailChange        errCode = "ERR_OAUTH_EMAIL_CHANGE"
