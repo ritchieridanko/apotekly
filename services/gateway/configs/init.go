@@ -22,6 +22,7 @@ type Config struct {
 type Service struct {
 	Auth     cfg.Service `mapstructure:"auth"`
 	Pharmacy cfg.Service `mapstructure:"pharmacy"`
+	Product  cfg.Service `mapstructure:"product"`
 	User     cfg.Service `mapstructure:"user"`
 }
 
@@ -55,6 +56,7 @@ func Init(path string) (*Config, error) {
 	cfg.Server.Addr = cfg.Server.Host + ":" + strconv.Itoa(cfg.Server.Port)
 	cfg.Service.Auth.Addr = cfg.Service.Auth.Host + ":" + strconv.Itoa(cfg.Service.Auth.Port)
 	cfg.Service.Pharmacy.Addr = cfg.Service.Pharmacy.Host + ":" + strconv.Itoa(cfg.Service.Pharmacy.Port)
+	cfg.Service.Product.Addr = cfg.Service.Product.Host + ":" + strconv.Itoa(cfg.Service.Product.Port)
 	cfg.Service.User.Addr = cfg.Service.User.Host + ":" + strconv.Itoa(cfg.Service.User.Port)
 	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
 

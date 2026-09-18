@@ -21,7 +21,8 @@ func Init(
 	j *jwt.JWT,
 	l *logger.Logger,
 	ah *handlers.AuthHandler,
-	ph *handlers.PharmacyHandler,
+	phh *handlers.PharmacyHandler,
+	prh *handlers.ProductHandler,
 	uh *handlers.UserHandler,
 	uah *handlers.AddressHandler,
 ) *Router {
@@ -115,14 +116,21 @@ func Init(
 	pharmacy := v1.Group("/pharmacies")
 	{
 		// Create
-		pharmacy.POST("", middlewares.Auth(j), ph.CreatePharmacy)
+		pharmacy.POST("", middlewares.Auth(j), phh.CreatePharmacy)
 
 		// Me
 		me := pharmacy.Group("/me")
 		{
 			// Fetch
-			me.GET("", middlewares.Auth(j), ph.GetMe)
+			me.GET("", middlewares.Auth(j), phh.GetMe)
 		}
+	}
+
+	// PRODUCT ENDPOINTS
+	product := v1.Group("/products")
+	{
+		// Create
+		product.POST("", middlewares.Auth(j), prh.CreateProduct)
 	}
 
 	// USER ENDPOINTS

@@ -15,11 +15,11 @@ import (
 )
 
 type PharmacyHandler struct {
-	pc clients.PharmacyClient
+	phc clients.PharmacyClient
 }
 
-func NewPharmacyHandler(pc clients.PharmacyClient) *PharmacyHandler {
-	return &PharmacyHandler{pc: pc}
+func NewPharmacyHandler(phc clients.PharmacyClient) *PharmacyHandler {
+	return &PharmacyHandler{phc: phc}
 }
 
 func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
@@ -41,7 +41,7 @@ func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
 		return
 	}
 
-	p, err := h.pc.CreatePharmacy(
+	p, err := h.phc.CreatePharmacy(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
 			constants.MDKeyAuthID,
@@ -98,7 +98,7 @@ func (h *PharmacyHandler) GetMe(ctx *gin.Context) {
 		return
 	}
 
-	p, err := h.pc.GetMe(
+	p, err := h.phc.GetMe(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
 			constants.MDKeyAuthID,

@@ -6,5 +6,6 @@ type Claim struct {
 	AuthID          uint64
 	Role            string
 	IsEmailVerified bool
+	PharmacyID      *string
 	jwt.RegisteredClaims
 }

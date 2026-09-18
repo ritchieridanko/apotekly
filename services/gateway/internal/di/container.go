@@ -18,7 +18,8 @@ type Container struct {
 	logger *logger.Logger
 
 	ac  clients.AuthClient
-	pc  clients.PharmacyClient
+	phc clients.PharmacyClient
+	prc clients.ProductClient
 	uc  clients.UserClient
 	uac clients.AddressClient
 
@@ -27,7 +28,8 @@ type Container struct {
 	validator *validator.Validator
 
 	ah  *handlers.AuthHandler
-	ph  *handlers.PharmacyHandler
+	phh *handlers.PharmacyHandler
+	prh *handlers.ProductHandler
 	uh  *handlers.UserHandler
 	uah *handlers.AddressHandler
 
@@ -41,7 +43,8 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Clients
 	ac := clients.NewAuthClient(inf.AuthService().AuthClient())
-	pc := clients.NewPharmacyClient(inf.PharmacyService().PharmacyClient())
+	phc := clients.NewPharmacyClient(inf.PharmacyService().PharmacyClient())
+	prc := clients.NewProductClient(inf.ProductService().ProductClient())
 	uc := clients.NewUserClient(inf.UserService().UserClient())
 	uac := clients.NewAddressClient(inf.UserService().AddressClient())
 
@@ -52,12 +55,13 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Handlers
 	ah := handlers.NewAuthHandler(ac, v, c)
-	ph := handlers.NewPharmacyHandler(pc)
+	phh := handlers.NewPharmacyHandler(phc)
+	prh := handlers.NewProductHandler(prc)
 	uh := handlers.NewUserHandler(uc)
 	uah := handlers.NewAddressHandler(uac)
 
 	// Router
-	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, ah, ph, uh, uah)
+	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, ah, phh, prh, uh, uah)
 
 	// Server
 	srv := server.Init(&cfg.Server, r, l)
@@ -66,14 +70,16 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		config:    cfg,
 		logger:    l,
 		ac:        ac,
-		pc:        pc,
+		phc:       phc,
+		prc:       prc,
 		uc:        uc,
 		uac:       uac,
 		cookie:    c,
 		jwt:       j,
 		validator: v,
 		ah:        ah,
-		ph:        ph,
+		phh:       phh,
+		prh:       prh,
 		uh:        uh,
 		uah:       uah,
 		router:    r,

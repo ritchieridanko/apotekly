@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
@@ -72,6 +73,12 @@ func Auth(j *jwt.JWT) gin.HandlerFunc {
 			return
 		}
 
+		var pharmacyID *uuid.UUID
+		if claim.Role == constants.RolePharmacy && claim.PharmacyID != nil {
+			id := utils.ToUUID(*claim.PharmacyID)
+			pharmacyID = &id
+		}
+
 		ctx.Request = ctx.Request.WithContext(
 			context.WithValue(
 				ctx.Request.Context(),
@@ -80,6 +87,7 @@ func Auth(j *jwt.JWT) gin.HandlerFunc {
 					AuthID:          claim.AuthID,
 					Role:            claim.Role,
 					IsEmailVerified: claim.IsEmailVerified,
+					PharmacyID:      pharmacyID,
 				},
 			),
 		)
