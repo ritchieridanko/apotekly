@@ -36,6 +36,7 @@ type AuthUsecase interface {
 	ResetPassword(ctx context.Context, email string) (recipient string, err *ce.Error)
 	ConfirmPasswordReset(ctx context.Context, req *models.ConfirmPasswordResetReq) (err *ce.Error)
 	IsPasswordResetTokenValid(ctx context.Context, token string) (valid bool, err *ce.Error)
+	SetRolePharmacy(ctx context.Context, authID uint64) (err *ce.Error)
 }
 
 type authUsecase struct {
@@ -1075,4 +1076,8 @@ func (u *authUsecase) IsPasswordResetTokenValid(ctx context.Context, token strin
 
 	// Password Reset Token Validity Check
 	return u.tr.IsPasswordResetValid(ctx, t)
+}
+
+func (u *authUsecase) SetRolePharmacy(ctx context.Context, authID uint64) *ce.Error {
+	return u.ar.UpdateRole(ctx, authID, constants.RolePharmacy)
 }

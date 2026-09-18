@@ -20,6 +20,7 @@ service AuthService {
   rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
   rpc ConfirmPasswordReset (ConfirmPasswordResetRequest) returns (google.protobuf.Empty);
   rpc IsPasswordResetTokenValid (IsPasswordResetTokenValidRequest) returns (IsPasswordResetTokenValidResponse);
+  rpc SetRolePharmacy (SetRolePharmacyRequest) returns (google.protobuf.Empty);
 }
 
 message Auth {
@@ -134,4 +135,8 @@ message IsPasswordResetTokenValidRequest {
 
 message IsPasswordResetTokenValidResponse {
   bool is_valid = 1;
+}
+
+message SetRolePharmacyRequest {
+  uint64 auth_id = 1;
 }

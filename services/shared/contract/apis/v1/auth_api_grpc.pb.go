@@ -33,6 +33,7 @@ const (
 	AuthService_ResetPassword_FullMethodName             = "/auth.v1.AuthService/ResetPassword"
 	AuthService_ConfirmPasswordReset_FullMethodName      = "/auth.v1.AuthService/ConfirmPasswordReset"
 	AuthService_IsPasswordResetTokenValid_FullMethodName = "/auth.v1.AuthService/IsPasswordResetTokenValid"
+	AuthService_SetRolePharmacy_FullMethodName           = "/auth.v1.AuthService/SetRolePharmacy"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -52,6 +53,7 @@ type AuthServiceClient interface {
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
 	ConfirmPasswordReset(ctx context.Context, in *ConfirmPasswordResetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	IsPasswordResetTokenValid(ctx context.Context, in *IsPasswordResetTokenValidRequest, opts ...grpc.CallOption) (*IsPasswordResetTokenValidResponse, error)
+	SetRolePharmacy(ctx context.Context, in *SetRolePharmacyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authServiceClient struct {
@@ -192,6 +194,16 @@ func (c *authServiceClient) IsPasswordResetTokenValid(ctx context.Context, in *I
 	return out, nil
 }
 
+func (c *authServiceClient) SetRolePharmacy(ctx context.Context, in *SetRolePharmacyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthService_SetRolePharmacy_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -209,6 +221,7 @@ type AuthServiceServer interface {
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
 	ConfirmPasswordReset(context.Context, *ConfirmPasswordResetRequest) (*emptypb.Empty, error)
 	IsPasswordResetTokenValid(context.Context, *IsPasswordResetTokenValidRequest) (*IsPasswordResetTokenValidResponse, error)
+	SetRolePharmacy(context.Context, *SetRolePharmacyRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -257,6 +270,9 @@ func (UnimplementedAuthServiceServer) ConfirmPasswordReset(context.Context, *Con
 }
 func (UnimplementedAuthServiceServer) IsPasswordResetTokenValid(context.Context, *IsPasswordResetTokenValidRequest) (*IsPasswordResetTokenValidResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsPasswordResetTokenValid not implemented")
+}
+func (UnimplementedAuthServiceServer) SetRolePharmacy(context.Context, *SetRolePharmacyRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRolePharmacy not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -513,6 +529,24 @@ func _AuthService_IsPasswordResetTokenValid_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_SetRolePharmacy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRolePharmacyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SetRolePharmacy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_SetRolePharmacy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SetRolePharmacy(ctx, req.(*SetRolePharmacyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -571,6 +605,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsPasswordResetTokenValid",
 			Handler:    _AuthService_IsPasswordResetTokenValid_Handler,
+		},
+		{
+			MethodName: "SetRolePharmacy",
+			Handler:    _AuthService_SetRolePharmacy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

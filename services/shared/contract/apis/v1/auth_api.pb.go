@@ -1234,6 +1234,50 @@ func (x *IsPasswordResetTokenValidResponse) GetIsValid() bool {
 	return false
 }
 
+type SetRolePharmacyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthId        uint64                 `protobuf:"varint,1,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetRolePharmacyRequest) Reset() {
+	*x = SetRolePharmacyRequest{}
+	mi := &file_v1_auth_api_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetRolePharmacyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetRolePharmacyRequest) ProtoMessage() {}
+
+func (x *SetRolePharmacyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetRolePharmacyRequest.ProtoReflect.Descriptor instead.
+func (*SetRolePharmacyRequest) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *SetRolePharmacyRequest) GetAuthId() uint64 {
+	if x != nil {
+		return x.AuthId
+	}
+	return 0
+}
+
 var File_v1_auth_api_proto protoreflect.FileDescriptor
 
 const file_v1_auth_api_proto_rawDesc = "" +
@@ -1306,7 +1350,9 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	" IsPasswordResetTokenValidRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\">\n" +
 	"!IsPasswordResetTokenValidResponse\x12\x19\n" +
-	"\bis_valid\x18\x01 \x01(\bR\aisValid2\x8b\b\n" +
+	"\bis_valid\x18\x01 \x01(\bR\aisValid\"1\n" +
+	"\x16SetRolePharmacyRequest\x12\x17\n" +
+	"\aauth_id\x18\x01 \x01(\x04R\x06authId2\xd7\b\n" +
 	"\vAuthService\x129\n" +
 	"\x06SignUp\x12\x16.auth.v1.SignUpRequest\x1a\x17.auth.v1.SignUpResponse\x129\n" +
 	"\x06SignIn\x12\x16.auth.v1.SignInRequest\x1a\x17.auth.v1.SignInResponse\x12:\n" +
@@ -1320,7 +1366,8 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\x0eChangePassword\x12\x1e.auth.v1.ChangePasswordRequest\x1a\x16.google.protobuf.Empty\x12N\n" +
 	"\rResetPassword\x12\x1d.auth.v1.ResetPasswordRequest\x1a\x1e.auth.v1.ResetPasswordResponse\x12T\n" +
 	"\x14ConfirmPasswordReset\x12$.auth.v1.ConfirmPasswordResetRequest\x1a\x16.google.protobuf.Empty\x12r\n" +
-	"\x19IsPasswordResetTokenValid\x12).auth.v1.IsPasswordResetTokenValidRequest\x1a*.auth.v1.IsPasswordResetTokenValidResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x19IsPasswordResetTokenValid\x12).auth.v1.IsPasswordResetTokenValidRequest\x1a*.auth.v1.IsPasswordResetTokenValidResponse\x12J\n" +
+	"\x0fSetRolePharmacy\x12\x1f.auth.v1.SetRolePharmacyRequest\x1a\x16.google.protobuf.EmptyBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_auth_api_proto_rawDescOnce sync.Once
@@ -1334,7 +1381,7 @@ func file_v1_auth_api_proto_rawDescGZIP() []byte {
 	return file_v1_auth_api_proto_rawDescData
 }
 
-var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_v1_auth_api_proto_goTypes = []any{
 	(*Auth)(nil),                              // 0: auth.v1.Auth
 	(*AccessToken)(nil),                       // 1: auth.v1.AccessToken
@@ -1361,7 +1408,8 @@ var file_v1_auth_api_proto_goTypes = []any{
 	(*ConfirmPasswordResetRequest)(nil),       // 22: auth.v1.ConfirmPasswordResetRequest
 	(*IsPasswordResetTokenValidRequest)(nil),  // 23: auth.v1.IsPasswordResetTokenValidRequest
 	(*IsPasswordResetTokenValidResponse)(nil), // 24: auth.v1.IsPasswordResetTokenValidResponse
-	(*emptypb.Empty)(nil),                     // 25: google.protobuf.Empty
+	(*SetRolePharmacyRequest)(nil),            // 25: auth.v1.SetRolePharmacyRequest
+	(*emptypb.Empty)(nil),                     // 26: google.protobuf.Empty
 }
 var file_v1_auth_api_proto_depIdxs = []int32{
 	1,  // 0: auth.v1.AuthToken.access_token:type_name -> auth.v1.AccessToken
@@ -1378,7 +1426,7 @@ var file_v1_auth_api_proto_depIdxs = []int32{
 	8,  // 11: auth.v1.AuthService.SignOut:input_type -> auth.v1.SignOutRequest
 	9,  // 12: auth.v1.AuthService.IsEmailAvailable:input_type -> auth.v1.IsEmailAvailableRequest
 	11, // 13: auth.v1.AuthService.RotateAuthToken:input_type -> auth.v1.RotateAuthTokenRequest
-	25, // 14: auth.v1.AuthService.ResendVerification:input_type -> google.protobuf.Empty
+	26, // 14: auth.v1.AuthService.ResendVerification:input_type -> google.protobuf.Empty
 	14, // 15: auth.v1.AuthService.VerifyEmail:input_type -> auth.v1.VerifyEmailRequest
 	16, // 16: auth.v1.AuthService.ChangeEmail:input_type -> auth.v1.ChangeEmailRequest
 	18, // 17: auth.v1.AuthService.ConfirmEmailChange:input_type -> auth.v1.ConfirmEmailChangeRequest
@@ -1386,21 +1434,23 @@ var file_v1_auth_api_proto_depIdxs = []int32{
 	20, // 19: auth.v1.AuthService.ResetPassword:input_type -> auth.v1.ResetPasswordRequest
 	22, // 20: auth.v1.AuthService.ConfirmPasswordReset:input_type -> auth.v1.ConfirmPasswordResetRequest
 	23, // 21: auth.v1.AuthService.IsPasswordResetTokenValid:input_type -> auth.v1.IsPasswordResetTokenValidRequest
-	5,  // 22: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
-	7,  // 23: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
-	25, // 24: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
-	10, // 25: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
-	12, // 26: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
-	13, // 27: auth.v1.AuthService.ResendVerification:output_type -> auth.v1.ResendVerificationResponse
-	15, // 28: auth.v1.AuthService.VerifyEmail:output_type -> auth.v1.VerifyEmailResponse
-	17, // 29: auth.v1.AuthService.ChangeEmail:output_type -> auth.v1.ChangeEmailResponse
-	25, // 30: auth.v1.AuthService.ConfirmEmailChange:output_type -> google.protobuf.Empty
-	25, // 31: auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
-	21, // 32: auth.v1.AuthService.ResetPassword:output_type -> auth.v1.ResetPasswordResponse
-	25, // 33: auth.v1.AuthService.ConfirmPasswordReset:output_type -> google.protobuf.Empty
-	24, // 34: auth.v1.AuthService.IsPasswordResetTokenValid:output_type -> auth.v1.IsPasswordResetTokenValidResponse
-	22, // [22:35] is the sub-list for method output_type
-	9,  // [9:22] is the sub-list for method input_type
+	25, // 22: auth.v1.AuthService.SetRolePharmacy:input_type -> auth.v1.SetRolePharmacyRequest
+	5,  // 23: auth.v1.AuthService.SignUp:output_type -> auth.v1.SignUpResponse
+	7,  // 24: auth.v1.AuthService.SignIn:output_type -> auth.v1.SignInResponse
+	26, // 25: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
+	10, // 26: auth.v1.AuthService.IsEmailAvailable:output_type -> auth.v1.IsEmailAvailableResponse
+	12, // 27: auth.v1.AuthService.RotateAuthToken:output_type -> auth.v1.RotateAuthTokenResponse
+	13, // 28: auth.v1.AuthService.ResendVerification:output_type -> auth.v1.ResendVerificationResponse
+	15, // 29: auth.v1.AuthService.VerifyEmail:output_type -> auth.v1.VerifyEmailResponse
+	17, // 30: auth.v1.AuthService.ChangeEmail:output_type -> auth.v1.ChangeEmailResponse
+	26, // 31: auth.v1.AuthService.ConfirmEmailChange:output_type -> google.protobuf.Empty
+	26, // 32: auth.v1.AuthService.ChangePassword:output_type -> google.protobuf.Empty
+	21, // 33: auth.v1.AuthService.ResetPassword:output_type -> auth.v1.ResetPasswordResponse
+	26, // 34: auth.v1.AuthService.ConfirmPasswordReset:output_type -> google.protobuf.Empty
+	24, // 35: auth.v1.AuthService.IsPasswordResetTokenValid:output_type -> auth.v1.IsPasswordResetTokenValidResponse
+	26, // 36: auth.v1.AuthService.SetRolePharmacy:output_type -> google.protobuf.Empty
+	23, // [23:37] is the sub-list for method output_type
+	9,  // [9:23] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -1417,7 +1467,7 @@ func file_v1_auth_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_api_proto_rawDesc), len(file_v1_auth_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   25,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

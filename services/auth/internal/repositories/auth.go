@@ -15,6 +15,7 @@ type AuthRepository interface {
 	GetByID(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
 	UpdateEmail(ctx context.Context, authID uint64, newEmail string) (err *ce.Error)
 	UpdatePassword(ctx context.Context, authID uint64, newPassword string) (err *ce.Error)
+	UpdateRole(ctx context.Context, authID uint64, role string) (err *ce.Error)
 	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 	UnreserveEmail(ctx context.Context, email string) (err *ce.Error)
 	SetVerified(ctx context.Context, authID uint64) (a *models.Auth, err *ce.Error)
@@ -47,6 +48,10 @@ func (r *authRepository) UpdateEmail(ctx context.Context, authID uint64, newEmai
 
 func (r *authRepository) UpdatePassword(ctx context.Context, authID uint64, newPassword string) *ce.Error {
 	return r.database.UpdatePassword(ctx, authID, newPassword)
+}
+
+func (r *authRepository) UpdateRole(ctx context.Context, authID uint64, role string) *ce.Error {
+	return r.database.UpdateRole(ctx, authID, role)
 }
 
 func (r *authRepository) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {

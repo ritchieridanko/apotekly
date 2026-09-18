@@ -181,6 +181,13 @@ func (h *AuthHandler) IsPasswordResetTokenValid(ctx context.Context, req *apis.I
 	}, nil
 }
 
+func (h *AuthHandler) SetRolePharmacy(ctx context.Context, req *apis.SetRolePharmacyRequest) (*emptypb.Empty, error) {
+	if err := h.au.SetRolePharmacy(ctx, req.GetAuthId()); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {
 	if a == nil {
 		return nil
