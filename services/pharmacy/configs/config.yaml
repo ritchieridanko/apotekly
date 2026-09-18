@@ -7,6 +7,12 @@ server:
   timeout:
     shutdown: "10s"
 
+service:
+  auth:
+    name: "auth-service"
+    host: "localhost"
+    port: 50051
+
 database:
   host: "localhost"
   port: 5432

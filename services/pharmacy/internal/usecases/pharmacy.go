@@ -5,8 +5,10 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/models"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/repositories"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
@@ -20,23 +22,29 @@ type PharmacyUsecase interface {
 }
 
 type pharmacyUsecase struct {
-	appName   string
-	pr        repositories.PharmacyRepository
-	validator *validator.Validator
-	logger    *logger.Logger
+	appName    string
+	pr         repositories.PharmacyRepository
+	ac         clients.AuthClient
+	transactor *database.Transactor
+	validator  *validator.Validator
+	logger     *logger.Logger
 }
 
 func NewPharmacyUsecase(
 	appName string,
 	pr repositories.PharmacyRepository,
+	ac clients.AuthClient,
+	tx *database.Transactor,
 	v *validator.Validator,
 	l *logger.Logger,
 ) PharmacyUsecase {
 	return &pharmacyUsecase{
-		appName:   appName,
-		pr:        pr,
-		validator: v,
-		logger:    l,
+		appName:    appName,
+		pr:         pr,
+		ac:         ac,
+		transactor: tx,
+		validator:  v,
+		logger:     l,
 	}
 }
 
@@ -146,31 +154,48 @@ func (u *pharmacyUsecase) CreatePharmacy(ctx context.Context, req *models.Create
 		}
 	}
 
-	// Pharmacy Creation
-	p, err := u.pr.Create(
-		ctx,
-		&models.CreatePharmacy{
-			ID:           utils.MustGenerateUUIDv7(),
-			AuthID:       authCtx.AuthID,
-			Name:         name,
-			LegalName:    legalName,
-			Description:  description,
-			OnlineHours:  req.OnlineHours,
-			Country:      country,
-			Subdivision1: subdivision1,
-			Subdivision2: subdivision2,
-			Subdivision3: subdivision3,
-			Subdivision4: subdivision4,
-			Street:       street,
-			PostalCode:   postalCode,
-			Latitude:     req.Latitude,
-			Longitude:    req.Longitude,
-			Email:        email,
-			Phone:        phone,
-			Website:      website,
-			Whatsapp:     whatsapp,
-		},
-	)
+	var p *models.Pharmacy
+	err := u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Pharmacy Creation
+		pharmacy, err := u.pr.Create(
+			ctx,
+			&models.CreatePharmacy{
+				ID:           utils.MustGenerateUUIDv7(),
+				AuthID:       authCtx.AuthID,
+				Name:         name,
+				LegalName:    legalName,
+				Description:  description,
+				OnlineHours:  req.OnlineHours,
+				Country:      country,
+				Subdivision1: subdivision1,
+				Subdivision2: subdivision2,
+				Subdivision3: subdivision3,
+				Subdivision4: subdivision4,
+				Street:       street,
+				PostalCode:   postalCode,
+				Latitude:     req.Latitude,
+				Longitude:    req.Longitude,
+				Email:        email,
+				Phone:        phone,
+				Website:      website,
+				Whatsapp:     whatsapp,
+			},
+		)
+		if err != nil {
+			return err
+		}
+
+		// New Role Setting
+		if err := u.ac.SetRolePharmacy(ctx, authCtx.AuthID); err != nil {
+			if err.Code() == ce.CodeNotFound {
+				return ce.NewError(ce.CodeAuthNotRegistered, ce.MsgInvalidCredentials, err.Unwrap())
+			}
+			return err
+		}
+
+		p = pharmacy
+		return nil
+	})
 	if err != nil {
 		return nil, err.Append(authIDField)
 	}

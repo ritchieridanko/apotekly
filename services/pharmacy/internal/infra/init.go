@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/pharmacy/configs"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/services"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/tracer"
 	"go.uber.org/zap"
 )
@@ -16,6 +17,7 @@ type Infra struct {
 	database *pgxpool.Pool
 	logger   *zap.Logger
 	tracer   *tracer.Tracer
+	as       *services.AuthService
 }
 
 func Init(cfg *configs.Config) (*Infra, error) {
@@ -34,11 +36,18 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		return nil, err
 	}
 
+	// Services
+	as, err := services.NewAuthService(&cfg.Service.Auth, l)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Infra{
 		config:   cfg,
 		database: db,
 		logger:   l,
 		tracer:   t,
+		as:       as,
 	}, nil
 }
 
@@ -50,12 +59,19 @@ func (i *Infra) Logger() *zap.Logger {
 	return i.logger
 }
 
+func (i *Infra) AuthService() *services.AuthService {
+	return i.as
+}
+
 func (i *Infra) Close() error {
 	if err := i.logger.Sync(); err != nil {
 		return fmt.Errorf("failed to close logger: %w", err)
 	}
 	if err := i.tracer.Shutdown(); err != nil {
 		return fmt.Errorf("failed to close tracer: %w", err)
+	}
+	if err := i.as.Close(); err != nil {
+		return fmt.Errorf("failed to close auth service connection: %w", err)
 	}
 
 	i.database.Close()

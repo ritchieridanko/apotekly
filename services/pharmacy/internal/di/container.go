@@ -2,6 +2,7 @@ package di
 
 import (
 	"github.com/ritchieridanko/apotekly/services/pharmacy/configs"
+	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/infra"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/repositories"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/repositories/database"
@@ -14,9 +15,12 @@ import (
 )
 
 type Container struct {
-	config   *configs.Config
-	database *infdb.Database
-	logger   *logger.Logger
+	config     *configs.Config
+	database   *infdb.Database
+	transactor *infdb.Transactor
+	logger     *logger.Logger
+
+	ac clients.AuthClient
 
 	pdb database.PharmacyDatabase
 
@@ -34,7 +38,11 @@ type Container struct {
 func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	// Infra
 	db := infdb.NewDatabase(inf.Database())
+	tx := infdb.NewTransactor(inf.Database())
 	l := logger.NewLogger(inf.Logger())
+
+	// Clients
+	ac := clients.NewAuthClient(inf.AuthService().AuthClient())
 
 	// Databases
 	pdb := database.NewPharmacyDatabase(db)
@@ -46,7 +54,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	pu := usecases.NewPharmacyUsecase(cfg.App.Name, pr, v, l)
+	pu := usecases.NewPharmacyUsecase(cfg.App.Name, pr, ac, tx, v, l)
 
 	// Handlers
 	ph := handlers.NewPharmacyHandler(pu)
@@ -55,15 +63,17 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	srv := server.Init(&cfg.Server, l, ph)
 
 	return &Container{
-		config:    cfg,
-		database:  db,
-		logger:    l,
-		pdb:       pdb,
-		pr:        pr,
-		validator: v,
-		pu:        pu,
-		ph:        ph,
-		server:    srv,
+		config:     cfg,
+		database:   db,
+		transactor: tx,
+		logger:     l,
+		ac:         ac,
+		pdb:        pdb,
+		pr:         pr,
+		validator:  v,
+		pu:         pu,
+		ph:         ph,
+		server:     srv,
 	}
 }
 

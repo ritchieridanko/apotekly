@@ -18,6 +18,7 @@ COPY services/shared/constants ../shared/constants
 COPY services/shared/contract/apis/v1 ../shared/contract/apis/v1
 COPY services/shared/infra/database ../shared/infra/database
 COPY services/shared/infra/logger ../shared/infra/logger
+COPY services/shared/infra/services ../shared/infra/services
 COPY services/shared/infra/tracer ../shared/infra/tracer
 COPY services/shared/utils ../shared/utils
 COPY services/pharmacy/cmd/app ./cmd/app

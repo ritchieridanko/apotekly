@@ -13,8 +13,13 @@ import (
 type Config struct {
 	App      cfg.App        `mapstructure:"app"`
 	Server   cfg.GRPCServer `mapstructure:"server"`
+	Service  Service        `mapstructure:"service"`
 	Database cfg.Database   `mapstructure:"database"`
 	Tracer   cfg.Tracer     `mapstructure:"tracer"`
+}
+
+type Service struct {
+	Auth cfg.Service `mapstructure:"auth"`
 }
 
 func Init(path string) (*Config, error) {
@@ -44,6 +49,7 @@ func Init(path string) (*Config, error) {
 
 	cfg.App.Env = env
 	cfg.Server.Addr = cfg.Server.Host + ":" + strconv.Itoa(cfg.Server.Port)
+	cfg.Service.Auth.Addr = cfg.Service.Auth.Host + ":" + strconv.Itoa(cfg.Service.Auth.Port)
 	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
 	cfg.Database.DSN = fmt.Sprintf(
 		"postgresql://%s:%s@%s:%d/%s?sslmode=%s",
