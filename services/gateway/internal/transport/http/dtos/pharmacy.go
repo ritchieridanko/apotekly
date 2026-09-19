@@ -8,6 +8,7 @@ import (
 // Requests
 type (
 	CreatePharmacyRequest struct {
+		// Data
 		Name         string           `json:"name" binding:"required"`
 		LegalName    *string          `json:"legal_name"`
 		Description  *string          `json:"description"`
@@ -25,6 +26,9 @@ type (
 		Phone        *string          `json:"phone"`
 		Website      *string          `json:"website"`
 		Whatsapp     *string          `json:"whatsapp"`
+
+		// Auth Info
+		RememberMe bool `json:"remember_me"`
 	}
 )
 
@@ -58,7 +62,8 @@ type (
 	}
 
 	CreatePharmacyResponse struct {
-		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+		Pharmacy    *Pharmacy    `json:"pharmacy,omitempty"`
+		AccessToken *AccessToken `json:"access_token,omitempty"`
 	}
 
 	PharmacyGetMeResponse struct {

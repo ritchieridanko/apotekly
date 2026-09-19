@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/clients"
@@ -12,14 +13,17 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
+	"github.com/ritchieridanko/apotekly/services/shared/utils/cookie"
 )
 
 type PharmacyHandler struct {
-	phc clients.PharmacyClient
+	phc    clients.PharmacyClient
+	ac     clients.AuthClient
+	cookie *cookie.Cookie
 }
 
-func NewPharmacyHandler(phc clients.PharmacyClient) *PharmacyHandler {
-	return &PharmacyHandler{phc: phc}
+func NewPharmacyHandler(phc clients.PharmacyClient, ac clients.AuthClient, c *cookie.Cookie) *PharmacyHandler {
+	return &PharmacyHandler{phc: phc, ac: ac, cookie: c}
 }
 
 func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
@@ -41,6 +45,7 @@ func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
 		return
 	}
 
+	// Pharmacy Creation
 	p, err := h.phc.CreatePharmacy(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
@@ -74,6 +79,48 @@ func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
 	if err != nil {
 		err.Bind(ctx)
 		return
+	}
+
+	// Auth Token Rotation
+	refreshToken, getErr := ctx.Cookie(constants.CookieKeyRefreshToken)
+	if getErr == nil {
+		token := strings.TrimSpace(refreshToken)
+		if token != "" {
+			at, err := h.ac.RotateAuthToken(
+				utils.CtxWithMetadata(
+					ctx.Request.Context(),
+				),
+				token,
+			)
+			if err == nil {
+				if at != nil && at.RefreshToken != nil {
+					var duration int
+					if payload.RememberMe {
+						duration = int(at.RefreshToken.ExpiresInSeconds)
+					}
+
+					h.cookie.Set(
+						ctx,
+						constants.CookieKeyRefreshToken,
+						at.RefreshToken.Token,
+						"/",
+						duration,
+					)
+				}
+
+				utils.SetHTTPResponse(
+					ctx,
+					http.StatusCreated,
+					"Pharmacy created successfully",
+					dtos.CreatePharmacyResponse{
+						Pharmacy:    h.toPharmacy(p),
+						AccessToken: h.toAccessToken(at),
+					},
+					nil,
+				)
+				return
+			}
+		}
 	}
 
 	utils.SetHTTPResponse(
@@ -150,5 +197,15 @@ func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *dtos.Pharmacy {
 		VerifiedAt:     p.VerifiedAt,
 		CreatedAt:      p.CreatedAt,
 		UpdatedAt:      p.UpdatedAt,
+	}
+}
+
+func (h *PharmacyHandler) toAccessToken(at *models.AuthToken) *dtos.AccessToken {
+	if at == nil || at.AccessToken == nil {
+		return nil
+	}
+	return &dtos.AccessToken{
+		Token:            at.AccessToken.Token,
+		ExpiresInSeconds: at.AccessToken.ExpiresInSeconds,
 	}
 }
