@@ -21,6 +21,7 @@ COPY services/shared/infra/cache ../shared/infra/cache
 COPY services/shared/infra/database ../shared/infra/database
 COPY services/shared/infra/logger ../shared/infra/logger
 COPY services/shared/infra/publisher ../shared/infra/publisher
+COPY services/shared/infra/services ../shared/infra/services
 COPY services/shared/infra/tracer ../shared/infra/tracer
 COPY services/shared/utils ../shared/utils
 COPY services/auth/cmd/app ./cmd/app

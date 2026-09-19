@@ -66,6 +66,7 @@ const (
 	CodePharmacyNotFound        errCode = "ERR_PHARMACY_NOT_FOUND"
 	CodeProtobufParsingFailed   errCode = "ERR_PROTOBUF_PARSING_FAILED"
 	CodeRefreshTokenNotFound    errCode = "ERR_REFRESH_TOKEN_NOT_FOUND"
+	CodeRoleMismatch            errCode = "ERR_ROLE_MISMATCH"
 	CodeRoleNotAuthorized       errCode = "ERR_ROLE_NOT_AUTHORIZED"
 	CodeSessionExpired          errCode = "ERR_SESSION_EXPIRED"
 	CodeSessionNotFound         errCode = "ERR_SESSION_NOT_FOUND"

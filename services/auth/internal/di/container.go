@@ -2,6 +2,7 @@ package di
 
 import (
 	"github.com/ritchieridanko/apotekly/services/auth/configs"
+	"github.com/ritchieridanko/apotekly/services/auth/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/infra"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/repositories"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/repositories/cache"
@@ -29,6 +30,8 @@ type Container struct {
 	aecrp *publisher.Publisher
 	aevrp *publisher.Publisher
 	aprrp *publisher.Publisher
+
+	pc clients.PharmacyClient
 
 	acc cache.AuthCache
 	tcc cache.TokenCache
@@ -65,6 +68,9 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	aevrp := publisher.NewPublisher(inf.PublisherAEVR())
 	aprrp := publisher.NewPublisher(inf.PublisherAPRR())
 
+	// Clients
+	pc := clients.NewPharmacyClient(inf.PharmacyService().PharmacyClient())
+
 	// Caches
 	acc := cache.NewAuthCache(cc)
 	tcc := cache.NewTokenCache(cc)
@@ -84,7 +90,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	su := usecases.NewSessionUsecase(cfg.App.Name, cfg.Auth.JWT.Duration, cfg.Auth.Duration.Session, sr, tx, j)
+	su := usecases.NewSessionUsecase(cfg.App.Name, cfg.Auth.JWT.Duration, cfg.Auth.Duration.Session, sr, pc, tx, j)
 	au := usecases.NewAuthUsecase(
 		cfg.App.Name,
 		cfg.Auth.Duration.EmailChange,
@@ -111,6 +117,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		aecrp:      aecrp,
 		aevrp:      aevrp,
 		aprrp:      aprrp,
+		pc:         pc,
 		acc:        acc,
 		tcc:        tcc,
 		adb:        adb,

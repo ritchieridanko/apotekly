@@ -15,6 +15,7 @@ type Config struct {
 	App      cfg.App        `mapstructure:"app"`
 	Auth     Auth           `mapstructure:"auth"`
 	Server   cfg.GRPCServer `mapstructure:"server"`
+	Service  Service        `mapstructure:"service"`
 	Database cfg.Database   `mapstructure:"database"`
 	Cache    cfg.Cache      `mapstructure:"cache"`
 	Tracer   cfg.Tracer     `mapstructure:"tracer"`
@@ -31,6 +32,10 @@ type Auth struct {
 		Session       time.Duration `mapstructure:"session"`
 		Verification  time.Duration `mapstructure:"verification"`
 	} `mapstructure:"duration"`
+}
+
+type Service struct {
+	Pharmacy cfg.Service `mapstructure:"pharmacy"`
 }
 
 type Broker struct {
@@ -70,6 +75,7 @@ func Init(path string) (*Config, error) {
 
 	cfg.App.Env = env
 	cfg.Server.Addr = cfg.Server.Host + ":" + strconv.Itoa(cfg.Server.Port)
+	cfg.Service.Pharmacy.Addr = cfg.Service.Pharmacy.Host + ":" + strconv.Itoa(cfg.Service.Pharmacy.Port)
 	cfg.Cache.Addr = cfg.Cache.Host + ":" + strconv.Itoa(cfg.Cache.Port)
 	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
 	cfg.Database.DSN = fmt.Sprintf(

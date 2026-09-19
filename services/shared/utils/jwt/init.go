@@ -22,7 +22,7 @@ func Init(issuer, secret string, dn time.Duration) *JWT {
 	}
 }
 
-func (j *JWT) Generate(authID uint64, role string, isEmailVerified bool, now *time.Time) (string, error) {
+func (j *JWT) Generate(i *Identity, now *time.Time) (string, error) {
 	if now == nil {
 		t := time.Now().UTC()
 		now = &t
@@ -30,12 +30,13 @@ func (j *JWT) Generate(authID uint64, role string, isEmailVerified bool, now *ti
 	return jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		Claim{
-			AuthID:          authID,
-			Role:            role,
-			IsEmailVerified: isEmailVerified,
+			AuthID:          i.AuthID,
+			Role:            i.Role,
+			IsEmailVerified: i.IsEmailVerified,
+			PharmacyID:      i.PharmacyID,
 			RegisteredClaims: jwt.RegisteredClaims{
 				Issuer:    j.issuer,
-				Subject:   "auth_" + strconv.FormatUint(authID, 10),
+				Subject:   "auth_" + strconv.FormatUint(i.AuthID, 10),
 				IssuedAt:  &jwt.NumericDate{Time: *now},
 				ExpiresAt: &jwt.NumericDate{Time: now.Add(j.duration)},
 			},

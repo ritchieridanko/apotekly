@@ -5,8 +5,10 @@ import (
 	"errors"
 	"time"
 
+	"github.com/ritchieridanko/apotekly/services/auth/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/models"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/repositories"
+	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
@@ -28,6 +30,7 @@ type sessionUsecase struct {
 	accessToken  time.Duration
 	refreshToken time.Duration
 	sr           repositories.SessionRepository
+	pc           clients.PharmacyClient
 	transactor   *database.Transactor
 	jwt          *jwt.JWT
 }
@@ -37,6 +40,7 @@ func NewSessionUsecase(
 	accessToken,
 	refreshToken time.Duration,
 	sr repositories.SessionRepository,
+	pc clients.PharmacyClient,
 	tx *database.Transactor,
 	j *jwt.JWT,
 ) SessionUsecase {
@@ -45,6 +49,7 @@ func NewSessionUsecase(
 		accessToken:  accessToken,
 		refreshToken: refreshToken,
 		sr:           sr,
+		pc:           pc,
 		transactor:   tx,
 		jwt:          j,
 	}
@@ -59,9 +64,38 @@ func (u *sessionUsecase) CreateSession(ctx context.Context, req *models.CreateSe
 	// UUID Creation
 	uuid := utils.GenerateUUID()
 
+	// Pharmacy Role Check
+	var pharmacyID *string
+	if req.Role == constants.RolePharmacy {
+		// Pharmacy ID Fetching
+		id, err := u.pc.GetID(ctx, req.AuthID)
+		if err != nil && err.Code() == ce.CodeNotFound {
+			return nil, ce.NewError(
+				ce.CodeRoleMismatch,
+				ce.MsgInternalServer,
+				err.Unwrap(),
+				authIDField,
+			)
+		}
+		if err != nil {
+			return nil, err.Append(authIDField)
+		}
+
+		res := id.String()
+		pharmacyID = &res
+	}
+
 	// JWT Creation
 	now := time.Now().UTC()
-	jwt, err := u.jwt.Generate(req.AuthID, req.Role, req.IsEmailVerified, &now)
+	jwt, err := u.jwt.Generate(
+		&jwt.Identity{
+			AuthID:          req.AuthID,
+			Role:            req.Role,
+			IsEmailVerified: req.IsEmailVerified,
+			PharmacyID:      pharmacyID,
+		},
+		&now,
+	)
 	if err != nil {
 		return nil, ce.NewError(
 			ce.CodeJWTGenerationFailed,
@@ -138,9 +172,38 @@ func (u *sessionUsecase) RefreshSession(ctx context.Context, req *models.Refresh
 	// UUID Creation
 	uuid := utils.GenerateUUID()
 
+	// Pharmacy Role Check
+	var pharmacyID *string
+	if req.Role == constants.RolePharmacy {
+		// Pharmacy ID Fetching
+		id, err := u.pc.GetID(ctx, req.AuthID)
+		if err != nil && err.Code() == ce.CodeNotFound {
+			return nil, ce.NewError(
+				ce.CodeRoleMismatch,
+				ce.MsgInternalServer,
+				err.Unwrap(),
+				authIDField,
+			)
+		}
+		if err != nil {
+			return nil, err.Append(authIDField)
+		}
+
+		res := id.String()
+		pharmacyID = &res
+	}
+
 	// JWT Creation
 	now := time.Now().UTC()
-	jwt, err := u.jwt.Generate(req.AuthID, req.Role, req.IsEmailVerified, &now)
+	jwt, err := u.jwt.Generate(
+		&jwt.Identity{
+			AuthID:          req.AuthID,
+			Role:            req.Role,
+			IsEmailVerified: req.IsEmailVerified,
+			PharmacyID:      pharmacyID,
+		},
+		&now,
+	)
 	if err != nil {
 		return nil, ce.NewError(
 			ce.CodeJWTGenerationFailed,

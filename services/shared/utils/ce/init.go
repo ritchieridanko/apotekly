@@ -126,6 +126,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeOrphanedEventInbox,
 		CodePanicOccurred,
 		CodeProtobufParsingFailed,
+		CodeRoleMismatch,
 		CodeTypeAssertionFailed,
 		CodeTypeConversionFailed,
 		CodeURLGenerationFailed,
