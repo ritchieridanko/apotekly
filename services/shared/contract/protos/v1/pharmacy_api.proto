@@ -10,6 +10,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 service PharmacyService {
   rpc CreatePharmacy (CreatePharmacyRequest) returns (CreatePharmacyResponse);
   rpc GetMe (google.protobuf.Empty) returns (PharmacyGetMeResponse);
+  rpc GetID (PharmacyGetIDRequest) returns (PharmacyGetIDResponse);
 }
 
 message Pharmacy {
@@ -65,4 +66,12 @@ message CreatePharmacyResponse {
 
 message PharmacyGetMeResponse {
   Pharmacy pharmacy = 1;
+}
+
+message PharmacyGetIDRequest {
+  uint64 auth_id = 1;
+}
+
+message PharmacyGetIDResponse {
+  string pharmacy_id = 1;
 }

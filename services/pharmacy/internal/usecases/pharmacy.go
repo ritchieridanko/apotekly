@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/models"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/repositories"
@@ -19,6 +20,7 @@ import (
 type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
+	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
 }
 
 type pharmacyUsecase struct {
@@ -224,4 +226,8 @@ func (u *pharmacyUsecase) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Erro
 		return nil, err.Append(authIDField)
 	}
 	return p, nil
+}
+
+func (u *pharmacyUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
+	return u.pr.GetID(ctx, authID)
 }

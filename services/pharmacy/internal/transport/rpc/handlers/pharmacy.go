@@ -56,6 +56,14 @@ func (h *PharmacyHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.
 	return &apis.PharmacyGetMeResponse{Pharmacy: h.toPharmacy(p)}, nil
 }
 
+func (h *PharmacyHandler) GetID(ctx context.Context, req *apis.PharmacyGetIDRequest) (*apis.PharmacyGetIDResponse, error) {
+	pharmacyID, err := h.pu.GetID(ctx, req.GetAuthId())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.PharmacyGetIDResponse{PharmacyId: pharmacyID.String()}, nil
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {
 	if p == nil {
 		return nil

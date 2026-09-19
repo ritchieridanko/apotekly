@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/models"
 	db "github.com/ritchieridanko/apotekly/services/shared/infra/database"
@@ -13,6 +14,7 @@ import (
 
 type PharmacyDatabase interface {
 	Create(ctx context.Context, data *models.CreatePharmacy) (p *models.Pharmacy, err *ce.Error)
+	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
 }
 
@@ -110,6 +112,38 @@ func (d *pharmacyDatabase) Create(ctx context.Context, data *models.CreatePharma
 	}
 
 	return &p, nil
+}
+
+func (d *pharmacyDatabase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
+	query := "SELECT id FROM pharmacies WHERE auth_id = $1 AND deleted_at IS NULL"
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var pharmacyID uuid.UUID
+	err := d.database.Query(
+		ctx, query,
+		authID,
+	).Scan(
+		&pharmacyID,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get pharmacy id: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return uuid.Nil, ce.NewError(
+				ce.CodePharmacyNotFound,
+				ce.MsgPharmacyNotFound,
+				wrappedErr,
+			)
+		}
+		return uuid.Nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return pharmacyID, nil
 }
 
 func (d *pharmacyDatabase) GetByAuthID(ctx context.Context, authID uint64) (*models.Pharmacy, *ce.Error) {
