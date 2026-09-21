@@ -148,6 +148,9 @@ func Init(
 			// Update
 			me.PATCH("", middlewares.Auth(j), uh.UpdateUser)
 
+			// Update Profile Picture
+			me.PUT("/profile-picture", middlewares.Auth(j), uh.UpdateProfilePicture)
+
 			// Addresses
 			address := me.Group("/addresses")
 			{

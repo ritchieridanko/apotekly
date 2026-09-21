@@ -17,6 +17,7 @@ type UserClient interface {
 	CreateUser(ctx context.Context, req *models.CreateUserReq) (u *models.User, err *ce.Error)
 	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
 	UpdateUser(ctx context.Context, req *models.UpdateUserReq) (u *models.User, err *ce.Error)
+	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (u *models.User, err *ce.Error)
 }
 
 type userClient struct {
@@ -67,6 +68,23 @@ func (c *userClient) UpdateUser(ctx context.Context, req *models.UpdateUserReq) 
 			Sex:       req.Sex,
 			Birthdate: utils.ToTimestamp(req.Birthdate),
 			Phone:     req.Phone,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			userServiceField,
+		)
+	}
+	return c.toUser(resp.GetUser()), nil
+}
+
+func (c *userClient) UpdateProfilePicture(ctx context.Context, profilePictureURL string) (*models.User, *ce.Error) {
+	resp, err := c.client.UpdateProfilePicture(
+		ctx,
+		&apis.UpdateProfilePictureRequest{
+			ProfilePictureUrl: profilePictureURL,
 		},
 	)
 	if err != nil {

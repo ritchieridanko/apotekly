@@ -18,6 +18,10 @@ type (
 		Phone     *string    `json:"phone"`
 	}
 
+	UpdateProfilePictureRequest struct {
+		ProfilePictureURL string `json:"profile_picture_url" binding:"required"`
+	}
+
 	// Address
 	CreateAddressRequest struct {
 		Label        string  `json:"label" binding:"required"`
@@ -78,6 +82,10 @@ type (
 	}
 
 	UpdateUserResponse struct {
+		User *User `json:"user,omitempty"`
+	}
+
+	UpdateProfilePictureResponse struct {
 		User *User `json:"user,omitempty"`
 	}
 
