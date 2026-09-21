@@ -22,6 +22,10 @@ type (
 		ProfilePictureURL string `json:"profile_picture_url" binding:"required"`
 	}
 
+	UpdateProfileBannerRequest struct {
+		ProfileBannerURL string `json:"profile_banner_url" binding:"required"`
+	}
+
 	// Address
 	CreateAddressRequest struct {
 		Label        string  `json:"label" binding:"required"`
@@ -86,6 +90,10 @@ type (
 	}
 
 	UpdateProfilePictureResponse struct {
+		User *User `json:"user,omitempty"`
+	}
+
+	UpdateProfileBannerResponse struct {
 		User *User `json:"user,omitempty"`
 	}
 

@@ -18,6 +18,7 @@ type UserClient interface {
 	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
 	UpdateUser(ctx context.Context, req *models.UpdateUserReq) (u *models.User, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (u *models.User, err *ce.Error)
+	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (u *models.User, err *ce.Error)
 }
 
 type userClient struct {
@@ -85,6 +86,23 @@ func (c *userClient) UpdateProfilePicture(ctx context.Context, profilePictureURL
 		ctx,
 		&apis.UpdateProfilePictureRequest{
 			ProfilePictureUrl: profilePictureURL,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			userServiceField,
+		)
+	}
+	return c.toUser(resp.GetUser()), nil
+}
+
+func (c *userClient) UpdateProfileBanner(ctx context.Context, profileBannerURL string) (*models.User, *ce.Error) {
+	resp, err := c.client.UpdateProfileBanner(
+		ctx,
+		&apis.UpdateProfileBannerRequest{
+			ProfileBannerUrl: profileBannerURL,
 		},
 	)
 	if err != nil {

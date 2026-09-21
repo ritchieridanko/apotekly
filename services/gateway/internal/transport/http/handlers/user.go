@@ -189,6 +189,47 @@ func (h *UserHandler) UpdateProfilePicture(ctx *gin.Context) {
 	)
 }
 
+func (h *UserHandler) UpdateProfileBanner(ctx *gin.Context) {
+	var payload dtos.UpdateProfileBannerRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	u, err := h.uc.UpdateProfileBanner(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		),
+		payload.ProfileBannerURL,
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Profile banner updated successfully",
+		dtos.UpdateProfileBannerResponse{User: h.toUser(u)},
+		nil,
+	)
+}
+
 func (h *UserHandler) toUser(u *models.User) *dtos.User {
 	if u == nil {
 		return nil
