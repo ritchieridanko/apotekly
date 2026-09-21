@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	db "github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
@@ -15,6 +16,7 @@ import (
 
 type UserDatabase interface {
 	Create(ctx context.Context, data *models.CreateUser) (u *models.User, err *ce.Error)
+	GetID(ctx context.Context, authID uint64) (userID uuid.UUID, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (u *models.User, err *ce.Error)
 	Update(ctx context.Context, authID uint64, data *models.UpdateUser) (u *models.User, err *ce.Error)
 }
@@ -78,6 +80,38 @@ func (d *userDatabase) Create(ctx context.Context, data *models.CreateUser) (*mo
 	}
 
 	return &u, nil
+}
+
+func (d *userDatabase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
+	query := "SELECT id FROM users WHERE auth_id = $1 AND deleted_at IS NULL"
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var userID uuid.UUID
+	err := d.database.Query(
+		ctx, query,
+		authID,
+	).Scan(
+		&userID,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get user id: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return uuid.Nil, ce.NewError(
+				ce.CodeUserNotFound,
+				ce.MsgUserNotFound,
+				wrappedErr,
+			)
+		}
+		return uuid.Nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return userID, nil
 }
 
 func (d *userDatabase) GetByAuthID(ctx context.Context, authID uint64) (*models.User, *ce.Error) {
@@ -150,6 +184,16 @@ func (d *userDatabase) Update(ctx context.Context, authID uint64, data *models.U
 	if data.Phone != nil {
 		setClauses = append(setClauses, "phone = $"+strconv.Itoa(argPos))
 		args = append(args, *data.Phone)
+		argPos++
+	}
+	if data.ProfilePicture != nil {
+		setClauses = append(setClauses, "profile_picture = $"+strconv.Itoa(argPos))
+		args = append(args, *data.ProfilePicture)
+		argPos++
+	}
+	if data.ProfileBanner != nil {
+		setClauses = append(setClauses, "profile_banner = $"+strconv.Itoa(argPos))
+		args = append(args, *data.ProfileBanner)
 		argPos++
 	}
 	if len(setClauses) == 0 {

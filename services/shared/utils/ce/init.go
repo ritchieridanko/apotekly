@@ -127,6 +127,7 @@ func (e *Error) ToGRPCErr() error {
 		CodePanicOccurred,
 		CodeProtobufParsingFailed,
 		CodeRoleMismatch,
+		CodeStorageFileRenamingFailed,
 		CodeTypeAssertionFailed,
 		CodeTypeConversionFailed,
 		CodeURLGenerationFailed,

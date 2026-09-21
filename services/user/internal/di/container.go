@@ -3,6 +3,7 @@ package di
 import (
 	infdb "github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/storage"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/validator"
 	"github.com/ritchieridanko/apotekly/services/user/configs"
 	"github.com/ritchieridanko/apotekly/services/user/internal/infra"
@@ -18,6 +19,7 @@ type Container struct {
 	database   *infdb.Database
 	transactor *infdb.Transactor
 	logger     *logger.Logger
+	storage    *storage.Storage
 
 	udb database.UserDatabase
 	adb database.AddressDatabase
@@ -41,6 +43,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	db := infdb.NewDatabase(inf.Database())
 	tx := infdb.NewTransactor(inf.Database())
 	l := logger.NewLogger(inf.Logger())
+	s := storage.NewStorage(inf.Storage())
 
 	// Databases
 	udb := database.NewUserDatabase(db)
@@ -54,7 +57,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	uu := usecases.NewUserUsecase(cfg.App.Name, ur, v, l)
+	uu := usecases.NewUserUsecase(cfg.App.Name, ur, s, v, l)
 	au := usecases.NewAddressUsecase(cfg.App.Name, ar, tx, v, l)
 
 	// Handlers
@@ -69,6 +72,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		database:   db,
 		transactor: tx,
 		logger:     l,
+		storage:    s,
 		udb:        udb,
 		adb:        adb,
 		ur:         ur,

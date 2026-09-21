@@ -30,9 +30,11 @@ type (
 	}
 
 	UpdateUser struct {
-		Name      *string
-		Sex       *string
-		Birthdate *time.Time
-		Phone     *string
+		Name           *string
+		Sex            *string
+		Birthdate      *time.Time
+		Phone          *string
+		ProfilePicture *string
+		ProfileBanner  *string
 	}
 )

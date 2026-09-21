@@ -8,10 +8,11 @@ var (
 	rgxNumber           *regexp.Regexp = regexp.MustCompile(`[0-9]`)
 	rgxPhone            *regexp.Regexp = regexp.MustCompile(`^0\d{7,15}$`)
 	rgxPrice            *regexp.Regexp = regexp.MustCompile(`^\d+(\.\d{1,2})?$`)
-	rgxZeroDecimalPrice *regexp.Regexp = regexp.MustCompile(`^\d+$`)
 	rgxSpecialChars     *regexp.Regexp = regexp.MustCompile(`[!@#$%^&*()_+\-={};:'"/\\|,.<>?]`)
+	rgxStorageURL       *regexp.Regexp = regexp.MustCompile(`^https://res\.cloudinary\.com/dta3lzmww/image/upload/(?:v\d+/)?(.+)$`)
 	rgxTimeRange        *regexp.Regexp = regexp.MustCompile(`^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$`)
 	rgxUppercase        *regexp.Regexp = regexp.MustCompile(`[A-Z]`)
+	rgxZeroDecimalPrice *regexp.Regexp = regexp.MustCompile(`^\d+$`)
 )
 
 const (

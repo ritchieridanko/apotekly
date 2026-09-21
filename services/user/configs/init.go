@@ -14,6 +14,7 @@ type Config struct {
 	App      cfg.App        `mapstructure:"app"`
 	Server   cfg.GRPCServer `mapstructure:"server"`
 	Database cfg.Database   `mapstructure:"database"`
+	Storage  cfg.Storage    `mapstructure:"storage"`
 	Tracer   cfg.Tracer     `mapstructure:"tracer"`
 }
 

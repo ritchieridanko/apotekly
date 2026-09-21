@@ -260,6 +260,13 @@ func (v *Validator) Sex(value string) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) StorageURL(value string) (bool, string) {
+	if !rgxStorageURL.MatchString(value) {
+		return false, "URL is invalid: " + value
+	}
+	return true, ""
+}
+
 func (v *Validator) URL(value string) (bool, string) {
 	why := "URL is invalid: " + value
 	u, err := url.ParseRequestURI(value)
