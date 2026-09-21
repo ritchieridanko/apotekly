@@ -21,6 +21,7 @@ type UserUsecase interface {
 	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
 	UpdateUser(ctx context.Context, req *models.UpdateUserReq) (u *models.User, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (u *models.User, err *ce.Error)
+	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (u *models.User, err *ce.Error)
 }
 
 type userUsecase struct {
@@ -252,6 +253,78 @@ func (u *userUsecase) UpdateProfilePicture(ctx context.Context, profilePictureUR
 		authCtx.AuthID,
 		&models.UpdateUser{
 			ProfilePicture: &res.SecureURL,
+		},
+	)
+	if err != nil {
+		return nil, err.Append(authIDField)
+	}
+
+	return user, nil
+}
+
+func (u *userUsecase) UpdateProfileBanner(ctx context.Context, profileBannerURL string) (*models.User, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "user.usecase.UpdateProfileBanner")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Normalization
+	url := strings.TrimSpace(profileBannerURL)
+
+	// Data Validation
+	if ok, why := u.validator.StorageURL(url); !ok {
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+	}
+
+	// User ID Fetching
+	userID, err := u.ur.GetID(ctx, authCtx.AuthID)
+	if err != nil {
+		return nil, err.Append(authIDField)
+	}
+
+	// URL Public ID Extraction
+	publicID, extErr := u.storage.ExtractPublicID(url, constants.StorageFilePathTempImages)
+	if extErr != nil {
+		return nil, ce.NewError(
+			ce.CodeInvalidPayload,
+			ce.MsgInvalidPayload,
+			extErr,
+			authIDField,
+		)
+	}
+
+	// Image File Renaming
+	res, renameErr := u.storage.Rename(
+		ctx,
+		publicID,
+		"users/profile_banners/"+userID.String(),
+		true,
+		true,
+	)
+	if renameErr != nil {
+		return nil, ce.NewError(
+			ce.CodeStorageFileRenamingFailed,
+			ce.MsgInternalServer,
+			renameErr,
+			authIDField,
+		)
+	}
+
+	// User Update
+	user, err := u.ur.Update(
+		ctx,
+		authCtx.AuthID,
+		&models.UpdateUser{
+			ProfileBanner: &res.SecureURL,
 		},
 	)
 	if err != nil {

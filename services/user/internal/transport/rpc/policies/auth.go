@@ -29,6 +29,7 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 	"/user.v1.UserService/GetMe":                {authenticated: true},
 	"/user.v1.UserService/UpdateUser":           {authenticated: true},
 	"/user.v1.UserService/UpdateProfilePicture": {authenticated: true},
+	"/user.v1.UserService/UpdateProfileBanner":  {authenticated: true},
 
 	// Address
 	"/user.v1.AddressService/CreateAddress":     {authenticated: true},

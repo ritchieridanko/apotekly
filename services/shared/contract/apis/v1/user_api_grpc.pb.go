@@ -24,6 +24,7 @@ const (
 	UserService_GetMe_FullMethodName                = "/user.v1.UserService/GetMe"
 	UserService_UpdateUser_FullMethodName           = "/user.v1.UserService/UpdateUser"
 	UserService_UpdateProfilePicture_FullMethodName = "/user.v1.UserService/UpdateProfilePicture"
+	UserService_UpdateProfileBanner_FullMethodName  = "/user.v1.UserService/UpdateProfileBanner"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -34,6 +35,7 @@ type UserServiceClient interface {
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserGetMeResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	UpdateProfilePicture(ctx context.Context, in *UpdateProfilePictureRequest, opts ...grpc.CallOption) (*UpdateProfilePictureResponse, error)
+	UpdateProfileBanner(ctx context.Context, in *UpdateProfileBannerRequest, opts ...grpc.CallOption) (*UpdateProfileBannerResponse, error)
 }
 
 type userServiceClient struct {
@@ -84,6 +86,16 @@ func (c *userServiceClient) UpdateProfilePicture(ctx context.Context, in *Update
 	return out, nil
 }
 
+func (c *userServiceClient) UpdateProfileBanner(ctx context.Context, in *UpdateProfileBannerRequest, opts ...grpc.CallOption) (*UpdateProfileBannerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateProfileBannerResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateProfileBanner_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -92,6 +104,7 @@ type UserServiceServer interface {
 	GetMe(context.Context, *emptypb.Empty) (*UserGetMeResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	UpdateProfilePicture(context.Context, *UpdateProfilePictureRequest) (*UpdateProfilePictureResponse, error)
+	UpdateProfileBanner(context.Context, *UpdateProfileBannerRequest) (*UpdateProfileBannerResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -113,6 +126,9 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) UpdateProfilePicture(context.Context, *UpdateProfilePictureRequest) (*UpdateProfilePictureResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePicture not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateProfileBanner(context.Context, *UpdateProfileBannerRequest) (*UpdateProfileBannerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfileBanner not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -207,6 +223,24 @@ func _UserService_UpdateProfilePicture_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UpdateProfileBanner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProfileBannerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateProfileBanner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateProfileBanner_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateProfileBanner(ctx, req.(*UpdateProfileBannerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -229,6 +263,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProfilePicture",
 			Handler:    _UserService_UpdateProfilePicture_Handler,
+		},
+		{
+			MethodName: "UpdateProfileBanner",
+			Handler:    _UserService_UpdateProfileBanner_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

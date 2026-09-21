@@ -67,6 +67,14 @@ func (h *UserHandler) UpdateProfilePicture(ctx context.Context, req *apis.Update
 	return &apis.UpdateProfilePictureResponse{User: h.toUser(u)}, nil
 }
 
+func (h *UserHandler) UpdateProfileBanner(ctx context.Context, req *apis.UpdateProfileBannerRequest) (*apis.UpdateProfileBannerResponse, error) {
+	u, err := h.uu.UpdateProfileBanner(ctx, req.GetProfileBannerUrl())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.UpdateProfileBannerResponse{User: h.toUser(u)}, nil
+}
+
 func (h *UserHandler) toUser(u *models.User) *apis.User {
 	if u == nil {
 		return nil

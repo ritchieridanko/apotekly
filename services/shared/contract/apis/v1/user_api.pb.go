@@ -471,6 +471,94 @@ func (x *UpdateProfilePictureResponse) GetUser() *User {
 	return nil
 }
 
+type UpdateProfileBannerRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	ProfileBannerUrl string                 `protobuf:"bytes,1,opt,name=profile_banner_url,json=profileBannerUrl,proto3" json:"profile_banner_url,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UpdateProfileBannerRequest) Reset() {
+	*x = UpdateProfileBannerRequest{}
+	mi := &file_v1_user_api_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProfileBannerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProfileBannerRequest) ProtoMessage() {}
+
+func (x *UpdateProfileBannerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_api_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProfileBannerRequest.ProtoReflect.Descriptor instead.
+func (*UpdateProfileBannerRequest) Descriptor() ([]byte, []int) {
+	return file_v1_user_api_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *UpdateProfileBannerRequest) GetProfileBannerUrl() string {
+	if x != nil {
+		return x.ProfileBannerUrl
+	}
+	return ""
+}
+
+type UpdateProfileBannerResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateProfileBannerResponse) Reset() {
+	*x = UpdateProfileBannerResponse{}
+	mi := &file_v1_user_api_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProfileBannerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProfileBannerResponse) ProtoMessage() {}
+
+func (x *UpdateProfileBannerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_api_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProfileBannerResponse.ProtoReflect.Descriptor instead.
+func (*UpdateProfileBannerResponse) Descriptor() ([]byte, []int) {
+	return file_v1_user_api_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdateProfileBannerResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 var File_v1_user_api_proto protoreflect.FileDescriptor
 
 const file_v1_user_api_proto_rawDesc = "" +
@@ -512,14 +600,19 @@ const file_v1_user_api_proto_rawDesc = "" +
 	"\x1bUpdateProfilePictureRequest\x12.\n" +
 	"\x13profile_picture_url\x18\x01 \x01(\tR\x11profilePictureUrl\"A\n" +
 	"\x1cUpdateProfilePictureResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xbd\x02\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"J\n" +
+	"\x1aUpdateProfileBannerRequest\x12,\n" +
+	"\x12profile_banner_url\x18\x01 \x01(\tR\x10profileBannerUrl\"@\n" +
+	"\x1bUpdateProfileBannerResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\x9f\x03\n" +
 	"\vUserService\x12E\n" +
 	"\n" +
 	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\x12;\n" +
 	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x1a.user.v1.UserGetMeResponse\x12E\n" +
 	"\n" +
 	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponse\x12c\n" +
-	"\x14UpdateProfilePicture\x12$.user.v1.UpdateProfilePictureRequest\x1a%.user.v1.UpdateProfilePictureResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x14UpdateProfilePicture\x12$.user.v1.UpdateProfilePictureRequest\x1a%.user.v1.UpdateProfilePictureResponse\x12`\n" +
+	"\x13UpdateProfileBanner\x12#.user.v1.UpdateProfileBannerRequest\x1a$.user.v1.UpdateProfileBannerResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_user_api_proto_rawDescOnce sync.Once
@@ -533,7 +626,7 @@ func file_v1_user_api_proto_rawDescGZIP() []byte {
 	return file_v1_user_api_proto_rawDescData
 }
 
-var file_v1_user_api_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_v1_user_api_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_v1_user_api_proto_goTypes = []any{
 	(*User)(nil),                         // 0: user.v1.User
 	(*CreateUserRequest)(nil),            // 1: user.v1.CreateUserRequest
@@ -543,30 +636,35 @@ var file_v1_user_api_proto_goTypes = []any{
 	(*UpdateUserResponse)(nil),           // 5: user.v1.UpdateUserResponse
 	(*UpdateProfilePictureRequest)(nil),  // 6: user.v1.UpdateProfilePictureRequest
 	(*UpdateProfilePictureResponse)(nil), // 7: user.v1.UpdateProfilePictureResponse
-	(*timestamppb.Timestamp)(nil),        // 8: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                // 9: google.protobuf.Empty
+	(*UpdateProfileBannerRequest)(nil),   // 8: user.v1.UpdateProfileBannerRequest
+	(*UpdateProfileBannerResponse)(nil),  // 9: user.v1.UpdateProfileBannerResponse
+	(*timestamppb.Timestamp)(nil),        // 10: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                // 11: google.protobuf.Empty
 }
 var file_v1_user_api_proto_depIdxs = []int32{
-	8,  // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
-	8,  // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
+	10, // 0: user.v1.User.birthdate:type_name -> google.protobuf.Timestamp
+	10, // 1: user.v1.CreateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
 	0,  // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
 	0,  // 3: user.v1.UserGetMeResponse.user:type_name -> user.v1.User
-	8,  // 4: user.v1.UpdateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
+	10, // 4: user.v1.UpdateUserRequest.birthdate:type_name -> google.protobuf.Timestamp
 	0,  // 5: user.v1.UpdateUserResponse.user:type_name -> user.v1.User
 	0,  // 6: user.v1.UpdateProfilePictureResponse.user:type_name -> user.v1.User
-	1,  // 7: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
-	9,  // 8: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
-	4,  // 9: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
-	6,  // 10: user.v1.UserService.UpdateProfilePicture:input_type -> user.v1.UpdateProfilePictureRequest
-	2,  // 11: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
-	3,  // 12: user.v1.UserService.GetMe:output_type -> user.v1.UserGetMeResponse
-	5,  // 13: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
-	7,  // 14: user.v1.UserService.UpdateProfilePicture:output_type -> user.v1.UpdateProfilePictureResponse
-	11, // [11:15] is the sub-list for method output_type
-	7,  // [7:11] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	0,  // 7: user.v1.UpdateProfileBannerResponse.user:type_name -> user.v1.User
+	1,  // 8: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
+	11, // 9: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
+	4,  // 10: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
+	6,  // 11: user.v1.UserService.UpdateProfilePicture:input_type -> user.v1.UpdateProfilePictureRequest
+	8,  // 12: user.v1.UserService.UpdateProfileBanner:input_type -> user.v1.UpdateProfileBannerRequest
+	2,  // 13: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
+	3,  // 14: user.v1.UserService.GetMe:output_type -> user.v1.UserGetMeResponse
+	5,  // 15: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
+	7,  // 16: user.v1.UserService.UpdateProfilePicture:output_type -> user.v1.UpdateProfilePictureResponse
+	9,  // 17: user.v1.UserService.UpdateProfileBanner:output_type -> user.v1.UpdateProfileBannerResponse
+	13, // [13:18] is the sub-list for method output_type
+	8,  // [8:13] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_v1_user_api_proto_init() }
@@ -583,7 +681,7 @@ func file_v1_user_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_user_api_proto_rawDesc), len(file_v1_user_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
