@@ -101,6 +101,14 @@ func (h *PharmacyHandler) UpdateProfilePicture(ctx context.Context, req *apis.Ph
 	return &apis.PharmacyUpdateProfilePictureResponse{Pharmacy: h.toPharmacy(p)}, nil
 }
 
+func (h *PharmacyHandler) UpdateProfileBanner(ctx context.Context, req *apis.PharmacyUpdateProfileBannerRequest) (*apis.PharmacyUpdateProfileBannerResponse, error) {
+	p, err := h.pu.UpdateProfileBanner(ctx, req.GetProfileBannerUrl())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.PharmacyUpdateProfileBannerResponse{Pharmacy: h.toPharmacy(p)}, nil
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {
 	if p == nil {
 		return nil

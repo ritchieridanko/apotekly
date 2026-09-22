@@ -13,6 +13,7 @@ service PharmacyService {
   rpc GetID (PharmacyGetIDRequest) returns (PharmacyGetIDResponse);
   rpc UpdatePharmacy (UpdatePharmacyRequest) returns (UpdatePharmacyResponse);
   rpc UpdateProfilePicture (PharmacyUpdateProfilePictureRequest) returns (PharmacyUpdateProfilePictureResponse);
+  rpc UpdateProfileBanner (PharmacyUpdateProfileBannerRequest) returns (PharmacyUpdateProfileBannerResponse);
 }
 
 message Pharmacy {
@@ -107,5 +108,13 @@ message PharmacyUpdateProfilePictureRequest {
 }
 
 message PharmacyUpdateProfilePictureResponse {
+  Pharmacy pharmacy = 1;
+}
+
+message PharmacyUpdateProfileBannerRequest {
+  string profile_banner_url = 1;
+}
+
+message PharmacyUpdateProfileBannerResponse {
   Pharmacy pharmacy = 1;
 }
