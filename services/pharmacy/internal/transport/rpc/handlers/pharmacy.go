@@ -64,6 +64,35 @@ func (h *PharmacyHandler) GetID(ctx context.Context, req *apis.PharmacyGetIDRequ
 	return &apis.PharmacyGetIDResponse{PharmacyId: pharmacyID.String()}, nil
 }
 
+func (h *PharmacyHandler) UpdatePharmacy(ctx context.Context, req *apis.UpdatePharmacyRequest) (*apis.UpdatePharmacyResponse, error) {
+	p, err := h.pu.UpdatePharmacy(
+		ctx,
+		&models.UpdatePharmacyReq{
+			Name:         req.Name,
+			LegalName:    req.LegalName,
+			Description:  req.Description,
+			OnlineHours:  utils.ToJSON(req.GetOnlineHours()),
+			Country:      req.Country,
+			Subdivision1: req.Subdivision_1,
+			Subdivision2: req.Subdivision_2,
+			Subdivision3: req.Subdivision_3,
+			Subdivision4: req.Subdivision_4,
+			Street:       req.Street,
+			PostalCode:   req.PostalCode,
+			Latitude:     req.Latitude,
+			Longitude:    req.Longitude,
+			Email:        req.Email,
+			Phone:        req.Phone,
+			Website:      req.Website,
+			Whatsapp:     req.Whatsapp,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.UpdatePharmacyResponse{Pharmacy: h.toPharmacy(p)}, nil
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {
 	if p == nil {
 		return nil

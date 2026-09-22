@@ -599,6 +599,222 @@ func (x *PharmacyGetIDResponse) GetPharmacyId() string {
 	return ""
 }
 
+type UpdatePharmacyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	LegalName     *string                `protobuf:"bytes,2,opt,name=legal_name,json=legalName,proto3,oneof" json:"legal_name,omitempty"`
+	Description   *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	OnlineHours   []byte                 `protobuf:"bytes,4,opt,name=online_hours,json=onlineHours,proto3,oneof" json:"online_hours,omitempty"`
+	Country       *string                `protobuf:"bytes,5,opt,name=country,proto3,oneof" json:"country,omitempty"`
+	Subdivision_1 *string                `protobuf:"bytes,6,opt,name=subdivision_1,json=subdivision1,proto3,oneof" json:"subdivision_1,omitempty"`
+	Subdivision_2 *string                `protobuf:"bytes,7,opt,name=subdivision_2,json=subdivision2,proto3,oneof" json:"subdivision_2,omitempty"`
+	Subdivision_3 *string                `protobuf:"bytes,8,opt,name=subdivision_3,json=subdivision3,proto3,oneof" json:"subdivision_3,omitempty"`
+	Subdivision_4 *string                `protobuf:"bytes,9,opt,name=subdivision_4,json=subdivision4,proto3,oneof" json:"subdivision_4,omitempty"`
+	Street        *string                `protobuf:"bytes,10,opt,name=street,proto3,oneof" json:"street,omitempty"`
+	PostalCode    *string                `protobuf:"bytes,11,opt,name=postal_code,json=postalCode,proto3,oneof" json:"postal_code,omitempty"`
+	Latitude      *float64               `protobuf:"fixed64,12,opt,name=latitude,proto3,oneof" json:"latitude,omitempty"`
+	Longitude     *float64               `protobuf:"fixed64,13,opt,name=longitude,proto3,oneof" json:"longitude,omitempty"`
+	Email         *string                `protobuf:"bytes,14,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	Phone         *string                `protobuf:"bytes,15,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	Website       *string                `protobuf:"bytes,16,opt,name=website,proto3,oneof" json:"website,omitempty"`
+	Whatsapp      *string                `protobuf:"bytes,17,opt,name=whatsapp,proto3,oneof" json:"whatsapp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePharmacyRequest) Reset() {
+	*x = UpdatePharmacyRequest{}
+	mi := &file_v1_pharmacy_api_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePharmacyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePharmacyRequest) ProtoMessage() {}
+
+func (x *UpdatePharmacyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_pharmacy_api_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePharmacyRequest.ProtoReflect.Descriptor instead.
+func (*UpdatePharmacyRequest) Descriptor() ([]byte, []int) {
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdatePharmacyRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetLegalName() string {
+	if x != nil && x.LegalName != nil {
+		return *x.LegalName
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetOnlineHours() []byte {
+	if x != nil {
+		return x.OnlineHours
+	}
+	return nil
+}
+
+func (x *UpdatePharmacyRequest) GetCountry() string {
+	if x != nil && x.Country != nil {
+		return *x.Country
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetSubdivision_1() string {
+	if x != nil && x.Subdivision_1 != nil {
+		return *x.Subdivision_1
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetSubdivision_2() string {
+	if x != nil && x.Subdivision_2 != nil {
+		return *x.Subdivision_2
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetSubdivision_3() string {
+	if x != nil && x.Subdivision_3 != nil {
+		return *x.Subdivision_3
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetSubdivision_4() string {
+	if x != nil && x.Subdivision_4 != nil {
+		return *x.Subdivision_4
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetStreet() string {
+	if x != nil && x.Street != nil {
+		return *x.Street
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetPostalCode() string {
+	if x != nil && x.PostalCode != nil {
+		return *x.PostalCode
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetLatitude() float64 {
+	if x != nil && x.Latitude != nil {
+		return *x.Latitude
+	}
+	return 0
+}
+
+func (x *UpdatePharmacyRequest) GetLongitude() float64 {
+	if x != nil && x.Longitude != nil {
+		return *x.Longitude
+	}
+	return 0
+}
+
+func (x *UpdatePharmacyRequest) GetEmail() string {
+	if x != nil && x.Email != nil {
+		return *x.Email
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetPhone() string {
+	if x != nil && x.Phone != nil {
+		return *x.Phone
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetWebsite() string {
+	if x != nil && x.Website != nil {
+		return *x.Website
+	}
+	return ""
+}
+
+func (x *UpdatePharmacyRequest) GetWhatsapp() string {
+	if x != nil && x.Whatsapp != nil {
+		return *x.Whatsapp
+	}
+	return ""
+}
+
+type UpdatePharmacyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pharmacy      *Pharmacy              `protobuf:"bytes,1,opt,name=pharmacy,proto3" json:"pharmacy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePharmacyResponse) Reset() {
+	*x = UpdatePharmacyResponse{}
+	mi := &file_v1_pharmacy_api_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePharmacyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePharmacyResponse) ProtoMessage() {}
+
+func (x *UpdatePharmacyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_pharmacy_api_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePharmacyResponse.ProtoReflect.Descriptor instead.
+func (*UpdatePharmacyResponse) Descriptor() ([]byte, []int) {
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UpdatePharmacyResponse) GetPharmacy() *Pharmacy {
+	if x != nil {
+		return x.Pharmacy
+	}
+	return nil
+}
+
 var File_v1_pharmacy_api_proto protoreflect.FileDescriptor
 
 const file_v1_pharmacy_api_proto_rawDesc = "" +
@@ -692,11 +908,56 @@ const file_v1_pharmacy_api_proto_rawDesc = "" +
 	"\aauth_id\x18\x01 \x01(\x04R\x06authId\"8\n" +
 	"\x15PharmacyGetIDResponse\x12\x1f\n" +
 	"\vpharmacy_id\x18\x01 \x01(\tR\n" +
-	"pharmacyId2\x81\x02\n" +
+	"pharmacyId\"\xd7\x06\n" +
+	"\x15UpdatePharmacyRequest\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"legal_name\x18\x02 \x01(\tH\x01R\tlegalName\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x02R\vdescription\x88\x01\x01\x12&\n" +
+	"\fonline_hours\x18\x04 \x01(\fH\x03R\vonlineHours\x88\x01\x01\x12\x1d\n" +
+	"\acountry\x18\x05 \x01(\tH\x04R\acountry\x88\x01\x01\x12(\n" +
+	"\rsubdivision_1\x18\x06 \x01(\tH\x05R\fsubdivision1\x88\x01\x01\x12(\n" +
+	"\rsubdivision_2\x18\a \x01(\tH\x06R\fsubdivision2\x88\x01\x01\x12(\n" +
+	"\rsubdivision_3\x18\b \x01(\tH\aR\fsubdivision3\x88\x01\x01\x12(\n" +
+	"\rsubdivision_4\x18\t \x01(\tH\bR\fsubdivision4\x88\x01\x01\x12\x1b\n" +
+	"\x06street\x18\n" +
+	" \x01(\tH\tR\x06street\x88\x01\x01\x12$\n" +
+	"\vpostal_code\x18\v \x01(\tH\n" +
+	"R\n" +
+	"postalCode\x88\x01\x01\x12\x1f\n" +
+	"\blatitude\x18\f \x01(\x01H\vR\blatitude\x88\x01\x01\x12!\n" +
+	"\tlongitude\x18\r \x01(\x01H\fR\tlongitude\x88\x01\x01\x12\x19\n" +
+	"\x05email\x18\x0e \x01(\tH\rR\x05email\x88\x01\x01\x12\x19\n" +
+	"\x05phone\x18\x0f \x01(\tH\x0eR\x05phone\x88\x01\x01\x12\x1d\n" +
+	"\awebsite\x18\x10 \x01(\tH\x0fR\awebsite\x88\x01\x01\x12\x1f\n" +
+	"\bwhatsapp\x18\x11 \x01(\tH\x10R\bwhatsapp\x88\x01\x01B\a\n" +
+	"\x05_nameB\r\n" +
+	"\v_legal_nameB\x0e\n" +
+	"\f_descriptionB\x0f\n" +
+	"\r_online_hoursB\n" +
+	"\n" +
+	"\b_countryB\x10\n" +
+	"\x0e_subdivision_1B\x10\n" +
+	"\x0e_subdivision_2B\x10\n" +
+	"\x0e_subdivision_3B\x10\n" +
+	"\x0e_subdivision_4B\t\n" +
+	"\a_streetB\x0e\n" +
+	"\f_postal_codeB\v\n" +
+	"\t_latitudeB\f\n" +
+	"\n" +
+	"_longitudeB\b\n" +
+	"\x06_emailB\b\n" +
+	"\x06_phoneB\n" +
+	"\n" +
+	"\b_websiteB\v\n" +
+	"\t_whatsapp\"K\n" +
+	"\x16UpdatePharmacyResponse\x121\n" +
+	"\bpharmacy\x18\x01 \x01(\v2\x15.pharmacy.v1.PharmacyR\bpharmacy2\xdc\x02\n" +
 	"\x0fPharmacyService\x12Y\n" +
 	"\x0eCreatePharmacy\x12\".pharmacy.v1.CreatePharmacyRequest\x1a#.pharmacy.v1.CreatePharmacyResponse\x12C\n" +
 	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\".pharmacy.v1.PharmacyGetMeResponse\x12N\n" +
-	"\x05GetID\x12!.pharmacy.v1.PharmacyGetIDRequest\x1a\".pharmacy.v1.PharmacyGetIDResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x05GetID\x12!.pharmacy.v1.PharmacyGetIDRequest\x1a\".pharmacy.v1.PharmacyGetIDResponse\x12Y\n" +
+	"\x0eUpdatePharmacy\x12\".pharmacy.v1.UpdatePharmacyRequest\x1a#.pharmacy.v1.UpdatePharmacyResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_pharmacy_api_proto_rawDescOnce sync.Once
@@ -710,7 +971,7 @@ func file_v1_pharmacy_api_proto_rawDescGZIP() []byte {
 	return file_v1_pharmacy_api_proto_rawDescData
 }
 
-var file_v1_pharmacy_api_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_v1_pharmacy_api_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_v1_pharmacy_api_proto_goTypes = []any{
 	(*Pharmacy)(nil),               // 0: pharmacy.v1.Pharmacy
 	(*CreatePharmacyRequest)(nil),  // 1: pharmacy.v1.CreatePharmacyRequest
@@ -718,26 +979,31 @@ var file_v1_pharmacy_api_proto_goTypes = []any{
 	(*PharmacyGetMeResponse)(nil),  // 3: pharmacy.v1.PharmacyGetMeResponse
 	(*PharmacyGetIDRequest)(nil),   // 4: pharmacy.v1.PharmacyGetIDRequest
 	(*PharmacyGetIDResponse)(nil),  // 5: pharmacy.v1.PharmacyGetIDResponse
-	(*timestamppb.Timestamp)(nil),  // 6: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),          // 7: google.protobuf.Empty
+	(*UpdatePharmacyRequest)(nil),  // 6: pharmacy.v1.UpdatePharmacyRequest
+	(*UpdatePharmacyResponse)(nil), // 7: pharmacy.v1.UpdatePharmacyResponse
+	(*timestamppb.Timestamp)(nil),  // 8: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),          // 9: google.protobuf.Empty
 }
 var file_v1_pharmacy_api_proto_depIdxs = []int32{
-	6, // 0: pharmacy.v1.Pharmacy.verified_at:type_name -> google.protobuf.Timestamp
-	6, // 1: pharmacy.v1.Pharmacy.created_at:type_name -> google.protobuf.Timestamp
-	6, // 2: pharmacy.v1.Pharmacy.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 3: pharmacy.v1.CreatePharmacyResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
-	0, // 4: pharmacy.v1.PharmacyGetMeResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
-	1, // 5: pharmacy.v1.PharmacyService.CreatePharmacy:input_type -> pharmacy.v1.CreatePharmacyRequest
-	7, // 6: pharmacy.v1.PharmacyService.GetMe:input_type -> google.protobuf.Empty
-	4, // 7: pharmacy.v1.PharmacyService.GetID:input_type -> pharmacy.v1.PharmacyGetIDRequest
-	2, // 8: pharmacy.v1.PharmacyService.CreatePharmacy:output_type -> pharmacy.v1.CreatePharmacyResponse
-	3, // 9: pharmacy.v1.PharmacyService.GetMe:output_type -> pharmacy.v1.PharmacyGetMeResponse
-	5, // 10: pharmacy.v1.PharmacyService.GetID:output_type -> pharmacy.v1.PharmacyGetIDResponse
-	8, // [8:11] is the sub-list for method output_type
-	5, // [5:8] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	8,  // 0: pharmacy.v1.Pharmacy.verified_at:type_name -> google.protobuf.Timestamp
+	8,  // 1: pharmacy.v1.Pharmacy.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 2: pharmacy.v1.Pharmacy.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 3: pharmacy.v1.CreatePharmacyResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
+	0,  // 4: pharmacy.v1.PharmacyGetMeResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
+	0,  // 5: pharmacy.v1.UpdatePharmacyResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
+	1,  // 6: pharmacy.v1.PharmacyService.CreatePharmacy:input_type -> pharmacy.v1.CreatePharmacyRequest
+	9,  // 7: pharmacy.v1.PharmacyService.GetMe:input_type -> google.protobuf.Empty
+	4,  // 8: pharmacy.v1.PharmacyService.GetID:input_type -> pharmacy.v1.PharmacyGetIDRequest
+	6,  // 9: pharmacy.v1.PharmacyService.UpdatePharmacy:input_type -> pharmacy.v1.UpdatePharmacyRequest
+	2,  // 10: pharmacy.v1.PharmacyService.CreatePharmacy:output_type -> pharmacy.v1.CreatePharmacyResponse
+	3,  // 11: pharmacy.v1.PharmacyService.GetMe:output_type -> pharmacy.v1.PharmacyGetMeResponse
+	5,  // 12: pharmacy.v1.PharmacyService.GetID:output_type -> pharmacy.v1.PharmacyGetIDResponse
+	7,  // 13: pharmacy.v1.PharmacyService.UpdatePharmacy:output_type -> pharmacy.v1.UpdatePharmacyResponse
+	10, // [10:14] is the sub-list for method output_type
+	6,  // [6:10] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_v1_pharmacy_api_proto_init() }
@@ -747,13 +1013,14 @@ func file_v1_pharmacy_api_proto_init() {
 	}
 	file_v1_pharmacy_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_pharmacy_api_proto_msgTypes[1].OneofWrappers = []any{}
+	file_v1_pharmacy_api_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_pharmacy_api_proto_rawDesc), len(file_v1_pharmacy_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

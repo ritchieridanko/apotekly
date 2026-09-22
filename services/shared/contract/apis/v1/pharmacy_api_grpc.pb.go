@@ -23,6 +23,7 @@ const (
 	PharmacyService_CreatePharmacy_FullMethodName = "/pharmacy.v1.PharmacyService/CreatePharmacy"
 	PharmacyService_GetMe_FullMethodName          = "/pharmacy.v1.PharmacyService/GetMe"
 	PharmacyService_GetID_FullMethodName          = "/pharmacy.v1.PharmacyService/GetID"
+	PharmacyService_UpdatePharmacy_FullMethodName = "/pharmacy.v1.PharmacyService/UpdatePharmacy"
 )
 
 // PharmacyServiceClient is the client API for PharmacyService service.
@@ -32,6 +33,7 @@ type PharmacyServiceClient interface {
 	CreatePharmacy(ctx context.Context, in *CreatePharmacyRequest, opts ...grpc.CallOption) (*CreatePharmacyResponse, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PharmacyGetMeResponse, error)
 	GetID(ctx context.Context, in *PharmacyGetIDRequest, opts ...grpc.CallOption) (*PharmacyGetIDResponse, error)
+	UpdatePharmacy(ctx context.Context, in *UpdatePharmacyRequest, opts ...grpc.CallOption) (*UpdatePharmacyResponse, error)
 }
 
 type pharmacyServiceClient struct {
@@ -72,6 +74,16 @@ func (c *pharmacyServiceClient) GetID(ctx context.Context, in *PharmacyGetIDRequ
 	return out, nil
 }
 
+func (c *pharmacyServiceClient) UpdatePharmacy(ctx context.Context, in *UpdatePharmacyRequest, opts ...grpc.CallOption) (*UpdatePharmacyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePharmacyResponse)
+	err := c.cc.Invoke(ctx, PharmacyService_UpdatePharmacy_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PharmacyServiceServer is the server API for PharmacyService service.
 // All implementations must embed UnimplementedPharmacyServiceServer
 // for forward compatibility.
@@ -79,6 +91,7 @@ type PharmacyServiceServer interface {
 	CreatePharmacy(context.Context, *CreatePharmacyRequest) (*CreatePharmacyResponse, error)
 	GetMe(context.Context, *emptypb.Empty) (*PharmacyGetMeResponse, error)
 	GetID(context.Context, *PharmacyGetIDRequest) (*PharmacyGetIDResponse, error)
+	UpdatePharmacy(context.Context, *UpdatePharmacyRequest) (*UpdatePharmacyResponse, error)
 	mustEmbedUnimplementedPharmacyServiceServer()
 }
 
@@ -97,6 +110,9 @@ func (UnimplementedPharmacyServiceServer) GetMe(context.Context, *emptypb.Empty)
 }
 func (UnimplementedPharmacyServiceServer) GetID(context.Context, *PharmacyGetIDRequest) (*PharmacyGetIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetID not implemented")
+}
+func (UnimplementedPharmacyServiceServer) UpdatePharmacy(context.Context, *UpdatePharmacyRequest) (*UpdatePharmacyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePharmacy not implemented")
 }
 func (UnimplementedPharmacyServiceServer) mustEmbedUnimplementedPharmacyServiceServer() {}
 func (UnimplementedPharmacyServiceServer) testEmbeddedByValue()                         {}
@@ -173,6 +189,24 @@ func _PharmacyService_GetID_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PharmacyService_UpdatePharmacy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePharmacyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PharmacyServiceServer).UpdatePharmacy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PharmacyService_UpdatePharmacy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PharmacyServiceServer).UpdatePharmacy(ctx, req.(*UpdatePharmacyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PharmacyService_ServiceDesc is the grpc.ServiceDesc for PharmacyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,6 +225,10 @@ var PharmacyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetID",
 			Handler:    _PharmacyService_GetID_Handler,
+		},
+		{
+			MethodName: "UpdatePharmacy",
+			Handler:    _PharmacyService_UpdatePharmacy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

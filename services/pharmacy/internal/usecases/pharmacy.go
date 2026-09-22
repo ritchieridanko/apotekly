@@ -21,6 +21,7 @@ type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyUsecase struct {
@@ -230,4 +231,161 @@ func (u *pharmacyUsecase) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Erro
 
 func (u *pharmacyUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
 	return u.pr.GetID(ctx, authID)
+}
+
+func (u *pharmacyUsecase) UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (*models.Pharmacy, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "pharmacy.usecase.UpdatePharmacy")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// Data Normalization
+	name := utils.TrimSpacePtr(req.Name)
+	legalName := utils.TrimSpacePtr(req.LegalName)
+	description := utils.TrimSpacePtr(req.Description)
+	country := utils.ToLowerPtr(utils.TrimSpacePtr(req.Country))
+	subdivision1 := utils.ToLowerPtr(utils.TrimSpacePtr(req.Subdivision1))
+	subdivision2 := utils.ToLowerPtr(utils.TrimSpacePtr(req.Subdivision2))
+	subdivision3 := utils.ToLowerPtr(utils.TrimSpacePtr(req.Subdivision3))
+	subdivision4 := utils.ToLowerPtr(utils.TrimSpacePtr(req.Subdivision4))
+	street := utils.TrimSpacePtr(req.Street)
+	postalCode := utils.ToLowerPtr(utils.TrimSpacePtr(req.PostalCode))
+	email := utils.ToLowerPtr(utils.TrimSpacePtr(req.Email))
+	phone := utils.TrimSpacePtr(req.Phone)
+	website := utils.TrimSpacePtr(req.Website)
+	whatsapp := utils.TrimSpacePtr(req.Whatsapp)
+
+	// Data Validation
+	if name != nil {
+		if ok, why := u.validator.Name(*name, "Name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if legalName != nil {
+		if ok, why := u.validator.Name(*legalName, "Legal name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if description != nil {
+		if ok, why := u.validator.Description(*description); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if req.OnlineHours != nil {
+		if ok, why := u.validator.OnlineHours(*req.OnlineHours); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if country != nil {
+		if ok, why := u.validator.Country(*country, "Country"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if subdivision1 != nil {
+		if ok, why := u.validator.AddrSubdivision(*subdivision1); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if subdivision2 != nil {
+		if ok, why := u.validator.AddrSubdivision(*subdivision2); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if subdivision3 != nil {
+		if ok, why := u.validator.AddrSubdivision(*subdivision3); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if subdivision4 != nil {
+		if ok, why := u.validator.AddrSubdivision(*subdivision4); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if street != nil {
+		if ok, why := u.validator.Name(*street, "Street name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if postalCode != nil {
+		if ok, why := u.validator.PostalCode(*postalCode); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if (req.Latitude != nil && req.Longitude == nil) || (req.Latitude == nil && req.Longitude != nil) {
+		return nil, ce.NewError(
+			ce.CodeInvalidPayload,
+			"Both latitude and longitude are required",
+			nil,
+			authIDField,
+		)
+	}
+	if req.Latitude != nil {
+		if ok, why := u.validator.Latitude(*req.Latitude); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if req.Longitude != nil {
+		if ok, why := u.validator.Longitude(*req.Longitude); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if email != nil {
+		if ok, why := u.validator.Email(*email); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if phone != nil {
+		if ok, why := u.validator.Phone(*phone); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if website != nil {
+		if ok, why := u.validator.URL(*website); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+	if whatsapp != nil {
+		if ok, why := u.validator.Phone(*whatsapp); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authIDField)
+		}
+	}
+
+	// Pharmacy Update
+	p, err := u.pr.Update(
+		ctx,
+		authCtx.AuthID,
+		&models.UpdatePharmacy{
+			Name:         name,
+			LegalName:    legalName,
+			Description:  description,
+			OnlineHours:  req.OnlineHours,
+			Country:      country,
+			Subdivision1: subdivision1,
+			Subdivision2: subdivision2,
+			Subdivision3: subdivision3,
+			Subdivision4: subdivision4,
+			Street:       street,
+			PostalCode:   postalCode,
+			Latitude:     req.Latitude,
+			Longitude:    req.Longitude,
+			Email:        email,
+			Phone:        phone,
+			Website:      website,
+			Whatsapp:     whatsapp,
+		},
+	)
+	if err != nil {
+		return nil, err.Append(authIDField)
+	}
+
+	return p, nil
 }
