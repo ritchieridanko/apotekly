@@ -54,6 +54,10 @@ type (
 	PharmacyUpdateProfilePictureRequest struct {
 		ProfilePictureURL string `json:"profile_picture_url" binding:"required"`
 	}
+
+	PharmacyUpdateProfileBannerRequest struct {
+		ProfileBannerURL string `json:"profile_banner_url" binding:"required"`
+	}
 )
 
 // Responses
@@ -99,6 +103,10 @@ type (
 	}
 
 	PharmacyUpdateProfilePictureResponse struct {
+		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+	}
+
+	PharmacyUpdateProfileBannerResponse struct {
 		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
 	}
 )

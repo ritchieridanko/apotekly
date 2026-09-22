@@ -18,6 +18,7 @@ type PharmacyClient interface {
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
+	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyClient struct {
@@ -111,6 +112,23 @@ func (c *pharmacyClient) UpdateProfilePicture(ctx context.Context, profilePictur
 		ctx,
 		&apis.PharmacyUpdateProfilePictureRequest{
 			ProfilePictureUrl: profilePictureURL,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			pharmacyServiceField,
+		)
+	}
+	return c.toPharmacy(resp.GetPharmacy()), nil
+}
+
+func (c *pharmacyClient) UpdateProfileBanner(ctx context.Context, profileBannerURL string) (*models.Pharmacy, *ce.Error) {
+	resp, err := c.client.UpdateProfileBanner(
+		ctx,
+		&apis.PharmacyUpdateProfileBannerRequest{
+			ProfileBannerUrl: profileBannerURL,
 		},
 	)
 	if err != nil {

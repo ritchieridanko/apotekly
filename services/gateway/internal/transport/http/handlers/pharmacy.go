@@ -284,6 +284,61 @@ func (h *PharmacyHandler) UpdateProfilePicture(ctx *gin.Context) {
 	)
 }
 
+func (h *PharmacyHandler) UpdateProfileBanner(ctx *gin.Context) {
+	var payload dtos.PharmacyUpdateProfileBannerRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+	if authCtx.PharmacyID == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	p, err := h.phc.UpdateProfileBanner(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole,
+			authCtx.Role,
+			constants.MDKeyPharmacyID,
+			authCtx.PharmacyID.String(),
+		),
+		payload.ProfileBannerURL,
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Profile banner updated successfully",
+		dtos.PharmacyUpdateProfileBannerResponse{Pharmacy: h.toPharmacy(p)},
+		nil,
+	)
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *dtos.Pharmacy {
 	if p == nil {
 		return nil
