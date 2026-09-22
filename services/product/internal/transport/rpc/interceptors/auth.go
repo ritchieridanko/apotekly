@@ -108,16 +108,10 @@ func Auth() grpc.UnaryServerInterceptor {
 			}
 			if role == constants.RolePharmacy {
 				values := md.Get(constants.MDKeyPharmacyID)
-				if len(values) == 0 {
-					return nil, ce.NewError(
-						ce.CodeRoleNotAuthorized,
-						ce.MsgUnauthorized,
-						errors.New("pharmacy_id missing from metadata"),
-					)
+				if len(values) > 0 {
+					id := utils.ToUUID(values[0])
+					pharmacyID = &id
 				}
-
-				id := utils.ToUUID(values[0])
-				pharmacyID = &id
 			}
 		}
 
