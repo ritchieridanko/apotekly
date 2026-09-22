@@ -59,20 +59,20 @@ func (h *UserHandler) UpdateUser(ctx context.Context, req *apis.UpdateUserReques
 	return &apis.UpdateUserResponse{User: h.toUser(u)}, nil
 }
 
-func (h *UserHandler) UpdateProfilePicture(ctx context.Context, req *apis.UpdateProfilePictureRequest) (*apis.UpdateProfilePictureResponse, error) {
+func (h *UserHandler) UpdateProfilePicture(ctx context.Context, req *apis.UserUpdateProfilePictureRequest) (*apis.UserUpdateProfilePictureResponse, error) {
 	u, err := h.uu.UpdateProfilePicture(ctx, req.GetProfilePictureUrl())
 	if err != nil {
 		return nil, err
 	}
-	return &apis.UpdateProfilePictureResponse{User: h.toUser(u)}, nil
+	return &apis.UserUpdateProfilePictureResponse{User: h.toUser(u)}, nil
 }
 
-func (h *UserHandler) UpdateProfileBanner(ctx context.Context, req *apis.UpdateProfileBannerRequest) (*apis.UpdateProfileBannerResponse, error) {
+func (h *UserHandler) UpdateProfileBanner(ctx context.Context, req *apis.UserUpdateProfileBannerRequest) (*apis.UserUpdateProfileBannerResponse, error) {
 	u, err := h.uu.UpdateProfileBanner(ctx, req.GetProfileBannerUrl())
 	if err != nil {
 		return nil, err
 	}
-	return &apis.UpdateProfileBannerResponse{User: h.toUser(u)}, nil
+	return &apis.UserUpdateProfileBannerResponse{User: h.toUser(u)}, nil
 }
 
 func (h *UserHandler) toUser(u *models.User) *apis.User {

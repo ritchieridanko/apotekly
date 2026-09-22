@@ -93,6 +93,14 @@ func (h *PharmacyHandler) UpdatePharmacy(ctx context.Context, req *apis.UpdatePh
 	return &apis.UpdatePharmacyResponse{Pharmacy: h.toPharmacy(p)}, nil
 }
 
+func (h *PharmacyHandler) UpdateProfilePicture(ctx context.Context, req *apis.PharmacyUpdateProfilePictureRequest) (*apis.PharmacyUpdateProfilePictureResponse, error) {
+	p, err := h.pu.UpdateProfilePicture(ctx, req.GetProfilePictureUrl())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.PharmacyUpdateProfilePictureResponse{Pharmacy: h.toPharmacy(p)}, nil
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {
 	if p == nil {
 		return nil

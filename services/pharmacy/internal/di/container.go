@@ -11,6 +11,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/usecases"
 	infdb "github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/storage"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/validator"
 )
 
@@ -19,6 +20,7 @@ type Container struct {
 	database   *infdb.Database
 	transactor *infdb.Transactor
 	logger     *logger.Logger
+	storage    *storage.Storage
 
 	ac clients.AuthClient
 
@@ -40,6 +42,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	db := infdb.NewDatabase(inf.Database())
 	tx := infdb.NewTransactor(inf.Database())
 	l := logger.NewLogger(inf.Logger())
+	s := storage.NewStorage(inf.Storage())
 
 	// Clients
 	ac := clients.NewAuthClient(inf.AuthService().AuthClient())
@@ -54,7 +57,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	pu := usecases.NewPharmacyUsecase(cfg.App.Name, pr, ac, tx, v, l)
+	pu := usecases.NewPharmacyUsecase(cfg.App.Name, pr, ac, tx, s, v, l)
 
 	// Handlers
 	ph := handlers.NewPharmacyHandler(pu)
@@ -67,6 +70,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		database:   db,
 		transactor: tx,
 		logger:     l,
+		storage:    s,
 		ac:         ac,
 		pdb:        pdb,
 		pr:         pr,

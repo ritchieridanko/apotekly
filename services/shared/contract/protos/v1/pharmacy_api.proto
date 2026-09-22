@@ -12,6 +12,7 @@ service PharmacyService {
   rpc GetMe (google.protobuf.Empty) returns (PharmacyGetMeResponse);
   rpc GetID (PharmacyGetIDRequest) returns (PharmacyGetIDResponse);
   rpc UpdatePharmacy (UpdatePharmacyRequest) returns (UpdatePharmacyResponse);
+  rpc UpdateProfilePicture (PharmacyUpdateProfilePictureRequest) returns (PharmacyUpdateProfilePictureResponse);
 }
 
 message Pharmacy {
@@ -98,5 +99,13 @@ message UpdatePharmacyRequest {
 }
 
 message UpdatePharmacyResponse {
+  Pharmacy pharmacy = 1;
+}
+
+message PharmacyUpdateProfilePictureRequest {
+  string profile_picture_url = 1;
+}
+
+message PharmacyUpdateProfilePictureResponse {
   Pharmacy pharmacy = 1;
 }

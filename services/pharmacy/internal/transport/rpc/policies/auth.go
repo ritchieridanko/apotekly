@@ -45,4 +45,10 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 			constants.RolePharmacy: {},
 		},
 	},
+	"/pharmacy.v1.PharmacyService/UpdateProfilePicture": {
+		authenticated: true,
+		roles: map[string]struct{}{
+			constants.RolePharmacy: {},
+		},
+	},
 }

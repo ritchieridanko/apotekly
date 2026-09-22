@@ -84,7 +84,7 @@ func (c *userClient) UpdateUser(ctx context.Context, req *models.UpdateUserReq) 
 func (c *userClient) UpdateProfilePicture(ctx context.Context, profilePictureURL string) (*models.User, *ce.Error) {
 	resp, err := c.client.UpdateProfilePicture(
 		ctx,
-		&apis.UpdateProfilePictureRequest{
+		&apis.UserUpdateProfilePictureRequest{
 			ProfilePictureUrl: profilePictureURL,
 		},
 	)
@@ -101,7 +101,7 @@ func (c *userClient) UpdateProfilePicture(ctx context.Context, profilePictureURL
 func (c *userClient) UpdateProfileBanner(ctx context.Context, profileBannerURL string) (*models.User, *ce.Error) {
 	resp, err := c.client.UpdateProfileBanner(
 		ctx,
-		&apis.UpdateProfileBannerRequest{
+		&apis.UserUpdateProfileBannerRequest{
 			ProfileBannerUrl: profileBannerURL,
 		},
 	)

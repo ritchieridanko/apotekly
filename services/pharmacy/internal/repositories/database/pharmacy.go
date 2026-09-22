@@ -305,6 +305,16 @@ func (d *pharmacyDatabase) Update(ctx context.Context, authID uint64, data *mode
 		args = append(args, *data.Whatsapp)
 		argPos++
 	}
+	if data.ProfilePicture != nil {
+		setClauses = append(setClauses, "profile_picture = $"+strconv.Itoa(argPos))
+		args = append(args, *data.ProfilePicture)
+		argPos++
+	}
+	if data.ProfileBanner != nil {
+		setClauses = append(setClauses, "profile_banner = $"+strconv.Itoa(argPos))
+		args = append(args, *data.ProfileBanner)
+		argPos++
+	}
 	if len(setClauses) == 0 {
 		return nil, ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, nil)
 	}

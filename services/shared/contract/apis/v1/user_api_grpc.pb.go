@@ -34,8 +34,8 @@ type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserGetMeResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
-	UpdateProfilePicture(ctx context.Context, in *UpdateProfilePictureRequest, opts ...grpc.CallOption) (*UpdateProfilePictureResponse, error)
-	UpdateProfileBanner(ctx context.Context, in *UpdateProfileBannerRequest, opts ...grpc.CallOption) (*UpdateProfileBannerResponse, error)
+	UpdateProfilePicture(ctx context.Context, in *UserUpdateProfilePictureRequest, opts ...grpc.CallOption) (*UserUpdateProfilePictureResponse, error)
+	UpdateProfileBanner(ctx context.Context, in *UserUpdateProfileBannerRequest, opts ...grpc.CallOption) (*UserUpdateProfileBannerResponse, error)
 }
 
 type userServiceClient struct {
@@ -76,9 +76,9 @@ func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateProfilePicture(ctx context.Context, in *UpdateProfilePictureRequest, opts ...grpc.CallOption) (*UpdateProfilePictureResponse, error) {
+func (c *userServiceClient) UpdateProfilePicture(ctx context.Context, in *UserUpdateProfilePictureRequest, opts ...grpc.CallOption) (*UserUpdateProfilePictureResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateProfilePictureResponse)
+	out := new(UserUpdateProfilePictureResponse)
 	err := c.cc.Invoke(ctx, UserService_UpdateProfilePicture_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -86,9 +86,9 @@ func (c *userServiceClient) UpdateProfilePicture(ctx context.Context, in *Update
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateProfileBanner(ctx context.Context, in *UpdateProfileBannerRequest, opts ...grpc.CallOption) (*UpdateProfileBannerResponse, error) {
+func (c *userServiceClient) UpdateProfileBanner(ctx context.Context, in *UserUpdateProfileBannerRequest, opts ...grpc.CallOption) (*UserUpdateProfileBannerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateProfileBannerResponse)
+	out := new(UserUpdateProfileBannerResponse)
 	err := c.cc.Invoke(ctx, UserService_UpdateProfileBanner_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -103,8 +103,8 @@ type UserServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	GetMe(context.Context, *emptypb.Empty) (*UserGetMeResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
-	UpdateProfilePicture(context.Context, *UpdateProfilePictureRequest) (*UpdateProfilePictureResponse, error)
-	UpdateProfileBanner(context.Context, *UpdateProfileBannerRequest) (*UpdateProfileBannerResponse, error)
+	UpdateProfilePicture(context.Context, *UserUpdateProfilePictureRequest) (*UserUpdateProfilePictureResponse, error)
+	UpdateProfileBanner(context.Context, *UserUpdateProfileBannerRequest) (*UserUpdateProfileBannerResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -124,10 +124,10 @@ func (UnimplementedUserServiceServer) GetMe(context.Context, *emptypb.Empty) (*U
 func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateProfilePicture(context.Context, *UpdateProfilePictureRequest) (*UpdateProfilePictureResponse, error) {
+func (UnimplementedUserServiceServer) UpdateProfilePicture(context.Context, *UserUpdateProfilePictureRequest) (*UserUpdateProfilePictureResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePicture not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateProfileBanner(context.Context, *UpdateProfileBannerRequest) (*UpdateProfileBannerResponse, error) {
+func (UnimplementedUserServiceServer) UpdateProfileBanner(context.Context, *UserUpdateProfileBannerRequest) (*UserUpdateProfileBannerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfileBanner not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -206,7 +206,7 @@ func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _UserService_UpdateProfilePicture_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateProfilePictureRequest)
+	in := new(UserUpdateProfilePictureRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -218,13 +218,13 @@ func _UserService_UpdateProfilePicture_Handler(srv interface{}, ctx context.Cont
 		FullMethod: UserService_UpdateProfilePicture_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateProfilePicture(ctx, req.(*UpdateProfilePictureRequest))
+		return srv.(UserServiceServer).UpdateProfilePicture(ctx, req.(*UserUpdateProfilePictureRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_UpdateProfileBanner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateProfileBannerRequest)
+	in := new(UserUpdateProfileBannerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func _UserService_UpdateProfileBanner_Handler(srv interface{}, ctx context.Conte
 		FullMethod: UserService_UpdateProfileBanner_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateProfileBanner(ctx, req.(*UpdateProfileBannerRequest))
+		return srv.(UserServiceServer).UpdateProfileBanner(ctx, req.(*UserUpdateProfileBannerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

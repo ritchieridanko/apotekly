@@ -9,8 +9,10 @@ import (
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/models"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/repositories"
+	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/storage"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/validator"
@@ -22,6 +24,7 @@ type PharmacyUsecase interface {
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
+	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyUsecase struct {
@@ -29,6 +32,7 @@ type pharmacyUsecase struct {
 	pr         repositories.PharmacyRepository
 	ac         clients.AuthClient
 	transactor *database.Transactor
+	storage    *storage.Storage
 	validator  *validator.Validator
 	logger     *logger.Logger
 }
@@ -38,6 +42,7 @@ func NewPharmacyUsecase(
 	pr repositories.PharmacyRepository,
 	ac clients.AuthClient,
 	tx *database.Transactor,
+	s *storage.Storage,
 	v *validator.Validator,
 	l *logger.Logger,
 ) PharmacyUsecase {
@@ -46,6 +51,7 @@ func NewPharmacyUsecase(
 		pr:         pr,
 		ac:         ac,
 		transactor: tx,
+		storage:    s,
 		validator:  v,
 		logger:     l,
 	}
@@ -385,6 +391,82 @@ func (u *pharmacyUsecase) UpdatePharmacy(ctx context.Context, req *models.Update
 	)
 	if err != nil {
 		return nil, err.Append(authIDField)
+	}
+
+	return p, nil
+}
+
+func (u *pharmacyUsecase) UpdateProfilePicture(ctx context.Context, profilePictureURL string) (*models.Pharmacy, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "pharmacy.usecase.UpdateProfilePicture")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+	if authCtx.PharmacyID == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		)
+	}
+
+	authFields := []logger.Field{
+		logger.NewField("auth_id", authCtx.AuthID),
+		logger.NewField("pharmacy_id", authCtx.PharmacyID.String()),
+	}
+
+	// Data Normalization
+	url := strings.TrimSpace(profilePictureURL)
+
+	// Data Validation
+	if ok, why := u.validator.StorageURL(url); !ok {
+		return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+	}
+
+	// URL Public ID Extraction
+	publicID, err := u.storage.ExtractPublicID(url, constants.StorageFilePathTempImages)
+	if err != nil {
+		return nil, ce.NewError(
+			ce.CodeInvalidPayload,
+			ce.MsgInvalidPayload,
+			err,
+			authFields...,
+		)
+	}
+
+	// Image File Renaming
+	res, err := u.storage.Rename(
+		ctx,
+		publicID,
+		"pharmacies/profile_pictures/"+authCtx.PharmacyID.String(),
+		true,
+		true,
+	)
+	if err != nil {
+		return nil, ce.NewError(
+			ce.CodeStorageFileRenamingFailed,
+			ce.MsgInternalServer,
+			err,
+			authFields...,
+		)
+	}
+
+	// Pharmacy Update
+	p, updateErr := u.pr.Update(
+		ctx,
+		authCtx.AuthID,
+		&models.UpdatePharmacy{
+			ProfilePicture: &res.SecureURL,
+		},
+	)
+	if updateErr != nil {
+		return nil, updateErr.Append(authFields...)
 	}
 
 	return p, nil

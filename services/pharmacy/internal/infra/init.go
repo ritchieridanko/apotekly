@@ -3,11 +3,13 @@ package infra
 import (
 	"fmt"
 
+	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/configs"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/services"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/storage"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/tracer"
 	"go.uber.org/zap"
 )
@@ -16,6 +18,7 @@ type Infra struct {
 	config   *configs.Config
 	database *pgxpool.Pool
 	logger   *zap.Logger
+	storage  *cloudinary.Cloudinary
 	tracer   *tracer.Tracer
 	as       *services.AuthService
 }
@@ -27,6 +30,11 @@ func Init(cfg *configs.Config) (*Infra, error) {
 	}
 
 	db, err := database.Init(&cfg.Database, l)
+	if err != nil {
+		return nil, err
+	}
+
+	s, err := storage.Init(&cfg.Storage, l)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +54,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		config:   cfg,
 		database: db,
 		logger:   l,
+		storage:  s,
 		tracer:   t,
 		as:       as,
 	}, nil
@@ -57,6 +66,10 @@ func (i *Infra) Database() *pgxpool.Pool {
 
 func (i *Infra) Logger() *zap.Logger {
 	return i.logger
+}
+
+func (i *Infra) Storage() *cloudinary.Cloudinary {
+	return i.storage
 }
 
 func (i *Infra) AuthService() *services.AuthService {

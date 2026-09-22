@@ -11,8 +11,8 @@ service UserService {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
   rpc GetMe (google.protobuf.Empty) returns (UserGetMeResponse);
   rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
-  rpc UpdateProfilePicture (UpdateProfilePictureRequest) returns (UpdateProfilePictureResponse);
-  rpc UpdateProfileBanner (UpdateProfileBannerRequest) returns (UpdateProfileBannerResponse);
+  rpc UpdateProfilePicture (UserUpdateProfilePictureRequest) returns (UserUpdateProfilePictureResponse);
+  rpc UpdateProfileBanner (UserUpdateProfileBannerRequest) returns (UserUpdateProfileBannerResponse);
 }
 
 message User {
@@ -51,18 +51,18 @@ message UpdateUserResponse {
   User user = 1;
 }
 
-message UpdateProfilePictureRequest {
+message UserUpdateProfilePictureRequest {
   string profile_picture_url = 1;
 }
 
-message UpdateProfilePictureResponse {
+message UserUpdateProfilePictureResponse {
   User user = 1;
 }
 
-message UpdateProfileBannerRequest {
+message UserUpdateProfileBannerRequest {
   string profile_banner_url = 1;
 }
 
-message UpdateProfileBannerResponse {
+message UserUpdateProfileBannerResponse {
   User user = 1;
 }
