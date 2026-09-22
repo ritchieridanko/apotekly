@@ -30,6 +30,26 @@ type (
 		// Auth Info
 		RememberMe bool `json:"remember_me"`
 	}
+
+	UpdatePharmacyRequest struct {
+		Name         *string          `json:"name"`
+		LegalName    *string          `json:"legal_name"`
+		Description  *string          `json:"description"`
+		OnlineHours  *json.RawMessage `json:"online_hours"`
+		Country      *string          `json:"country"`
+		Subdivision1 *string          `json:"subdivision_1"`
+		Subdivision2 *string          `json:"subdivision_2"`
+		Subdivision3 *string          `json:"subdivision_3"`
+		Subdivision4 *string          `json:"subdivision_4"`
+		Street       *string          `json:"street"`
+		PostalCode   *string          `json:"postal_code"`
+		Latitude     *float64         `json:"latitude"`
+		Longitude    *float64         `json:"longitude"`
+		Email        *string          `json:"email"`
+		Phone        *string          `json:"phone"`
+		Website      *string          `json:"website"`
+		Whatsapp     *string          `json:"whatsapp"`
+	}
 )
 
 // Responses
@@ -67,6 +87,10 @@ type (
 	}
 
 	PharmacyGetMeResponse struct {
+		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+	}
+
+	UpdatePharmacyResponse struct {
 		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
 	}
 )

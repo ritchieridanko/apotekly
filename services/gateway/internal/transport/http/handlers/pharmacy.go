@@ -168,6 +168,67 @@ func (h *PharmacyHandler) GetMe(ctx *gin.Context) {
 	)
 }
 
+func (h *PharmacyHandler) UpdatePharmacy(ctx *gin.Context) {
+	var payload dtos.UpdatePharmacyRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	p, err := h.phc.UpdatePharmacy(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole,
+			authCtx.Role,
+		),
+		&models.UpdatePharmacyReq{
+			Name:         payload.Name,
+			LegalName:    payload.LegalName,
+			Description:  payload.Description,
+			OnlineHours:  payload.OnlineHours,
+			Country:      payload.Country,
+			Subdivision1: payload.Subdivision1,
+			Subdivision2: payload.Subdivision2,
+			Subdivision3: payload.Subdivision3,
+			Subdivision4: payload.Subdivision4,
+			Street:       payload.Street,
+			PostalCode:   payload.PostalCode,
+			Latitude:     payload.Latitude,
+			Longitude:    payload.Longitude,
+			Email:        payload.Email,
+			Phone:        payload.Phone,
+			Website:      payload.Website,
+			Whatsapp:     payload.Whatsapp,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Pharmacy updated successfully",
+		dtos.UpdatePharmacyResponse{Pharmacy: h.toPharmacy(p)},
+		nil,
+	)
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *dtos.Pharmacy {
 	if p == nil {
 		return nil

@@ -123,6 +123,9 @@ func Init(
 		{
 			// Fetch
 			me.GET("", middlewares.Auth(j), phh.GetMe)
+
+			// Update
+			me.PATCH("", middlewares.Auth(j), phh.UpdatePharmacy)
 		}
 	}
 
