@@ -17,6 +17,7 @@ type PharmacyClient interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
+	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
 }
 
 type pharmacyClient struct {
@@ -93,6 +94,23 @@ func (c *pharmacyClient) UpdatePharmacy(ctx context.Context, req *models.UpdateP
 			Phone:         req.Phone,
 			Website:       req.Website,
 			Whatsapp:      req.Whatsapp,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			pharmacyServiceField,
+		)
+	}
+	return c.toPharmacy(resp.GetPharmacy()), nil
+}
+
+func (c *pharmacyClient) UpdateProfilePicture(ctx context.Context, profilePictureURL string) (*models.Pharmacy, *ce.Error) {
+	resp, err := c.client.UpdateProfilePicture(
+		ctx,
+		&apis.PharmacyUpdateProfilePictureRequest{
+			ProfilePictureUrl: profilePictureURL,
 		},
 	)
 	if err != nil {

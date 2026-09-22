@@ -149,7 +149,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 }
 
 func (h *UserHandler) UpdateProfilePicture(ctx *gin.Context) {
-	var payload dtos.UpdateProfilePictureRequest
+	var payload dtos.UserUpdateProfilePictureRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
 		return
@@ -184,13 +184,13 @@ func (h *UserHandler) UpdateProfilePicture(ctx *gin.Context) {
 		ctx,
 		http.StatusOK,
 		"Profile picture updated successfully",
-		dtos.UpdateProfilePictureResponse{User: h.toUser(u)},
+		dtos.UserUpdateProfilePictureResponse{User: h.toUser(u)},
 		nil,
 	)
 }
 
 func (h *UserHandler) UpdateProfileBanner(ctx *gin.Context) {
-	var payload dtos.UpdateProfileBannerRequest
+	var payload dtos.UserUpdateProfileBannerRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
 		return
@@ -225,7 +225,7 @@ func (h *UserHandler) UpdateProfileBanner(ctx *gin.Context) {
 		ctx,
 		http.StatusOK,
 		"Profile banner updated successfully",
-		dtos.UpdateProfileBannerResponse{User: h.toUser(u)},
+		dtos.UserUpdateProfileBannerResponse{User: h.toUser(u)},
 		nil,
 	)
 }

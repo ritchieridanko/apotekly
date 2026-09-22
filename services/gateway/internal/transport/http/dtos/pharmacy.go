@@ -50,6 +50,10 @@ type (
 		Website      *string          `json:"website"`
 		Whatsapp     *string          `json:"whatsapp"`
 	}
+
+	PharmacyUpdateProfilePictureRequest struct {
+		ProfilePictureURL string `json:"profile_picture_url" binding:"required"`
+	}
 )
 
 // Responses
@@ -91,6 +95,10 @@ type (
 	}
 
 	UpdatePharmacyResponse struct {
+		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+	}
+
+	PharmacyUpdateProfilePictureResponse struct {
 		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
 	}
 )

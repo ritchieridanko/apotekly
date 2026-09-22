@@ -126,6 +126,9 @@ func Init(
 
 			// Update
 			me.PATCH("", middlewares.Auth(j), phh.UpdatePharmacy)
+
+			// Update Profile Picture
+			me.PUT("/profile-picture", middlewares.Auth(j), phh.UpdateProfilePicture)
 		}
 	}
 

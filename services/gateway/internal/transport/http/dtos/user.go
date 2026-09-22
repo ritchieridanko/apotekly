@@ -18,11 +18,11 @@ type (
 		Phone     *string    `json:"phone"`
 	}
 
-	UpdateProfilePictureRequest struct {
+	UserUpdateProfilePictureRequest struct {
 		ProfilePictureURL string `json:"profile_picture_url" binding:"required"`
 	}
 
-	UpdateProfileBannerRequest struct {
+	UserUpdateProfileBannerRequest struct {
 		ProfileBannerURL string `json:"profile_banner_url" binding:"required"`
 	}
 
@@ -89,11 +89,11 @@ type (
 		User *User `json:"user,omitempty"`
 	}
 
-	UpdateProfilePictureResponse struct {
+	UserUpdateProfilePictureResponse struct {
 		User *User `json:"user,omitempty"`
 	}
 
-	UpdateProfileBannerResponse struct {
+	UserUpdateProfileBannerResponse struct {
 		User *User `json:"user,omitempty"`
 	}
 
