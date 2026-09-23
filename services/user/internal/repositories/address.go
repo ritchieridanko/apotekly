@@ -10,6 +10,7 @@ import (
 
 type AddressRepository interface {
 	Create(ctx context.Context, data *models.CreateAddress) (a *models.Address, err *ce.Error)
+	GetPrimaryLocation(ctx context.Context, authID uint64) (lat, lon float64, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllAddresses) (as []models.Address, total int64, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateAddressP, data *models.UpdateAddressD) (a *models.Address, err *ce.Error)
 	Delete(ctx context.Context, params *models.DeleteAddress) (err *ce.Error)
@@ -27,6 +28,10 @@ func NewAddressRepository(db database.AddressDatabase) AddressRepository {
 
 func (r *addressRepository) Create(ctx context.Context, data *models.CreateAddress) (*models.Address, *ce.Error) {
 	return r.database.Create(ctx, data)
+}
+
+func (r *addressRepository) GetPrimaryLocation(ctx context.Context, authID uint64) (float64, float64, *ce.Error) {
+	return r.database.GetPrimaryLocation(ctx, authID)
 }
 
 func (r *addressRepository) GetAll(ctx context.Context, params *models.GetAllAddresses) ([]models.Address, int64, *ce.Error) {

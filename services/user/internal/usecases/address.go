@@ -22,6 +22,7 @@ const (
 
 type AddressUsecase interface {
 	CreateAddress(ctx context.Context, req *models.CreateAddressReq) (a *models.Address, err *ce.Error)
+	GetPrimaryLocation(ctx context.Context, authID uint64) (lat, lon float64, err *ce.Error)
 	GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) (as []models.Address, total int64, err *ce.Error)
 	UpdateAddress(ctx context.Context, req *models.UpdateAddressReq) (a *models.Address, err *ce.Error)
 	DeleteAddress(ctx context.Context, addressID uint64) (err *ce.Error)
@@ -169,6 +170,10 @@ func (u *addressUsecase) CreateAddress(ctx context.Context, req *models.CreateAd
 	}
 
 	return a, nil
+}
+
+func (u *addressUsecase) GetPrimaryLocation(ctx context.Context, authID uint64) (float64, float64, *ce.Error) {
+	return u.ar.GetPrimaryLocation(ctx, authID)
 }
 
 func (u *addressUsecase) GetAllAddresses(ctx context.Context, req *models.GetAllAddressesReq) ([]models.Address, int64, *ce.Error) {

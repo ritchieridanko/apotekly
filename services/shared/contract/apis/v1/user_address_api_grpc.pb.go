@@ -20,11 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AddressService_CreateAddress_FullMethodName     = "/user.v1.AddressService/CreateAddress"
-	AddressService_GetAllAddresses_FullMethodName   = "/user.v1.AddressService/GetAllAddresses"
-	AddressService_UpdateAddress_FullMethodName     = "/user.v1.AddressService/UpdateAddress"
-	AddressService_DeleteAddress_FullMethodName     = "/user.v1.AddressService/DeleteAddress"
-	AddressService_SetPrimaryAddress_FullMethodName = "/user.v1.AddressService/SetPrimaryAddress"
+	AddressService_CreateAddress_FullMethodName      = "/user.v1.AddressService/CreateAddress"
+	AddressService_GetPrimaryLocation_FullMethodName = "/user.v1.AddressService/GetPrimaryLocation"
+	AddressService_GetAllAddresses_FullMethodName    = "/user.v1.AddressService/GetAllAddresses"
+	AddressService_UpdateAddress_FullMethodName      = "/user.v1.AddressService/UpdateAddress"
+	AddressService_DeleteAddress_FullMethodName      = "/user.v1.AddressService/DeleteAddress"
+	AddressService_SetPrimaryAddress_FullMethodName  = "/user.v1.AddressService/SetPrimaryAddress"
 )
 
 // AddressServiceClient is the client API for AddressService service.
@@ -32,6 +33,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AddressServiceClient interface {
 	CreateAddress(ctx context.Context, in *CreateAddressRequest, opts ...grpc.CallOption) (*CreateAddressResponse, error)
+	GetPrimaryLocation(ctx context.Context, in *AddressGetPrimaryLocationRequest, opts ...grpc.CallOption) (*AddressGetPrimaryLocationResponse, error)
 	GetAllAddresses(ctx context.Context, in *GetAllAddressesRequest, opts ...grpc.CallOption) (*GetAllAddressesResponse, error)
 	UpdateAddress(ctx context.Context, in *UpdateAddressRequest, opts ...grpc.CallOption) (*UpdateAddressResponse, error)
 	DeleteAddress(ctx context.Context, in *DeleteAddressRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -50,6 +52,16 @@ func (c *addressServiceClient) CreateAddress(ctx context.Context, in *CreateAddr
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateAddressResponse)
 	err := c.cc.Invoke(ctx, AddressService_CreateAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *addressServiceClient) GetPrimaryLocation(ctx context.Context, in *AddressGetPrimaryLocationRequest, opts ...grpc.CallOption) (*AddressGetPrimaryLocationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddressGetPrimaryLocationResponse)
+	err := c.cc.Invoke(ctx, AddressService_GetPrimaryLocation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +113,7 @@ func (c *addressServiceClient) SetPrimaryAddress(ctx context.Context, in *SetPri
 // for forward compatibility.
 type AddressServiceServer interface {
 	CreateAddress(context.Context, *CreateAddressRequest) (*CreateAddressResponse, error)
+	GetPrimaryLocation(context.Context, *AddressGetPrimaryLocationRequest) (*AddressGetPrimaryLocationResponse, error)
 	GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error)
 	UpdateAddress(context.Context, *UpdateAddressRequest) (*UpdateAddressResponse, error)
 	DeleteAddress(context.Context, *DeleteAddressRequest) (*emptypb.Empty, error)
@@ -117,6 +130,9 @@ type UnimplementedAddressServiceServer struct{}
 
 func (UnimplementedAddressServiceServer) CreateAddress(context.Context, *CreateAddressRequest) (*CreateAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAddress not implemented")
+}
+func (UnimplementedAddressServiceServer) GetPrimaryLocation(context.Context, *AddressGetPrimaryLocationRequest) (*AddressGetPrimaryLocationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPrimaryLocation not implemented")
 }
 func (UnimplementedAddressServiceServer) GetAllAddresses(context.Context, *GetAllAddressesRequest) (*GetAllAddressesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllAddresses not implemented")
@@ -165,6 +181,24 @@ func _AddressService_CreateAddress_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AddressServiceServer).CreateAddress(ctx, req.(*CreateAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AddressService_GetPrimaryLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddressGetPrimaryLocationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AddressServiceServer).GetPrimaryLocation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AddressService_GetPrimaryLocation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AddressServiceServer).GetPrimaryLocation(ctx, req.(*AddressGetPrimaryLocationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -251,6 +285,10 @@ var AddressService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAddress",
 			Handler:    _AddressService_CreateAddress_Handler,
+		},
+		{
+			MethodName: "GetPrimaryLocation",
+			Handler:    _AddressService_GetPrimaryLocation_Handler,
 		},
 		{
 			MethodName: "GetAllAddresses",

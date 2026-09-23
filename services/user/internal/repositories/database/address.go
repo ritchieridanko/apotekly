@@ -14,6 +14,7 @@ import (
 
 type AddressDatabase interface {
 	Create(ctx context.Context, data *models.CreateAddress) (a *models.Address, err *ce.Error)
+	GetPrimaryLocation(ctx context.Context, authID uint64) (lat, lon float64, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllAddresses) (as []models.Address, total int64, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateAddressP, data *models.UpdateAddressD) (a *models.Address, err *ce.Error)
 	Delete(ctx context.Context, params *models.DeleteAddress) (err *ce.Error)
@@ -92,6 +93,39 @@ func (d *addressDatabase) Create(ctx context.Context, data *models.CreateAddress
 	}
 
 	return &a, nil
+}
+
+func (d *addressDatabase) GetPrimaryLocation(ctx context.Context, authID uint64) (float64, float64, *ce.Error) {
+	query := "SELECT latitude, longitude FROM addresses WHERE auth_id = $1 AND is_primary = TRUE"
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var lat, lon float64
+	err := d.database.Query(
+		ctx, query,
+		authID,
+	).Scan(
+		&lat,
+		&lon,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get primary location: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return 0, 0, ce.NewError(
+				ce.CodeAddressNotFound,
+				ce.MsgAddressNotFound,
+				wrappedErr,
+			)
+		}
+		return 0, 0, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return lat, lon, nil
 }
 
 func (d *addressDatabase) GetAll(ctx context.Context, params *models.GetAllAddresses) ([]models.Address, int64, *ce.Error) {
@@ -185,7 +219,7 @@ func (d *addressDatabase) GetAll(ctx context.Context, params *models.GetAllAddre
 			return nil, 0, ce.NewError(
 				ce.CodeDBQueryExec,
 				ce.MsgInternalServer,
-				fmt.Errorf("failed to get all addresses: %w", err),
+				fmt.Errorf("failed to get total addresses count: %w", err),
 			)
 		}
 	}

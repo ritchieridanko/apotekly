@@ -9,6 +9,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 
 service AddressService {
   rpc CreateAddress (CreateAddressRequest) returns (CreateAddressResponse);
+	rpc GetPrimaryLocation (AddressGetPrimaryLocationRequest) returns (AddressGetPrimaryLocationResponse);
 	rpc GetAllAddresses (GetAllAddressesRequest) returns (GetAllAddressesResponse);
 	rpc UpdateAddress (UpdateAddressRequest) returns (UpdateAddressResponse);
 	rpc DeleteAddress (DeleteAddressRequest) returns (google.protobuf.Empty);
@@ -54,6 +55,15 @@ message CreateAddressRequest {
 
 message CreateAddressResponse {
   Address address = 1;
+}
+
+message AddressGetPrimaryLocationRequest {
+	uint64 auth_id = 1;
+}
+
+message AddressGetPrimaryLocationResponse {
+	double latitude = 1;
+  double longitude = 2;
 }
 
 message GetAllAddressesRequest {

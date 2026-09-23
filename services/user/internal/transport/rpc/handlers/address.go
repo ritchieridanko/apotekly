@@ -45,6 +45,17 @@ func (h *AddressHandler) CreateAddress(ctx context.Context, req *apis.CreateAddr
 	return &apis.CreateAddressResponse{Address: h.toAddress(a)}, nil
 }
 
+func (h *AddressHandler) GetPrimaryLocation(ctx context.Context, req *apis.AddressGetPrimaryLocationRequest) (*apis.AddressGetPrimaryLocationResponse, error) {
+	lat, lon, err := h.au.GetPrimaryLocation(ctx, req.GetAuthId())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.AddressGetPrimaryLocationResponse{
+		Latitude:  lat,
+		Longitude: lon,
+	}, nil
+}
+
 func (h *AddressHandler) GetAllAddresses(ctx context.Context, req *apis.GetAllAddressesRequest) (*apis.GetAllAddressesResponse, error) {
 	as, total, err := h.au.GetAllAddresses(
 		ctx,

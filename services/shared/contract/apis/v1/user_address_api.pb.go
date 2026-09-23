@@ -387,6 +387,102 @@ func (x *CreateAddressResponse) GetAddress() *Address {
 	return nil
 }
 
+type AddressGetPrimaryLocationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthId        uint64                 `protobuf:"varint,1,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddressGetPrimaryLocationRequest) Reset() {
+	*x = AddressGetPrimaryLocationRequest{}
+	mi := &file_v1_user_address_api_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddressGetPrimaryLocationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddressGetPrimaryLocationRequest) ProtoMessage() {}
+
+func (x *AddressGetPrimaryLocationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_address_api_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddressGetPrimaryLocationRequest.ProtoReflect.Descriptor instead.
+func (*AddressGetPrimaryLocationRequest) Descriptor() ([]byte, []int) {
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AddressGetPrimaryLocationRequest) GetAuthId() uint64 {
+	if x != nil {
+		return x.AuthId
+	}
+	return 0
+}
+
+type AddressGetPrimaryLocationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Latitude      float64                `protobuf:"fixed64,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	Longitude     float64                `protobuf:"fixed64,2,opt,name=longitude,proto3" json:"longitude,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddressGetPrimaryLocationResponse) Reset() {
+	*x = AddressGetPrimaryLocationResponse{}
+	mi := &file_v1_user_address_api_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddressGetPrimaryLocationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddressGetPrimaryLocationResponse) ProtoMessage() {}
+
+func (x *AddressGetPrimaryLocationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_user_address_api_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddressGetPrimaryLocationResponse.ProtoReflect.Descriptor instead.
+func (*AddressGetPrimaryLocationResponse) Descriptor() ([]byte, []int) {
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AddressGetPrimaryLocationResponse) GetLatitude() float64 {
+	if x != nil {
+		return x.Latitude
+	}
+	return 0
+}
+
+func (x *AddressGetPrimaryLocationResponse) GetLongitude() float64 {
+	if x != nil {
+		return x.Longitude
+	}
+	return 0
+}
+
 type GetAllAddressesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
@@ -397,7 +493,7 @@ type GetAllAddressesRequest struct {
 
 func (x *GetAllAddressesRequest) Reset() {
 	*x = GetAllAddressesRequest{}
-	mi := &file_v1_user_address_api_proto_msgTypes[3]
+	mi := &file_v1_user_address_api_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -409,7 +505,7 @@ func (x *GetAllAddressesRequest) String() string {
 func (*GetAllAddressesRequest) ProtoMessage() {}
 
 func (x *GetAllAddressesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[3]
+	mi := &file_v1_user_address_api_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -422,7 +518,7 @@ func (x *GetAllAddressesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllAddressesRequest.ProtoReflect.Descriptor instead.
 func (*GetAllAddressesRequest) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{3}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetAllAddressesRequest) GetPage() int32 {
@@ -449,7 +545,7 @@ type GetAllAddressesResponse struct {
 
 func (x *GetAllAddressesResponse) Reset() {
 	*x = GetAllAddressesResponse{}
-	mi := &file_v1_user_address_api_proto_msgTypes[4]
+	mi := &file_v1_user_address_api_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -461,7 +557,7 @@ func (x *GetAllAddressesResponse) String() string {
 func (*GetAllAddressesResponse) ProtoMessage() {}
 
 func (x *GetAllAddressesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[4]
+	mi := &file_v1_user_address_api_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -474,7 +570,7 @@ func (x *GetAllAddressesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllAddressesResponse.ProtoReflect.Descriptor instead.
 func (*GetAllAddressesResponse) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{4}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetAllAddressesResponse) GetAddresses() []*Address {
@@ -515,7 +611,7 @@ type UpdateAddressRequest struct {
 
 func (x *UpdateAddressRequest) Reset() {
 	*x = UpdateAddressRequest{}
-	mi := &file_v1_user_address_api_proto_msgTypes[5]
+	mi := &file_v1_user_address_api_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -527,7 +623,7 @@ func (x *UpdateAddressRequest) String() string {
 func (*UpdateAddressRequest) ProtoMessage() {}
 
 func (x *UpdateAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[5]
+	mi := &file_v1_user_address_api_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -540,7 +636,7 @@ func (x *UpdateAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAddressRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAddressRequest) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{5}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdateAddressRequest) GetAddressId() uint64 {
@@ -650,7 +746,7 @@ type UpdateAddressResponse struct {
 
 func (x *UpdateAddressResponse) Reset() {
 	*x = UpdateAddressResponse{}
-	mi := &file_v1_user_address_api_proto_msgTypes[6]
+	mi := &file_v1_user_address_api_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -662,7 +758,7 @@ func (x *UpdateAddressResponse) String() string {
 func (*UpdateAddressResponse) ProtoMessage() {}
 
 func (x *UpdateAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[6]
+	mi := &file_v1_user_address_api_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -675,7 +771,7 @@ func (x *UpdateAddressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAddressResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAddressResponse) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{6}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateAddressResponse) GetAddress() *Address {
@@ -694,7 +790,7 @@ type DeleteAddressRequest struct {
 
 func (x *DeleteAddressRequest) Reset() {
 	*x = DeleteAddressRequest{}
-	mi := &file_v1_user_address_api_proto_msgTypes[7]
+	mi := &file_v1_user_address_api_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -706,7 +802,7 @@ func (x *DeleteAddressRequest) String() string {
 func (*DeleteAddressRequest) ProtoMessage() {}
 
 func (x *DeleteAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[7]
+	mi := &file_v1_user_address_api_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -719,7 +815,7 @@ func (x *DeleteAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAddressRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAddressRequest) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{7}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeleteAddressRequest) GetAddressId() uint64 {
@@ -738,7 +834,7 @@ type SetPrimaryAddressRequest struct {
 
 func (x *SetPrimaryAddressRequest) Reset() {
 	*x = SetPrimaryAddressRequest{}
-	mi := &file_v1_user_address_api_proto_msgTypes[8]
+	mi := &file_v1_user_address_api_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -750,7 +846,7 @@ func (x *SetPrimaryAddressRequest) String() string {
 func (*SetPrimaryAddressRequest) ProtoMessage() {}
 
 func (x *SetPrimaryAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[8]
+	mi := &file_v1_user_address_api_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -763,7 +859,7 @@ func (x *SetPrimaryAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetPrimaryAddressRequest.ProtoReflect.Descriptor instead.
 func (*SetPrimaryAddressRequest) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{8}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SetPrimaryAddressRequest) GetAddressId() uint64 {
@@ -782,7 +878,7 @@ type SetPrimaryAddressResponse struct {
 
 func (x *SetPrimaryAddressResponse) Reset() {
 	*x = SetPrimaryAddressResponse{}
-	mi := &file_v1_user_address_api_proto_msgTypes[9]
+	mi := &file_v1_user_address_api_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -794,7 +890,7 @@ func (x *SetPrimaryAddressResponse) String() string {
 func (*SetPrimaryAddressResponse) ProtoMessage() {}
 
 func (x *SetPrimaryAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_user_address_api_proto_msgTypes[9]
+	mi := &file_v1_user_address_api_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -807,7 +903,7 @@ func (x *SetPrimaryAddressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetPrimaryAddressResponse.ProtoReflect.Descriptor instead.
 func (*SetPrimaryAddressResponse) Descriptor() ([]byte, []int) {
-	return file_v1_user_address_api_proto_rawDescGZIP(), []int{9}
+	return file_v1_user_address_api_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SetPrimaryAddressResponse) GetAddress() *Address {
@@ -874,7 +970,12 @@ const file_v1_user_address_api_proto_rawDesc = "" +
 	"\x0e_subdivision_3B\x10\n" +
 	"\x0e_subdivision_4\"C\n" +
 	"\x15CreateAddressResponse\x12*\n" +
-	"\aaddress\x18\x01 \x01(\v2\x10.user.v1.AddressR\aaddress\"I\n" +
+	"\aaddress\x18\x01 \x01(\v2\x10.user.v1.AddressR\aaddress\";\n" +
+	" AddressGetPrimaryLocationRequest\x12\x17\n" +
+	"\aauth_id\x18\x01 \x01(\x04R\x06authId\"]\n" +
+	"!AddressGetPrimaryLocationResponse\x12\x1a\n" +
+	"\blatitude\x18\x01 \x01(\x01R\blatitude\x12\x1c\n" +
+	"\tlongitude\x18\x02 \x01(\x01R\tlongitude\"I\n" +
 	"\x16GetAllAddressesRequest\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"_\n" +
@@ -925,9 +1026,10 @@ const file_v1_user_address_api_proto_rawDesc = "" +
 	"\n" +
 	"address_id\x18\x01 \x01(\x04R\taddressId\"G\n" +
 	"\x19SetPrimaryAddressResponse\x12*\n" +
-	"\aaddress\x18\x01 \x01(\v2\x10.user.v1.AddressR\aaddress2\xaa\x03\n" +
+	"\aaddress\x18\x01 \x01(\v2\x10.user.v1.AddressR\aaddress2\x97\x04\n" +
 	"\x0eAddressService\x12N\n" +
-	"\rCreateAddress\x12\x1d.user.v1.CreateAddressRequest\x1a\x1e.user.v1.CreateAddressResponse\x12T\n" +
+	"\rCreateAddress\x12\x1d.user.v1.CreateAddressRequest\x1a\x1e.user.v1.CreateAddressResponse\x12k\n" +
+	"\x12GetPrimaryLocation\x12).user.v1.AddressGetPrimaryLocationRequest\x1a*.user.v1.AddressGetPrimaryLocationResponse\x12T\n" +
 	"\x0fGetAllAddresses\x12\x1f.user.v1.GetAllAddressesRequest\x1a .user.v1.GetAllAddressesResponse\x12N\n" +
 	"\rUpdateAddress\x12\x1d.user.v1.UpdateAddressRequest\x1a\x1e.user.v1.UpdateAddressResponse\x12F\n" +
 	"\rDeleteAddress\x12\x1d.user.v1.DeleteAddressRequest\x1a\x16.google.protobuf.Empty\x12Z\n" +
@@ -945,40 +1047,44 @@ func file_v1_user_address_api_proto_rawDescGZIP() []byte {
 	return file_v1_user_address_api_proto_rawDescData
 }
 
-var file_v1_user_address_api_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_v1_user_address_api_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_v1_user_address_api_proto_goTypes = []any{
-	(*Address)(nil),                   // 0: user.v1.Address
-	(*CreateAddressRequest)(nil),      // 1: user.v1.CreateAddressRequest
-	(*CreateAddressResponse)(nil),     // 2: user.v1.CreateAddressResponse
-	(*GetAllAddressesRequest)(nil),    // 3: user.v1.GetAllAddressesRequest
-	(*GetAllAddressesResponse)(nil),   // 4: user.v1.GetAllAddressesResponse
-	(*UpdateAddressRequest)(nil),      // 5: user.v1.UpdateAddressRequest
-	(*UpdateAddressResponse)(nil),     // 6: user.v1.UpdateAddressResponse
-	(*DeleteAddressRequest)(nil),      // 7: user.v1.DeleteAddressRequest
-	(*SetPrimaryAddressRequest)(nil),  // 8: user.v1.SetPrimaryAddressRequest
-	(*SetPrimaryAddressResponse)(nil), // 9: user.v1.SetPrimaryAddressResponse
-	(*timestamppb.Timestamp)(nil),     // 10: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),             // 11: google.protobuf.Empty
+	(*Address)(nil),                           // 0: user.v1.Address
+	(*CreateAddressRequest)(nil),              // 1: user.v1.CreateAddressRequest
+	(*CreateAddressResponse)(nil),             // 2: user.v1.CreateAddressResponse
+	(*AddressGetPrimaryLocationRequest)(nil),  // 3: user.v1.AddressGetPrimaryLocationRequest
+	(*AddressGetPrimaryLocationResponse)(nil), // 4: user.v1.AddressGetPrimaryLocationResponse
+	(*GetAllAddressesRequest)(nil),            // 5: user.v1.GetAllAddressesRequest
+	(*GetAllAddressesResponse)(nil),           // 6: user.v1.GetAllAddressesResponse
+	(*UpdateAddressRequest)(nil),              // 7: user.v1.UpdateAddressRequest
+	(*UpdateAddressResponse)(nil),             // 8: user.v1.UpdateAddressResponse
+	(*DeleteAddressRequest)(nil),              // 9: user.v1.DeleteAddressRequest
+	(*SetPrimaryAddressRequest)(nil),          // 10: user.v1.SetPrimaryAddressRequest
+	(*SetPrimaryAddressResponse)(nil),         // 11: user.v1.SetPrimaryAddressResponse
+	(*timestamppb.Timestamp)(nil),             // 12: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                     // 13: google.protobuf.Empty
 }
 var file_v1_user_address_api_proto_depIdxs = []int32{
-	10, // 0: user.v1.Address.created_at:type_name -> google.protobuf.Timestamp
-	10, // 1: user.v1.Address.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 0: user.v1.Address.created_at:type_name -> google.protobuf.Timestamp
+	12, // 1: user.v1.Address.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: user.v1.CreateAddressResponse.address:type_name -> user.v1.Address
 	0,  // 3: user.v1.GetAllAddressesResponse.addresses:type_name -> user.v1.Address
 	0,  // 4: user.v1.UpdateAddressResponse.address:type_name -> user.v1.Address
 	0,  // 5: user.v1.SetPrimaryAddressResponse.address:type_name -> user.v1.Address
 	1,  // 6: user.v1.AddressService.CreateAddress:input_type -> user.v1.CreateAddressRequest
-	3,  // 7: user.v1.AddressService.GetAllAddresses:input_type -> user.v1.GetAllAddressesRequest
-	5,  // 8: user.v1.AddressService.UpdateAddress:input_type -> user.v1.UpdateAddressRequest
-	7,  // 9: user.v1.AddressService.DeleteAddress:input_type -> user.v1.DeleteAddressRequest
-	8,  // 10: user.v1.AddressService.SetPrimaryAddress:input_type -> user.v1.SetPrimaryAddressRequest
-	2,  // 11: user.v1.AddressService.CreateAddress:output_type -> user.v1.CreateAddressResponse
-	4,  // 12: user.v1.AddressService.GetAllAddresses:output_type -> user.v1.GetAllAddressesResponse
-	6,  // 13: user.v1.AddressService.UpdateAddress:output_type -> user.v1.UpdateAddressResponse
-	11, // 14: user.v1.AddressService.DeleteAddress:output_type -> google.protobuf.Empty
-	9,  // 15: user.v1.AddressService.SetPrimaryAddress:output_type -> user.v1.SetPrimaryAddressResponse
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
+	3,  // 7: user.v1.AddressService.GetPrimaryLocation:input_type -> user.v1.AddressGetPrimaryLocationRequest
+	5,  // 8: user.v1.AddressService.GetAllAddresses:input_type -> user.v1.GetAllAddressesRequest
+	7,  // 9: user.v1.AddressService.UpdateAddress:input_type -> user.v1.UpdateAddressRequest
+	9,  // 10: user.v1.AddressService.DeleteAddress:input_type -> user.v1.DeleteAddressRequest
+	10, // 11: user.v1.AddressService.SetPrimaryAddress:input_type -> user.v1.SetPrimaryAddressRequest
+	2,  // 12: user.v1.AddressService.CreateAddress:output_type -> user.v1.CreateAddressResponse
+	4,  // 13: user.v1.AddressService.GetPrimaryLocation:output_type -> user.v1.AddressGetPrimaryLocationResponse
+	6,  // 14: user.v1.AddressService.GetAllAddresses:output_type -> user.v1.GetAllAddressesResponse
+	8,  // 15: user.v1.AddressService.UpdateAddress:output_type -> user.v1.UpdateAddressResponse
+	13, // 16: user.v1.AddressService.DeleteAddress:output_type -> google.protobuf.Empty
+	11, // 17: user.v1.AddressService.SetPrimaryAddress:output_type -> user.v1.SetPrimaryAddressResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -991,14 +1097,14 @@ func file_v1_user_address_api_proto_init() {
 	}
 	file_v1_user_address_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_user_address_api_proto_msgTypes[1].OneofWrappers = []any{}
-	file_v1_user_address_api_proto_msgTypes[5].OneofWrappers = []any{}
+	file_v1_user_address_api_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_user_address_api_proto_rawDesc), len(file_v1_user_address_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
