@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package pharmacy.v1;
 
+import "v1/sorter.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -11,6 +12,7 @@ service PharmacyService {
   rpc CreatePharmacy (CreatePharmacyRequest) returns (CreatePharmacyResponse);
   rpc GetMe (google.protobuf.Empty) returns (PharmacyGetMeResponse);
   rpc GetID (PharmacyGetIDRequest) returns (PharmacyGetIDResponse);
+  rpc GetAllPharmacies (GetAllPharmaciesRequest) returns (GetAllPharmaciesResponse);
   rpc UpdatePharmacy (UpdatePharmacyRequest) returns (UpdatePharmacyResponse);
   rpc UpdateProfilePicture (PharmacyUpdateProfilePictureRequest) returns (PharmacyUpdateProfilePictureResponse);
   rpc UpdateProfileBanner (PharmacyUpdateProfileBannerRequest) returns (PharmacyUpdateProfileBannerResponse);
@@ -41,6 +43,17 @@ message Pharmacy {
   google.protobuf.Timestamp verified_at = 22;
 	google.protobuf.Timestamp created_at = 23;
 	google.protobuf.Timestamp updated_at = 24;
+}
+
+message PharmacySummary {
+  string id = 1;
+  string name = 2;
+  optional string legal_name = 3;
+  optional bytes online_hours = 4;
+  optional string profile_picture = 5;
+  optional double distance_m = 6;
+  google.protobuf.Timestamp created_at = 7;
+	google.protobuf.Timestamp updated_at = 8;
 }
 
 message CreatePharmacyRequest {
@@ -77,6 +90,28 @@ message PharmacyGetIDRequest {
 
 message PharmacyGetIDResponse {
   string pharmacy_id = 1;
+}
+
+message GetAllPharmaciesRequest {
+  // Queries
+  optional string search = 1;
+  optional uint32 radius_m = 2;
+  optional double latitude = 3;
+  optional double longitude = 4;
+
+  // Sorters
+  sorter.v1.Sorter by_location = 5;
+  sorter.v1.Sorter by_created_at = 6;
+  sorter.v1.Sorter by_updated_at = 7;
+
+  // Pagination
+  int32 page = 8;
+  int32 page_size = 9;
+}
+
+message GetAllPharmaciesResponse {
+  repeated PharmacySummary pharmacies = 1;
+	int64 total = 2;
 }
 
 message UpdatePharmacyRequest {

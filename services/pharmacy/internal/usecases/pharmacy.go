@@ -23,6 +23,7 @@ type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (p *models.Pharmacy, err *ce.Error)
@@ -32,6 +33,7 @@ type pharmacyUsecase struct {
 	appName    string
 	pr         repositories.PharmacyRepository
 	ac         clients.AuthClient
+	uac        clients.AddressClient
 	transactor *database.Transactor
 	storage    *storage.Storage
 	validator  *validator.Validator
@@ -42,6 +44,7 @@ func NewPharmacyUsecase(
 	appName string,
 	pr repositories.PharmacyRepository,
 	ac clients.AuthClient,
+	uac clients.AddressClient,
 	tx *database.Transactor,
 	s *storage.Storage,
 	v *validator.Validator,
@@ -51,6 +54,7 @@ func NewPharmacyUsecase(
 		appName:    appName,
 		pr:         pr,
 		ac:         ac,
+		uac:        uac,
 		transactor: tx,
 		storage:    s,
 		validator:  v,
@@ -198,7 +202,12 @@ func (u *pharmacyUsecase) CreatePharmacy(ctx context.Context, req *models.Create
 		// New Role Setting
 		if err := u.ac.SetRolePharmacy(ctx, authCtx.AuthID); err != nil {
 			if err.Code() == ce.CodeNotFound {
-				return ce.NewError(ce.CodeAuthNotRegistered, ce.MsgInvalidCredentials, err.Unwrap())
+				return ce.NewError(
+					ce.CodeAuthNotRegistered,
+					ce.MsgInvalidCredentials,
+					err.Unwrap(),
+					err.Fields()...,
+				)
 			}
 			return err
 		}
@@ -238,6 +247,97 @@ func (u *pharmacyUsecase) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Erro
 
 func (u *pharmacyUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
 	return u.pr.GetID(ctx, authID)
+}
+
+func (u *pharmacyUsecase) GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) ([]models.PharmacySummary, int64, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "pharmacy.usecase.GetAllPharmacies")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+
+	// Data Normalization
+	search := utils.TrimSpacePtr(req.Search)
+
+	// Data Validation
+	page := req.Page
+	pageSize := req.PageSize
+	if page < 1 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = constants.PageDefaultSizePharmacy
+	}
+	if pageSize > constants.PageMaxSizePharmacy {
+		pageSize = constants.PageMaxSizePharmacy
+	}
+	if search != nil {
+		if ok, why := u.validator.Search(*search); !ok {
+			return nil, 0, ce.NewError(ce.CodeInvalidParams, why, nil)
+		}
+	}
+	if req.RadiusM != nil {
+		if ok, why := u.validator.Radius(*req.RadiusM); !ok {
+			return nil, 0, ce.NewError(ce.CodeInvalidParams, why, nil)
+		}
+	}
+	if req.RequireLocation() {
+		if req.Latitude != nil && req.Longitude != nil {
+			if ok, why := u.validator.Latitude(*req.Latitude); !ok {
+				return nil, 0, ce.NewError(ce.CodeInvalidParams, why, nil)
+			}
+			if ok, why := u.validator.Longitude(*req.Longitude); !ok {
+				return nil, 0, ce.NewError(ce.CodeInvalidParams, why, nil)
+			}
+		} else {
+			// Authentication Status Check
+			if authCtx == nil {
+				return nil, 0, ce.NewError(
+					ce.CodeLocationNotProvided,
+					ce.MsgLocationNotProvided,
+					nil,
+				)
+			}
+
+			// Primary Location Fetching
+			lat, lon, err := u.uac.GetPrimaryLocation(ctx, authCtx.AuthID)
+			if err != nil && err.Code() == ce.CodeAddressNotFound {
+				return nil, 0, ce.NewError(
+					ce.CodeLocationNotProvided,
+					ce.MsgLocationNotProvided,
+					err.Unwrap(),
+					err.Fields()...,
+				)
+			}
+			if err != nil {
+				return nil, 0, err
+			}
+
+			req.Latitude = &lat
+			req.Longitude = &lon
+		}
+	}
+
+	// All Pharmacies Fetching
+	return u.pr.GetAll(
+		ctx,
+		&models.GetAllPharmacies{
+			Search:    search,
+			RadiusM:   req.RadiusM,
+			Latitude:  req.Latitude,
+			Longitude: req.Longitude,
+
+			ByLocation: req.ByLocation,
+			DefaultSorters: utils.DefaultSorters{
+				ByCreatedAt: req.ByCreatedAt,
+				ByUpdatedAt: req.ByUpdatedAt,
+			},
+
+			OffsetPagination: utils.OffsetPagination{
+				Page:     page,
+				PageSize: pageSize,
+			},
+		},
+	)
 }
 
 func (u *pharmacyUsecase) UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (*models.Pharmacy, *ce.Error) {

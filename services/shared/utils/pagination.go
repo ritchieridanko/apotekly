@@ -5,6 +5,15 @@ type (
 		Page     int
 		PageSize int
 	}
+
+	Sorter struct {
+		IsAsc bool
+	}
+
+	DefaultSorters struct {
+		ByCreatedAt *Sorter
+		ByUpdatedAt *Sorter
+	}
 )
 
 func (p *OffsetPagination) Offset() int {

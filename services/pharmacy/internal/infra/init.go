@@ -21,6 +21,7 @@ type Infra struct {
 	storage  *cloudinary.Cloudinary
 	tracer   *tracer.Tracer
 	as       *services.AuthService
+	us       *services.UserService
 }
 
 func Init(cfg *configs.Config) (*Infra, error) {
@@ -49,6 +50,10 @@ func Init(cfg *configs.Config) (*Infra, error) {
 	if err != nil {
 		return nil, err
 	}
+	us, err := services.NewUserService(&cfg.Service.User, l)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Infra{
 		config:   cfg,
@@ -57,6 +62,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		storage:  s,
 		tracer:   t,
 		as:       as,
+		us:       us,
 	}, nil
 }
 
@@ -76,6 +82,10 @@ func (i *Infra) AuthService() *services.AuthService {
 	return i.as
 }
 
+func (i *Infra) UserService() *services.UserService {
+	return i.us
+}
+
 func (i *Infra) Close() error {
 	if err := i.logger.Sync(); err != nil {
 		return fmt.Errorf("failed to close logger: %w", err)
@@ -85,6 +95,9 @@ func (i *Infra) Close() error {
 	}
 	if err := i.as.Close(); err != nil {
 		return fmt.Errorf("failed to close auth service connection: %w", err)
+	}
+	if err := i.us.Close(); err != nil {
+		return fmt.Errorf("failed to close user service connection: %w", err)
 	}
 
 	i.database.Close()

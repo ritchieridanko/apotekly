@@ -242,6 +242,16 @@ func (v *Validator) Quantity(value int) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) Radius(value uint32) (bool, string) {
+	if value < minRadius {
+		return false, "Radius is too short: " + strconv.FormatUint(uint64(value), 10) + " m"
+	}
+	if value > maxRadius {
+		return false, "Radius is too far: " + strconv.FormatFloat(float64(value)/1000, 'f', 2, 64) + " km"
+	}
+	return true, ""
+}
+
 func (v *Validator) RegIdentifier(value string) (bool, string) {
 	length := utf8.RuneCountInString(value)
 	if length < regIdentifierMinLength {
@@ -249,6 +259,17 @@ func (v *Validator) RegIdentifier(value string) (bool, string) {
 	}
 	if length > regIdentifierMaxLength {
 		return false, "Regulatory identifier must not exceed " + strconv.Itoa(regIdentifierMaxLength) + " characters"
+	}
+	return true, ""
+}
+
+func (v *Validator) Search(value string) (bool, string) {
+	length := utf8.RuneCountInString(value)
+	if length < searchMinLength {
+		return false, "Search query must be at least " + strconv.Itoa(searchMinLength) + " characters"
+	}
+	if length > searchMaxLength {
+		return false, "Search query must not exceed " + strconv.Itoa(searchMaxLength) + " characters"
 	}
 	return true, ""
 }

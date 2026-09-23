@@ -21,6 +21,7 @@ type Config struct {
 
 type Service struct {
 	Auth cfg.Service `mapstructure:"auth"`
+	User cfg.Service `mapstructure:"user"`
 }
 
 func Init(path string) (*Config, error) {
@@ -51,6 +52,7 @@ func Init(path string) (*Config, error) {
 	cfg.App.Env = env
 	cfg.Server.Addr = cfg.Server.Host + ":" + strconv.Itoa(cfg.Server.Port)
 	cfg.Service.Auth.Addr = cfg.Service.Auth.Host + ":" + strconv.Itoa(cfg.Service.Auth.Port)
+	cfg.Service.User.Addr = cfg.Service.User.Host + ":" + strconv.Itoa(cfg.Service.User.Port)
 	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
 	cfg.Database.DSN = fmt.Sprintf(
 		"postgresql://%s:%s@%s:%d/%s?sslmode=%s",

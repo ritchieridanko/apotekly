@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package sorter.v1;
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+message Sorter {
+  bool is_asc = 1;
+}

@@ -23,6 +23,7 @@ const (
 	PharmacyService_CreatePharmacy_FullMethodName       = "/pharmacy.v1.PharmacyService/CreatePharmacy"
 	PharmacyService_GetMe_FullMethodName                = "/pharmacy.v1.PharmacyService/GetMe"
 	PharmacyService_GetID_FullMethodName                = "/pharmacy.v1.PharmacyService/GetID"
+	PharmacyService_GetAllPharmacies_FullMethodName     = "/pharmacy.v1.PharmacyService/GetAllPharmacies"
 	PharmacyService_UpdatePharmacy_FullMethodName       = "/pharmacy.v1.PharmacyService/UpdatePharmacy"
 	PharmacyService_UpdateProfilePicture_FullMethodName = "/pharmacy.v1.PharmacyService/UpdateProfilePicture"
 	PharmacyService_UpdateProfileBanner_FullMethodName  = "/pharmacy.v1.PharmacyService/UpdateProfileBanner"
@@ -35,6 +36,7 @@ type PharmacyServiceClient interface {
 	CreatePharmacy(ctx context.Context, in *CreatePharmacyRequest, opts ...grpc.CallOption) (*CreatePharmacyResponse, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PharmacyGetMeResponse, error)
 	GetID(ctx context.Context, in *PharmacyGetIDRequest, opts ...grpc.CallOption) (*PharmacyGetIDResponse, error)
+	GetAllPharmacies(ctx context.Context, in *GetAllPharmaciesRequest, opts ...grpc.CallOption) (*GetAllPharmaciesResponse, error)
 	UpdatePharmacy(ctx context.Context, in *UpdatePharmacyRequest, opts ...grpc.CallOption) (*UpdatePharmacyResponse, error)
 	UpdateProfilePicture(ctx context.Context, in *PharmacyUpdateProfilePictureRequest, opts ...grpc.CallOption) (*PharmacyUpdateProfilePictureResponse, error)
 	UpdateProfileBanner(ctx context.Context, in *PharmacyUpdateProfileBannerRequest, opts ...grpc.CallOption) (*PharmacyUpdateProfileBannerResponse, error)
@@ -78,6 +80,16 @@ func (c *pharmacyServiceClient) GetID(ctx context.Context, in *PharmacyGetIDRequ
 	return out, nil
 }
 
+func (c *pharmacyServiceClient) GetAllPharmacies(ctx context.Context, in *GetAllPharmaciesRequest, opts ...grpc.CallOption) (*GetAllPharmaciesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllPharmaciesResponse)
+	err := c.cc.Invoke(ctx, PharmacyService_GetAllPharmacies_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *pharmacyServiceClient) UpdatePharmacy(ctx context.Context, in *UpdatePharmacyRequest, opts ...grpc.CallOption) (*UpdatePharmacyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdatePharmacyResponse)
@@ -115,6 +127,7 @@ type PharmacyServiceServer interface {
 	CreatePharmacy(context.Context, *CreatePharmacyRequest) (*CreatePharmacyResponse, error)
 	GetMe(context.Context, *emptypb.Empty) (*PharmacyGetMeResponse, error)
 	GetID(context.Context, *PharmacyGetIDRequest) (*PharmacyGetIDResponse, error)
+	GetAllPharmacies(context.Context, *GetAllPharmaciesRequest) (*GetAllPharmaciesResponse, error)
 	UpdatePharmacy(context.Context, *UpdatePharmacyRequest) (*UpdatePharmacyResponse, error)
 	UpdateProfilePicture(context.Context, *PharmacyUpdateProfilePictureRequest) (*PharmacyUpdateProfilePictureResponse, error)
 	UpdateProfileBanner(context.Context, *PharmacyUpdateProfileBannerRequest) (*PharmacyUpdateProfileBannerResponse, error)
@@ -136,6 +149,9 @@ func (UnimplementedPharmacyServiceServer) GetMe(context.Context, *emptypb.Empty)
 }
 func (UnimplementedPharmacyServiceServer) GetID(context.Context, *PharmacyGetIDRequest) (*PharmacyGetIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetID not implemented")
+}
+func (UnimplementedPharmacyServiceServer) GetAllPharmacies(context.Context, *GetAllPharmaciesRequest) (*GetAllPharmaciesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllPharmacies not implemented")
 }
 func (UnimplementedPharmacyServiceServer) UpdatePharmacy(context.Context, *UpdatePharmacyRequest) (*UpdatePharmacyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePharmacy not implemented")
@@ -221,6 +237,24 @@ func _PharmacyService_GetID_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PharmacyService_GetAllPharmacies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllPharmaciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PharmacyServiceServer).GetAllPharmacies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PharmacyService_GetAllPharmacies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PharmacyServiceServer).GetAllPharmacies(ctx, req.(*GetAllPharmaciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PharmacyService_UpdatePharmacy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePharmacyRequest)
 	if err := dec(in); err != nil {
@@ -293,6 +327,10 @@ var PharmacyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetID",
 			Handler:    _PharmacyService_GetID_Handler,
+		},
+		{
+			MethodName: "GetAllPharmacies",
+			Handler:    _PharmacyService_GetAllPharmacies_Handler,
 		},
 		{
 			MethodName: "UpdatePharmacy",

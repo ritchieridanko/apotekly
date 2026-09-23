@@ -51,5 +51,8 @@ CREATE UNIQUE INDEX idx_pharmacies_unique_auth ON pharmacies (auth_id) WHERE del
 -- Index records by name if active (not deleted)
 CREATE INDEX idx_pharmacies_name ON pharmacies USING GIN (name gin_trgm_ops) WHERE deleted_at IS NULL;
 
+-- Index records by legal name if active (not deleted)
+CREATE INDEX idx_pharmacies_legal_name ON pharmacies USING GIN (legal_name gin_trgm_ops) WHERE deleted_at IS NULL;
+
 -- Index records by location if active (not deleted)
 CREATE INDEX idx_pharmacies_location ON pharmacies USING GIST (location) WHERE is_active = TRUE AND deleted_at IS NULL;

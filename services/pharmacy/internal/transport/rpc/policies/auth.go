@@ -4,12 +4,17 @@ import "github.com/ritchieridanko/apotekly/services/shared/constants"
 
 type AuthPolicy struct {
 	authenticated bool
+	authOptional  bool
 	verified      bool
 	roles         map[string]struct{}
 }
 
 func (p *AuthPolicy) MustBeAuthenticated() bool {
 	return p.authenticated
+}
+
+func (p *AuthPolicy) IsAuthOptional() bool {
+	return p.authOptional
 }
 
 func (p *AuthPolicy) MustBeVerified() bool {
@@ -38,6 +43,9 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 		roles: map[string]struct{}{
 			constants.RolePharmacy: {},
 		},
+	},
+	"/pharmacy.v1.PharmacyService/GetAllPharmacies": {
+		authOptional: true,
 	},
 	"/pharmacy.v1.PharmacyService/UpdatePharmacy": {
 		authenticated: true,

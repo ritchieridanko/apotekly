@@ -64,6 +64,41 @@ func (h *PharmacyHandler) GetID(ctx context.Context, req *apis.PharmacyGetIDRequ
 	return &apis.PharmacyGetIDResponse{PharmacyId: pharmacyID.String()}, nil
 }
 
+func (h *PharmacyHandler) GetAllPharmacies(ctx context.Context, req *apis.GetAllPharmaciesRequest) (*apis.GetAllPharmaciesResponse, error) {
+	pss, total, err := h.pu.GetAllPharmacies(
+		ctx,
+		&models.GetAllPharmaciesReq{
+			Search:    req.Search,
+			RadiusM:   req.RadiusM,
+			Latitude:  req.Latitude,
+			Longitude: req.Longitude,
+
+			ByLocation: h.toSorter(req.GetByLocation()),
+			DefaultSorters: utils.DefaultSorters{
+				ByCreatedAt: h.toSorter(req.GetByCreatedAt()),
+				ByUpdatedAt: h.toSorter(req.GetByUpdatedAt()),
+			},
+
+			OffsetPagination: utils.OffsetPagination{
+				Page:     int(req.GetPage()),
+				PageSize: int(req.GetPageSize()),
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	pharmacies := make([]*apis.PharmacySummary, 0, len(pss))
+	for _, ps := range pss {
+		pharmacies = append(pharmacies, h.toPharmacySummary(&ps))
+	}
+	return &apis.GetAllPharmaciesResponse{
+		Pharmacies: pharmacies,
+		Total:      total,
+	}, nil
+}
+
 func (h *PharmacyHandler) UpdatePharmacy(ctx context.Context, req *apis.UpdatePharmacyRequest) (*apis.UpdatePharmacyResponse, error) {
 	p, err := h.pu.UpdatePharmacy(
 		ctx,
@@ -138,5 +173,30 @@ func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {
 		VerifiedAt:     utils.ToTimestamp(p.VerifiedAt),
 		CreatedAt:      utils.ToTimestamp(&p.CreatedAt),
 		UpdatedAt:      utils.ToTimestamp(&p.UpdatedAt),
+	}
+}
+
+func (h *PharmacyHandler) toPharmacySummary(ps *models.PharmacySummary) *apis.PharmacySummary {
+	if ps == nil {
+		return nil
+	}
+	return &apis.PharmacySummary{
+		Id:             ps.ID.String(),
+		Name:           ps.Name,
+		LegalName:      ps.LegalName,
+		OnlineHours:    utils.ToByte(ps.OnlineHours),
+		ProfilePicture: ps.ProfilePicture,
+		DistanceM:      ps.DistanceM,
+		CreatedAt:      utils.ToTimestamp(&ps.CreatedAt),
+		UpdatedAt:      utils.ToTimestamp(&ps.UpdatedAt),
+	}
+}
+
+func (h *PharmacyHandler) toSorter(s *apis.Sorter) *utils.Sorter {
+	if s == nil {
+		return nil
+	}
+	return &utils.Sorter{
+		IsAsc: s.GetIsAsc(),
 	}
 }

@@ -22,7 +22,8 @@ type Container struct {
 	logger     *logger.Logger
 	storage    *storage.Storage
 
-	ac clients.AuthClient
+	ac  clients.AuthClient
+	uac clients.AddressClient
 
 	pdb database.PharmacyDatabase
 
@@ -46,6 +47,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Clients
 	ac := clients.NewAuthClient(inf.AuthService().AuthClient())
+	uac := clients.NewAddressClient(inf.UserService().AddressClient())
 
 	// Databases
 	pdb := database.NewPharmacyDatabase(db)
@@ -57,7 +59,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	pu := usecases.NewPharmacyUsecase(cfg.App.Name, pr, ac, tx, s, v, l)
+	pu := usecases.NewPharmacyUsecase(cfg.App.Name, pr, ac, uac, tx, s, v, l)
 
 	// Handlers
 	ph := handlers.NewPharmacyHandler(pu)
@@ -72,6 +74,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		logger:     l,
 		storage:    s,
 		ac:         ac,
+		uac:        uac,
 		pdb:        pdb,
 		pr:         pr,
 		validator:  v,

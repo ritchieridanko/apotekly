@@ -30,7 +30,7 @@ func Init(cfg *configs.GRPCServer, l *logger.Logger, ph *handlers.PharmacyHandle
 			interceptors.Request(l),
 			interceptors.Recovery(l),
 			interceptors.Logging(l),
-			interceptors.Auth(),
+			interceptors.Auth(l),
 		),
 	)
 

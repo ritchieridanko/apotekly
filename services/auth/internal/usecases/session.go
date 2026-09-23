@@ -74,7 +74,9 @@ func (u *sessionUsecase) CreateSession(ctx context.Context, req *models.CreateSe
 				ce.CodeRoleMismatch,
 				ce.MsgInternalServer,
 				err.Unwrap(),
-				authIDField,
+				err.Append(
+					authIDField,
+				).Fields()...,
 			)
 		}
 		if err != nil {
@@ -182,7 +184,9 @@ func (u *sessionUsecase) RefreshSession(ctx context.Context, req *models.Refresh
 				ce.CodeRoleMismatch,
 				ce.MsgInternalServer,
 				err.Unwrap(),
-				authIDField,
+				err.Append(
+					authIDField,
+				).Fields()...,
 			)
 		}
 		if err != nil {

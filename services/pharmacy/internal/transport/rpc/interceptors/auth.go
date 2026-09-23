@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/pharmacy/internal/transport/rpc/policies"
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
@@ -15,7 +16,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func Auth() grpc.UnaryServerInterceptor {
+func Auth(l *logger.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req any,
@@ -58,6 +59,25 @@ func Auth() grpc.UnaryServerInterceptor {
 			authID = id
 		}
 
+		// Check if policy accepts optional authentication
+		if policy.IsAuthOptional() {
+			values := md.Get(constants.MDKeyAuthID)
+			if len(values) > 0 {
+				id, err := strconv.ParseUint(values[0], 10, 64)
+				if err != nil {
+					l.Warn(
+						ctx,
+						"auth_id provided. failed to convert to uint64",
+						logger.NewField("auth_id", values[0]),
+						logger.NewField("error_code", ce.CodeTypeConversionFailed),
+						logger.NewField("error", err),
+					)
+				} else {
+					authID = id
+				}
+			}
+		}
+
 		// Check if policy requires verification
 		var isVerified bool
 		if policy.MustBeVerified() {
@@ -87,6 +107,7 @@ func Auth() grpc.UnaryServerInterceptor {
 
 		// Check if policy requires role authorization
 		var role string
+		var pharmacyID *uuid.UUID
 		if policy.RequireRole() {
 			values := md.Get(constants.MDKeyRole)
 			if len(values) == 0 {
@@ -104,6 +125,13 @@ func Auth() grpc.UnaryServerInterceptor {
 					logger.NewField("role", role),
 				)
 			}
+			if role == constants.RolePharmacy {
+				values := md.Get(constants.MDKeyPharmacyID)
+				if len(values) > 0 {
+					id := utils.ToUUID(values[0])
+					pharmacyID = &id
+				}
+			}
 		}
 
 		return handler(
@@ -114,6 +142,7 @@ func Auth() grpc.UnaryServerInterceptor {
 					AuthID:          authID,
 					Role:            role,
 					IsEmailVerified: isVerified,
+					PharmacyID:      pharmacyID,
 				},
 			),
 			req,

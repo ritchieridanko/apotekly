@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
@@ -13,11 +14,6 @@ import (
 	"github.com/ritchieridanko/apotekly/services/user/internal/models"
 	"github.com/ritchieridanko/apotekly/services/user/internal/repositories"
 	"go.opentelemetry.io/otel"
-)
-
-const (
-	defaultPageSize int = 10
-	maxPageSize     int = 100
 )
 
 type AddressUsecase interface {
@@ -198,10 +194,10 @@ func (u *addressUsecase) GetAllAddresses(ctx context.Context, req *models.GetAll
 		page = 1
 	}
 	if pageSize <= 0 {
-		pageSize = defaultPageSize
+		pageSize = constants.PageDefaultSizeAddress
 	}
-	if pageSize > maxPageSize {
-		pageSize = maxPageSize
+	if pageSize > constants.PageMaxSizeAddress {
+		pageSize = constants.PageMaxSizeAddress
 	}
 
 	// All Addresses Fetching

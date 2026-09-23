@@ -18,6 +18,7 @@ type PharmacyDatabase interface {
 	Create(ctx context.Context, data *models.CreatePharmacy) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
+	GetAll(ctx context.Context, params *models.GetAllPharmacies) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (p *models.Pharmacy, err *ce.Error)
 }
 
@@ -213,6 +214,173 @@ func (d *pharmacyDatabase) GetByAuthID(ctx context.Context, authID uint64) (*mod
 	}
 
 	return &p, nil
+}
+
+func (d *pharmacyDatabase) GetAll(ctx context.Context, params *models.GetAllPharmacies) ([]models.PharmacySummary, int64, *ce.Error) {
+	query := ""
+	args := []any{}
+	argPos := 1
+	hasLocation := params.RequireLocation()
+	if hasLocation {
+		query += "WITH user AS (SELECT ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography AS location) "
+		args = append(args, *params.Latitude, *params.Longitude)
+		argPos += 2
+	}
+
+	query += `
+		SELECT
+			p.id, p.name, p.legal_name, p.online_hours, p.profile_picture,
+			p.created_at, p.updated_at,
+	`
+	if hasLocation {
+		query += "ST_Distance(p.location, u.location) AS distance_m,"
+	} else {
+		query += "NULL::DOUBLE PRECISION AS distance_m,"
+	}
+
+	query += "COUNT(*) OVER() AS total FROM pharmacies p"
+	if hasLocation {
+		query += " JOIN user u ON TRUE"
+	}
+
+	query += " WHERE p.deleted_at IS NULL AND p.is_active = TRUE"
+	searchArgPos := -1
+	if params.Search != nil {
+		query += " AND (p.name <% $" + strconv.Itoa(argPos) + " OR p.legal_name <% $" + strconv.Itoa(argPos) + ")"
+		args = append(args, *params.Search)
+		searchArgPos = argPos
+		argPos++
+	}
+	if params.RadiusM != nil {
+		query += " AND ST_DWithin(p.location, u.location, $" + strconv.Itoa(argPos) + ")"
+		args = append(args, *params.RadiusM)
+		argPos++
+	}
+
+	sortClauses := []string{}
+	if params.Search != nil {
+		sortClauses = append(
+			sortClauses,
+			"GREATEST(word_similarity(p.name, $"+strconv.Itoa(searchArgPos)+"), word_similarity(p.legal_name, $"+strconv.Itoa(searchArgPos)+")) DESC",
+		)
+	}
+	if params.ByLocation != nil {
+		if params.ByLocation.IsAsc {
+			sortClauses = append(sortClauses, "p.location <-> u.location ASC")
+		} else {
+			sortClauses = append(sortClauses, "p.location <-> u.location DESC")
+		}
+	}
+	if params.ByCreatedAt != nil {
+		if params.ByCreatedAt.IsAsc {
+			sortClauses = append(sortClauses, "p.created_at ASC")
+		} else {
+			sortClauses = append(sortClauses, "p.created_at DESC")
+		}
+	}
+	if params.ByUpdatedAt != nil {
+		if params.ByUpdatedAt.IsAsc {
+			sortClauses = append(sortClauses, "p.updated_at ASC")
+		} else {
+			sortClauses = append(sortClauses, "p.updated_at DESC")
+		}
+	}
+	if len(sortClauses) > 0 {
+		query += " ORDER BY " + strings.Join(sortClauses, ", ")
+	}
+
+	query += " LIMIT $" + strconv.Itoa(argPos) + " OFFSET $" + strconv.Itoa(argPos+1)
+	args = append(args, params.PageSize, params.Offset())
+
+	rows, err := d.database.QueryAll(
+		ctx, query,
+		args...,
+	)
+	if err != nil {
+		return nil, 0, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to get all pharmacies: %w", err),
+		)
+	}
+	defer rows.Close()
+
+	var total int64
+	pss := make([]models.PharmacySummary, 0, params.PageSize)
+
+	for rows.Next() {
+		var ps models.PharmacySummary
+		err := rows.Scan(
+			&ps.ID,
+			&ps.Name,
+			&ps.LegalName,
+			&ps.OnlineHours,
+			&ps.ProfilePicture,
+			&ps.CreatedAt,
+			&ps.UpdatedAt,
+			&ps.DistanceM,
+			&total,
+		)
+		if err != nil {
+			return nil, 0, ce.NewError(
+				ce.CodeDBQueryExec,
+				ce.MsgInternalServer,
+				fmt.Errorf("failed to get all pharmacies: %w", err),
+			)
+		}
+
+		pss = append(pss, ps)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to get all pharmacies: %w", err),
+		)
+	}
+	if len(pss) == 0 {
+		countQuery := ""
+		countArgs := []any{}
+		countArgPos := 1
+		if params.RadiusM != nil {
+			countQuery += "WITH user AS (SELECT ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography AS location) "
+			countArgs = append(countArgs, *params.Latitude, *params.Longitude)
+			countArgPos += 2
+		}
+
+		countQuery += "SELECT COUNT(*) FROM pharmacies p"
+		if params.RadiusM != nil {
+			countQuery += " JOIN user u ON TRUE"
+		}
+
+		countQuery += " WHERE p.deleted_at IS NULL AND p.is_active = TRUE"
+		if params.Search != nil {
+			countQuery += " AND (p.name <% $" + strconv.Itoa(countArgPos) + " OR p.legal_name <% $" + strconv.Itoa(countArgPos) + ")"
+			countArgs = append(countArgs, *params.Search)
+			countArgPos++
+		}
+		if params.RadiusM != nil {
+			countQuery += " AND ST_DWithin(p.location, u.location, $" + strconv.Itoa(countArgPos) + ")"
+			countArgs = append(countArgs, *params.RadiusM)
+			countArgPos++
+		}
+
+		err := d.database.Query(
+			ctx, countQuery,
+			countArgs...,
+		).Scan(
+			&total,
+		)
+		if err != nil {
+			return nil, 0, ce.NewError(
+				ce.CodeDBQueryExec,
+				ce.MsgInternalServer,
+				fmt.Errorf("failed to get total pharmacies count: %w", err),
+			)
+		}
+	}
+
+	return pss, total, nil
 }
 
 func (d *pharmacyDatabase) Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (*models.Pharmacy, *ce.Error) {

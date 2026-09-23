@@ -1,6 +1,10 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/ritchieridanko/apotekly/services/shared/utils"
+)
 
 type (
 	CreatePharmacyReq struct {
@@ -23,6 +27,21 @@ type (
 		Whatsapp     *string
 	}
 
+	GetAllPharmaciesReq struct {
+		// Queries
+		Search    *string
+		RadiusM   *uint32
+		Latitude  *float64
+		Longitude *float64
+
+		// Sorters
+		ByLocation *utils.Sorter
+		utils.DefaultSorters
+
+		// Pagination
+		utils.OffsetPagination
+	}
+
 	UpdatePharmacyReq struct {
 		Name         *string
 		LegalName    *string
@@ -43,3 +62,7 @@ type (
 		Whatsapp     *string
 	}
 )
+
+func (r *GetAllPharmaciesReq) RequireLocation() bool {
+	return r.RadiusM != nil || r.ByLocation != nil
+}

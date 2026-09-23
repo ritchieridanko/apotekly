@@ -13,6 +13,7 @@ type PharmacyRepository interface {
 	Create(ctx context.Context, data *models.CreatePharmacy) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
+	GetAll(ctx context.Context, params *models.GetAllPharmacies) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (p *models.Pharmacy, err *ce.Error)
 }
 
@@ -34,6 +35,10 @@ func (r *pharmacyRepository) GetID(ctx context.Context, authID uint64) (uuid.UUI
 
 func (r *pharmacyRepository) GetByAuthID(ctx context.Context, authID uint64) (*models.Pharmacy, *ce.Error) {
 	return r.database.GetByAuthID(ctx, authID)
+}
+
+func (r *pharmacyRepository) GetAll(ctx context.Context, params *models.GetAllPharmacies) ([]models.PharmacySummary, int64, *ce.Error) {
+	return r.database.GetAll(ctx, params)
 }
 
 func (r *pharmacyRepository) Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (*models.Pharmacy, *ce.Error) {

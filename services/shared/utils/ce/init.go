@@ -66,6 +66,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeInvalidPayload,
 		CodeInvalidRequestMetadata,
 		CodeInvalidToken,
+		CodeLocationNotProvided,
 		CodeTokenNotOwned:
 		return status.Error(codes.InvalidArgument, e.message)
 	case

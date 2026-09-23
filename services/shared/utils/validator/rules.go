@@ -30,8 +30,13 @@ const (
 	postalCodeMinLength     int = 4
 	regIdentifierMaxLength  int = 50
 	regIdentifierMinLength  int = 2
+	searchMaxLength         int = 255
+	searchMinLength         int = 3
 	subdivisionMaxLength    int = 255
 	userAgentMaxLength      int = 512
+
+	maxRadius uint32 = 100_000
+	minRadius uint32 = 100
 
 	maxLatitude  float64 = 90
 	minLatitude  float64 = -90
