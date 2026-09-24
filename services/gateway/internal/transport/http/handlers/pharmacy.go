@@ -11,6 +11,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/models"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/dtos"
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/cookie"
@@ -22,10 +23,23 @@ type PharmacyHandler struct {
 	ac        clients.AuthClient
 	validator *validator.Validator
 	cookie    *cookie.Cookie
+	logger    *logger.Logger
 }
 
-func NewPharmacyHandler(phc clients.PharmacyClient, ac clients.AuthClient, v *validator.Validator, c *cookie.Cookie) *PharmacyHandler {
-	return &PharmacyHandler{phc: phc, ac: ac, validator: v, cookie: c}
+func NewPharmacyHandler(
+	phc clients.PharmacyClient,
+	ac clients.AuthClient,
+	v *validator.Validator,
+	c *cookie.Cookie,
+	l *logger.Logger,
+) *PharmacyHandler {
+	return &PharmacyHandler{
+		phc:       phc,
+		ac:        ac,
+		validator: v,
+		cookie:    c,
+		logger:    l,
+	}
 }
 
 func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
@@ -122,6 +136,17 @@ func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
 				)
 				return
 			}
+
+			h.logger.Warn(
+				ctx,
+				"created pharmacy. failed to rotate auth token",
+				err.Append(
+					logger.NewField("auth_id", authCtx.AuthID),
+					logger.NewField("pharmacy_id", p.ID.String()),
+					logger.NewField("error_code", err.Code()),
+					logger.NewField("error", err.Unwrap()),
+				).Fields()...,
+			)
 		}
 	}
 
@@ -166,6 +191,27 @@ func (h *PharmacyHandler) GetMe(ctx *gin.Context) {
 		http.StatusOK,
 		"Pharmacy retrieved successfully",
 		dtos.PharmacyGetMeResponse{Pharmacy: h.toPharmacy(p)},
+		nil,
+	)
+}
+
+func (h *PharmacyHandler) GetPharmacyByID(ctx *gin.Context) {
+	p, err := h.phc.GetPharmacyByID(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		ctx.Param("pharmacy_id"),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Pharmacy retrieved successfully",
+		dtos.GetPharmacyByIDResponse{Pharmacy: h.toPharmacy(p)},
 		nil,
 	)
 }

@@ -125,6 +125,10 @@ type (
 		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
 	}
 
+	GetPharmacyByIDResponse struct {
+		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+	}
+
 	GetAllPharmaciesResponse struct {
 		Pharmacies []PharmacySummary `json:"pharmacies"`
 	}

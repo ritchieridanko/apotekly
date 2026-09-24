@@ -16,6 +16,7 @@ var pharmacyServiceField logger.Field = logger.NewField("service", "pharmacy")
 type PharmacyClient interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
+	GetPharmacyByID(ctx context.Context, pharmacyID string) (p *models.Pharmacy, err *ce.Error)
 	GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
@@ -65,6 +66,23 @@ func (c *pharmacyClient) CreatePharmacy(ctx context.Context, req *models.CreateP
 
 func (c *pharmacyClient) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Error) {
 	resp, err := c.client.GetMe(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			pharmacyServiceField,
+		)
+	}
+	return c.toPharmacy(resp.GetPharmacy()), nil
+}
+
+func (c *pharmacyClient) GetPharmacyByID(ctx context.Context, pharmacyID string) (*models.Pharmacy, *ce.Error) {
+	resp, err := c.client.GetPharmacyByID(
+		ctx,
+		&apis.GetPharmacyByIDRequest{
+			PharmacyId: pharmacyID,
+		},
+	)
 	if err != nil {
 		return nil, ce.ToError(
 			err,

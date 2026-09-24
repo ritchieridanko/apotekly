@@ -118,6 +118,9 @@ func Init(
 		// Create
 		pharmacy.POST("", middlewares.Auth(j), phh.CreatePharmacy)
 
+		// Fetch
+		pharmacy.GET("/:pharmacy_id", phh.GetPharmacyByID)
+
 		// Fetch All
 		pharmacy.GET("", middlewares.AuthOptional(j), phh.GetAllPharmacies)
 
