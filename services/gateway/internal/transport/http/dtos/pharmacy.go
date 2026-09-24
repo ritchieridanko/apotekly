@@ -31,6 +31,22 @@ type (
 		RememberMe bool `json:"remember_me"`
 	}
 
+	GetAllPharmaciesRequest struct {
+		// Queries
+		Search    *string  `form:"search"`
+		RadiusM   *uint32  `form:"radius_m"`
+		Latitude  *float64 `form:"latitude"`
+		Longitude *float64 `form:"longitude"`
+
+		// Sorters
+		SortLocation  *string `form:"sort_location"` // e.g., "asc" or "desc"
+		SortCreatedAt *string `form:"sort_created_at"`
+		SortUpdatedAt *string `form:"sort_updated_at"`
+
+		// Pagination
+		PaginationParams
+	}
+
 	UpdatePharmacyRequest struct {
 		Name         *string          `json:"name"`
 		LegalName    *string          `json:"legal_name"`
@@ -89,6 +105,17 @@ type (
 		UpdatedAt      *time.Time       `json:"updated_at"`
 	}
 
+	PharmacySummary struct {
+		ID             string           `json:"id"`
+		Name           string           `json:"name"`
+		LegalName      *string          `json:"legal_name"`
+		OnlineHours    *json.RawMessage `json:"online_hours"`
+		ProfilePicture *string          `json:"profile_picture"`
+		DistanceM      *float64         `json:"distance_m"`
+		CreatedAt      *time.Time       `json:"created_at"`
+		UpdatedAt      *time.Time       `json:"updated_at"`
+	}
+
 	CreatePharmacyResponse struct {
 		Pharmacy    *Pharmacy    `json:"pharmacy,omitempty"`
 		AccessToken *AccessToken `json:"access_token,omitempty"`
@@ -96,6 +123,10 @@ type (
 
 	PharmacyGetMeResponse struct {
 		Pharmacy *Pharmacy `json:"pharmacy,omitempty"`
+	}
+
+	GetAllPharmaciesResponse struct {
+		Pharmacies []PharmacySummary `json:"pharmacies"`
 	}
 
 	UpdatePharmacyResponse struct {

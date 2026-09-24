@@ -118,6 +118,9 @@ func Init(
 		// Create
 		pharmacy.POST("", middlewares.Auth(j), phh.CreatePharmacy)
 
+		// Fetch All
+		pharmacy.GET("", middlewares.AuthOptional(j), phh.GetAllPharmacies)
+
 		// Me
 		me := pharmacy.Group("/me")
 		{

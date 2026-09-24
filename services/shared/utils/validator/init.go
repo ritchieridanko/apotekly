@@ -281,6 +281,13 @@ func (v *Validator) Sex(value string) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) Sorter(value, name string) (bool, string) {
+	if value != "asc" && value != "desc" {
+		return false, name + " is invalid: " + strings.ToUpper(value)
+	}
+	return true, ""
+}
+
 func (v *Validator) StorageURL(value string) (bool, string) {
 	if !rgxStorageURL.MatchString(value) {
 		return false, "URL is invalid: " + value

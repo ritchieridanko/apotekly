@@ -34,4 +34,15 @@ type (
 		CreatedAt      *time.Time
 		UpdatedAt      *time.Time
 	}
+
+	PharmacySummary struct {
+		ID             uuid.UUID
+		Name           string
+		LegalName      *string
+		OnlineHours    *json.RawMessage
+		ProfilePicture *string
+		DistanceM      *float64
+		CreatedAt      *time.Time
+		UpdatedAt      *time.Time
+	}
 )

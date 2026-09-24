@@ -14,9 +14,14 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/utils/jwt"
 )
 
+const (
+	authHeader string = "Authorization"
+	authType   string = "bearer"
+)
+
 func Auth(j *jwt.JWT) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authorization := strings.TrimSpace(ctx.GetHeader("Authorization"))
+		authorization := strings.TrimSpace(ctx.GetHeader(authHeader))
 		if len(authorization) == 0 {
 			ce.NewError(
 				ce.CodeUnauthenticated,
@@ -31,7 +36,7 @@ func Auth(j *jwt.JWT) gin.HandlerFunc {
 		}
 
 		auth := strings.Split(authorization, " ")
-		if len(auth) != 2 || strings.ToLower(auth[0]) != "bearer" {
+		if len(auth) != 2 || strings.ToLower(auth[0]) != authType {
 			ce.NewError(
 				ce.CodeUnauthenticated,
 				ce.MsgUnauthenticated,
@@ -70,6 +75,48 @@ func Auth(j *jwt.JWT) gin.HandlerFunc {
 			}
 
 			ctx.Abort()
+			return
+		}
+
+		var pharmacyID *uuid.UUID
+		if claim.Role == constants.RolePharmacy && claim.PharmacyID != nil {
+			id := utils.ToUUID(*claim.PharmacyID)
+			pharmacyID = &id
+		}
+
+		ctx.Request = ctx.Request.WithContext(
+			context.WithValue(
+				ctx.Request.Context(),
+				constants.CtxKeyAuth,
+				&utils.AuthContext{
+					AuthID:          claim.AuthID,
+					Role:            claim.Role,
+					IsEmailVerified: claim.IsEmailVerified,
+					PharmacyID:      pharmacyID,
+				},
+			),
+		)
+		ctx.Next()
+	}
+}
+
+func AuthOptional(j *jwt.JWT) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		authorization := strings.TrimSpace(ctx.GetHeader(authHeader))
+		if len(authorization) == 0 {
+			ctx.Next()
+			return
+		}
+
+		auth := strings.Split(authorization, " ")
+		if len(auth) != 2 || strings.ToLower(auth[0]) != authType {
+			ctx.Next()
+			return
+		}
+
+		claim, err := j.Parse(auth[1])
+		if err != nil {
+			ctx.Next()
 			return
 		}
 

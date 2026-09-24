@@ -15,11 +15,6 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
 )
 
-const (
-	defaultPageSize int = 10
-	maxPageSize     int = 100
-)
-
 type AddressHandler struct {
 	uac clients.AddressClient
 }
@@ -96,10 +91,10 @@ func (h *AddressHandler) GetAllAddresses(ctx *gin.Context) {
 		params.Page = 1
 	}
 	if params.PageSize <= 0 {
-		params.PageSize = defaultPageSize
+		params.PageSize = constants.PageDefaultSizeAddress
 	}
-	if params.PageSize > maxPageSize {
-		params.PageSize = maxPageSize
+	if params.PageSize > constants.PageMaxSizeAddress {
+		params.PageSize = constants.PageMaxSizeAddress
 	}
 
 	authCtx := utils.CtxAuth(ctx.Request.Context())

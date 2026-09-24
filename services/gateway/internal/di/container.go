@@ -55,7 +55,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Handlers
 	ah := handlers.NewAuthHandler(ac, v, c)
-	phh := handlers.NewPharmacyHandler(phc, ac, c)
+	phh := handlers.NewPharmacyHandler(phc, ac, v, c)
 	prh := handlers.NewProductHandler(prc)
 	uh := handlers.NewUserHandler(uc)
 	uah := handlers.NewAddressHandler(uac)

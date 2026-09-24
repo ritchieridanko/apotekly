@@ -14,16 +14,18 @@ import (
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/cookie"
+	"github.com/ritchieridanko/apotekly/services/shared/utils/validator"
 )
 
 type PharmacyHandler struct {
-	phc    clients.PharmacyClient
-	ac     clients.AuthClient
-	cookie *cookie.Cookie
+	phc       clients.PharmacyClient
+	ac        clients.AuthClient
+	validator *validator.Validator
+	cookie    *cookie.Cookie
 }
 
-func NewPharmacyHandler(phc clients.PharmacyClient, ac clients.AuthClient, c *cookie.Cookie) *PharmacyHandler {
-	return &PharmacyHandler{phc: phc, ac: ac, cookie: c}
+func NewPharmacyHandler(phc clients.PharmacyClient, ac clients.AuthClient, v *validator.Validator, c *cookie.Cookie) *PharmacyHandler {
+	return &PharmacyHandler{phc: phc, ac: ac, validator: v, cookie: c}
 }
 
 func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
@@ -165,6 +167,95 @@ func (h *PharmacyHandler) GetMe(ctx *gin.Context) {
 		"Pharmacy retrieved successfully",
 		dtos.PharmacyGetMeResponse{Pharmacy: h.toPharmacy(p)},
 		nil,
+	)
+}
+
+func (h *PharmacyHandler) GetAllPharmacies(ctx *gin.Context) {
+	var params dtos.GetAllPharmaciesRequest
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ce.NewError(ce.CodeInvalidParams, ce.MsgInvalidParams, err).Bind(ctx)
+		return
+	}
+
+	params.SortLocation = utils.ToLowerPtr(utils.TrimSpacePtr(params.SortLocation))
+	params.SortCreatedAt = utils.ToLowerPtr(utils.TrimSpacePtr(params.SortCreatedAt))
+	params.SortUpdatedAt = utils.ToLowerPtr(utils.TrimSpacePtr(params.SortUpdatedAt))
+
+	if params.Page < 1 {
+		params.Page = 1
+	}
+	if params.PageSize <= 0 {
+		params.PageSize = constants.PageDefaultSizePharmacy
+	}
+	if params.PageSize > constants.PageMaxSizePharmacy {
+		params.PageSize = constants.PageMaxSizePharmacy
+	}
+	if params.SortLocation != nil {
+		if ok, why := h.validator.Sorter(*params.SortLocation, "Location sorter"); !ok {
+			ce.NewError(ce.CodeInvalidParams, why, nil).Bind(ctx)
+			return
+		}
+	}
+	if params.SortCreatedAt != nil {
+		if ok, why := h.validator.Sorter(*params.SortCreatedAt, "Creation time sorter"); !ok {
+			ce.NewError(ce.CodeInvalidParams, why, nil).Bind(ctx)
+			return
+		}
+	}
+	if params.SortUpdatedAt != nil {
+		if ok, why := h.validator.Sorter(*params.SortUpdatedAt, "Update time sorter"); !ok {
+			ce.NewError(ce.CodeInvalidParams, why, nil).Bind(ctx)
+			return
+		}
+	}
+
+	requestCtx := ctx.Request.Context()
+	if authCtx := utils.CtxAuth(requestCtx); authCtx != nil {
+		requestCtx = utils.CtxWithMetadata(
+			requestCtx,
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+		)
+	}
+
+	pss, total, err := h.phc.GetAllPharmacies(
+		requestCtx,
+		&models.GetAllPharmaciesReq{
+			Search:    params.Search,
+			RadiusM:   params.RadiusM,
+			Latitude:  params.Latitude,
+			Longitude: params.Longitude,
+
+			ByLocation:  params.SortLocation,
+			ByCreatedAt: params.SortCreatedAt,
+			ByUpdatedAt: params.SortUpdatedAt,
+
+			Page:     int32(params.Page),
+			PageSize: int32(params.PageSize),
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	pharmacies := make([]dtos.PharmacySummary, 0, len(pss))
+	for _, ps := range pss {
+		pharmacies = append(pharmacies, *h.toPharmacySummary(&ps))
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Pharmacies retrieved successfully",
+		dtos.GetAllPharmaciesResponse{
+			Pharmacies: pharmacies,
+		},
+		&utils.ResponseMetadata{
+			Page:     params.Page,
+			PageSize: params.PageSize,
+			Total:    total,
+		},
 	)
 }
 
@@ -368,6 +459,22 @@ func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *dtos.Pharmacy {
 		VerifiedAt:     p.VerifiedAt,
 		CreatedAt:      p.CreatedAt,
 		UpdatedAt:      p.UpdatedAt,
+	}
+}
+
+func (h *PharmacyHandler) toPharmacySummary(ps *models.PharmacySummary) *dtos.PharmacySummary {
+	if ps == nil {
+		return nil
+	}
+	return &dtos.PharmacySummary{
+		ID:             ps.ID.String(),
+		Name:           ps.Name,
+		LegalName:      ps.LegalName,
+		OnlineHours:    ps.OnlineHours,
+		ProfilePicture: ps.ProfilePicture,
+		DistanceM:      ps.DistanceM,
+		CreatedAt:      ps.CreatedAt,
+		UpdatedAt:      ps.UpdatedAt,
 	}
 }
 

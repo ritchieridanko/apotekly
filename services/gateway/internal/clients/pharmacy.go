@@ -16,6 +16,7 @@ var pharmacyServiceField logger.Field = logger.NewField("service", "pharmacy")
 type PharmacyClient interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
+	GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (p *models.Pharmacy, err *ce.Error)
@@ -72,6 +73,42 @@ func (c *pharmacyClient) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Error
 		)
 	}
 	return c.toPharmacy(resp.GetPharmacy()), nil
+}
+
+func (c *pharmacyClient) GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) ([]models.PharmacySummary, int64, *ce.Error) {
+	resp, err := c.client.GetAllPharmacies(
+		ctx,
+		&apis.GetAllPharmaciesRequest{
+			Search:    req.Search,
+			RadiusM:   req.RadiusM,
+			Latitude:  req.Latitude,
+			Longitude: req.Longitude,
+
+			ByLocation:  c.toSorter(req.ByLocation),
+			ByCreatedAt: c.toSorter(req.ByCreatedAt),
+			ByUpdatedAt: c.toSorter(req.ByUpdatedAt),
+
+			Page:     req.Page,
+			PageSize: req.PageSize,
+		},
+	)
+	if err != nil {
+		return nil, 0, ce.ToError(
+			err,
+		).Append(
+			pharmacyServiceField,
+		)
+	}
+
+	pss := make([]models.PharmacySummary, 0, len(resp.GetPharmacies()))
+	for _, ps := range resp.GetPharmacies() {
+		if ps == nil {
+			continue
+		}
+		pss = append(pss, *c.toPharmacySummary(ps))
+	}
+
+	return pss, resp.GetTotal(), nil
 }
 
 func (c *pharmacyClient) UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (*models.Pharmacy, *ce.Error) {
@@ -170,5 +207,30 @@ func (c *pharmacyClient) toPharmacy(p *apis.Pharmacy) *models.Pharmacy {
 		VerifiedAt:     utils.ToTime(p.GetVerifiedAt()),
 		CreatedAt:      utils.ToTime(p.GetCreatedAt()),
 		UpdatedAt:      utils.ToTime(p.GetUpdatedAt()),
+	}
+}
+
+func (c *pharmacyClient) toPharmacySummary(ps *apis.PharmacySummary) *models.PharmacySummary {
+	if ps == nil {
+		return nil
+	}
+	return &models.PharmacySummary{
+		ID:             utils.ToUUID(ps.GetId()),
+		Name:           ps.GetName(),
+		LegalName:      ps.LegalName,
+		OnlineHours:    utils.ToJSON(ps.GetOnlineHours()),
+		ProfilePicture: ps.ProfilePicture,
+		DistanceM:      ps.DistanceM,
+		CreatedAt:      utils.ToTime(ps.GetCreatedAt()),
+		UpdatedAt:      utils.ToTime(ps.GetUpdatedAt()),
+	}
+}
+
+func (c *pharmacyClient) toSorter(s *string) *apis.Sorter {
+	if s == nil {
+		return nil
+	}
+	return &apis.Sorter{
+		IsAsc: *s == "asc",
 	}
 }

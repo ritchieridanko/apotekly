@@ -60,6 +60,23 @@ type (
 		Whatsapp     *string
 	}
 
+	GetAllPharmaciesReq struct {
+		// Queries
+		Search    *string
+		RadiusM   *uint32
+		Latitude  *float64
+		Longitude *float64
+
+		// Sorters
+		ByLocation  *string
+		ByCreatedAt *string
+		ByUpdatedAt *string
+
+		// Pagination
+		Page     int32
+		PageSize int32
+	}
+
 	UpdatePharmacyReq struct {
 		Name         *string
 		LegalName    *string
