@@ -23,6 +23,7 @@ type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	GetPharmacyByID(ctx context.Context, pharmacyID uuid.UUID) (p *models.Pharmacy, err *ce.Error)
 	GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
@@ -247,6 +248,10 @@ func (u *pharmacyUsecase) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Erro
 
 func (u *pharmacyUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
 	return u.pr.GetID(ctx, authID)
+}
+
+func (u *pharmacyUsecase) GetPharmacyByID(ctx context.Context, pharmacyID uuid.UUID) (*models.Pharmacy, *ce.Error) {
+	return u.pr.GetByID(ctx, pharmacyID)
 }
 
 func (u *pharmacyUsecase) GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) ([]models.PharmacySummary, int64, *ce.Error) {

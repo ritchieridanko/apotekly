@@ -64,6 +64,14 @@ func (h *PharmacyHandler) GetID(ctx context.Context, req *apis.PharmacyGetIDRequ
 	return &apis.PharmacyGetIDResponse{PharmacyId: pharmacyID.String()}, nil
 }
 
+func (h *PharmacyHandler) GetPharmacyByID(ctx context.Context, req *apis.GetPharmacyByIDRequest) (*apis.GetPharmacyByIDResponse, error) {
+	p, err := h.pu.GetPharmacyByID(ctx, utils.ToUUID(req.GetPharmacyId()))
+	if err != nil {
+		return nil, err
+	}
+	return &apis.GetPharmacyByIDResponse{Pharmacy: h.toPharmacy(p)}, nil
+}
+
 func (h *PharmacyHandler) GetAllPharmacies(ctx context.Context, req *apis.GetAllPharmaciesRequest) (*apis.GetAllPharmaciesResponse, error) {
 	pss, total, err := h.pu.GetAllPharmacies(
 		ctx,

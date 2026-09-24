@@ -12,6 +12,7 @@ service PharmacyService {
   rpc CreatePharmacy (CreatePharmacyRequest) returns (CreatePharmacyResponse);
   rpc GetMe (google.protobuf.Empty) returns (PharmacyGetMeResponse);
   rpc GetID (PharmacyGetIDRequest) returns (PharmacyGetIDResponse);
+  rpc GetPharmacyByID (GetPharmacyByIDRequest) returns (GetPharmacyByIDResponse);
   rpc GetAllPharmacies (GetAllPharmaciesRequest) returns (GetAllPharmaciesResponse);
   rpc UpdatePharmacy (UpdatePharmacyRequest) returns (UpdatePharmacyResponse);
   rpc UpdateProfilePicture (PharmacyUpdateProfilePictureRequest) returns (PharmacyUpdateProfilePictureResponse);
@@ -90,6 +91,14 @@ message PharmacyGetIDRequest {
 
 message PharmacyGetIDResponse {
   string pharmacy_id = 1;
+}
+
+message GetPharmacyByIDRequest {
+  string pharmacy_id = 1;
+}
+
+message GetPharmacyByIDResponse {
+  Pharmacy pharmacy = 1;
 }
 
 message GetAllPharmaciesRequest {
