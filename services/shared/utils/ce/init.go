@@ -160,6 +160,8 @@ func (e *Error) ToHTTPErr() int {
 		return http.StatusNotFound
 	case CodeAlreadyExists:
 		return http.StatusConflict
+	case CodeTooManyRequests:
+		return http.StatusTooManyRequests
 	case
 		CodeInternal,
 		CodeUnknown:

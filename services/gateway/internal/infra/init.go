@@ -3,7 +3,9 @@ package infra
 import (
 	"fmt"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/ritchieridanko/apotekly/services/gateway/configs"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/cache"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/services"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/tracer"
@@ -12,6 +14,7 @@ import (
 
 type Infra struct {
 	config *configs.Config
+	cache  *redis.Client
 	logger *zap.Logger
 	tracer *tracer.Tracer
 	as     *services.AuthService
@@ -22,6 +25,11 @@ type Infra struct {
 
 func Init(cfg *configs.Config) (*Infra, error) {
 	l, err := logger.Init(cfg.App.Env)
+	if err != nil {
+		return nil, err
+	}
+
+	cc, err := cache.Init(&cfg.Cache, l)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +59,7 @@ func Init(cfg *configs.Config) (*Infra, error) {
 
 	return &Infra{
 		config: cfg,
+		cache:  cc,
 		logger: l,
 		tracer: t,
 		as:     as,
@@ -58,6 +67,10 @@ func Init(cfg *configs.Config) (*Infra, error) {
 		prs:    prs,
 		us:     us,
 	}, nil
+}
+
+func (i *Infra) Cache() *redis.Client {
+	return i.cache
 }
 
 func (i *Infra) Logger() *zap.Logger {
@@ -81,6 +94,9 @@ func (i *Infra) UserService() *services.UserService {
 }
 
 func (i *Infra) Close() error {
+	if err := i.cache.Close(); err != nil {
+		return fmt.Errorf("failed to close cache: %w", err)
+	}
 	if err := i.logger.Sync(); err != nil {
 		return fmt.Errorf("failed to close logger: %w", err)
 	}

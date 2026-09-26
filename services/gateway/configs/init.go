@@ -15,6 +15,7 @@ type Config struct {
 	Client  cfg.Client     `mapstructure:"client"`
 	Server  cfg.HTTPServer `mapstructure:"server"`
 	Service Service        `mapstructure:"service"`
+	Cache   cfg.Cache      `mapstructure:"cache"`
 	Tracer  cfg.Tracer     `mapstructure:"tracer"`
 	JWT     cfg.JWT        `mapstructure:"jwt"`
 }
@@ -58,6 +59,7 @@ func Init(path string) (*Config, error) {
 	cfg.Service.Pharmacy.Addr = cfg.Service.Pharmacy.Host + ":" + strconv.Itoa(cfg.Service.Pharmacy.Port)
 	cfg.Service.Product.Addr = cfg.Service.Product.Host + ":" + strconv.Itoa(cfg.Service.Product.Port)
 	cfg.Service.User.Addr = cfg.Service.User.Host + ":" + strconv.Itoa(cfg.Service.User.Port)
+	cfg.Cache.Addr = cfg.Cache.Host + ":" + strconv.Itoa(cfg.Cache.Port)
 	cfg.Tracer.Addr = cfg.Tracer.Host + ":" + strconv.Itoa(cfg.Tracer.Port)
 
 	if env == "prod" {

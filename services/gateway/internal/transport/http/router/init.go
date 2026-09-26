@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/handlers"
@@ -20,6 +21,7 @@ func Init(
 	clientAddr string,
 	j *jwt.JWT,
 	l *logger.Logger,
+	rlm *middlewares.RateLimiterMiddleware,
 	ah *handlers.AuthHandler,
 	phh *handlers.PharmacyHandler,
 	prh *handlers.ProductHandler,
@@ -53,41 +55,41 @@ func Init(
 	auth := v1.Group("/auth")
 	{
 		// Sign Up
-		auth.POST("/signup", ah.SignUp)
+		auth.POST("/signup", rlm.LimitByIPAddress("auth:su", 1*time.Minute, 10), ah.SignUp)
 
 		// Sign In
-		auth.POST("/signin", ah.SignIn)
+		auth.POST("/signin", rlm.LimitByIPAddress("auth:si", 1*time.Minute, 10), ah.SignIn)
 
 		// Sign Out
-		auth.POST("/signout", middlewares.Auth(j), ah.SignOut)
+		auth.POST("/signout", middlewares.Auth(j), rlm.LimitByAuthID("auth:so", 1*time.Minute, 10), ah.SignOut)
 
 		// Rotate Token
-		auth.POST("/refresh", ah.RotateAuthToken)
+		auth.POST("/refresh", rlm.LimitByIPAddress("auth:r", 1*time.Minute, 20), ah.RotateAuthToken)
 
 		// Emails
 		email := auth.Group("/email")
 		{
 			// Check Availability
-			email.GET("/available", ah.IsEmailAvailable)
+			email.GET("/available", rlm.LimitByIPAddress("auth:eac", 1*time.Minute, 20), ah.IsEmailAvailable)
 
 			// Verifications
-			verification := email.Group("/verification")
+			verification := email.Group("/verification", middlewares.Auth(j), rlm.LimitByAuthID("auth:ev", 1*time.Minute, 10))
 			{
 				// Resend
-				verification.POST("", middlewares.Auth(j), ah.ResendVerification)
+				verification.POST("", ah.ResendVerification)
 
 				// Confirm
-				verification.POST("/confirm", middlewares.Auth(j), ah.VerifyEmail)
+				verification.POST("/confirm", ah.VerifyEmail)
 			}
 
 			// Changes
-			change := email.Group("/change")
+			change := email.Group("/change", middlewares.Auth(j), rlm.LimitByAuthID("auth:ec", 1*time.Minute, 10))
 			{
 				// Request
-				change.POST("", middlewares.Auth(j), ah.ChangeEmail)
+				change.POST("", ah.ChangeEmail)
 
 				// Confirm
-				change.POST("/confirm", middlewares.Auth(j), ah.ConfirmEmailChange)
+				change.POST("/confirm", ah.ConfirmEmailChange)
 			}
 		}
 
@@ -95,10 +97,10 @@ func Init(
 		password := auth.Group("/password")
 		{
 			// Update
-			password.PATCH("", middlewares.Auth(j), ah.ChangePassword)
+			password.PATCH("", middlewares.Auth(j), rlm.LimitByAuthID("auth:pc", 1*time.Minute, 10), ah.ChangePassword)
 
 			// Resets
-			reset := password.Group("/reset")
+			reset := password.Group("/reset", rlm.LimitByIPAddress("auth:pr", 1*time.Minute, 20))
 			{
 				// Request
 				reset.POST("", ah.ResetPassword)
@@ -116,28 +118,28 @@ func Init(
 	pharmacy := v1.Group("/pharmacies")
 	{
 		// Create
-		pharmacy.POST("", middlewares.Auth(j), phh.CreatePharmacy)
+		pharmacy.POST("", middlewares.Auth(j), rlm.LimitByAuthID("phar:pc", 1*time.Minute, 5), phh.CreatePharmacy)
 
 		// Fetch
-		pharmacy.GET("/:pharmacy_id", phh.GetPharmacyByID)
+		pharmacy.GET("/:pharmacy_id", rlm.LimitByIPAddress("phar:pid", 1*time.Minute, 50), phh.GetPharmacyByID)
 
 		// Fetch All
-		pharmacy.GET("", middlewares.AuthOptional(j), phh.GetAllPharmacies)
+		pharmacy.GET("", rlm.LimitByIPAddress("phar:pfa", 1*time.Minute, 50), middlewares.AuthOptional(j), phh.GetAllPharmacies)
 
 		// Me
-		me := pharmacy.Group("/me")
+		me := pharmacy.Group("/me", middlewares.Auth(j))
 		{
 			// Fetch
-			me.GET("", middlewares.Auth(j), phh.GetMe)
+			me.GET("", rlm.LimitByAuthID("phar:me", 1*time.Minute, 50), phh.GetMe)
 
 			// Update
-			me.PATCH("", middlewares.Auth(j), phh.UpdatePharmacy)
+			me.PATCH("", rlm.LimitByAuthID("phar:pu", 1*time.Minute, 20), phh.UpdatePharmacy)
 
 			// Update Profile Picture
-			me.PUT("/profile-picture", middlewares.Auth(j), phh.UpdateProfilePicture)
+			me.PUT("/profile-picture", rlm.LimitByAuthID("phar:ppu", 1*time.Minute, 10), phh.UpdateProfilePicture)
 
 			// Update Profile Banner
-			me.PUT("/profile-banner", middlewares.Auth(j), phh.UpdateProfileBanner)
+			me.PUT("/profile-banner", rlm.LimitByAuthID("phar:pbu", 1*time.Minute, 10), phh.UpdateProfileBanner)
 		}
 	}
 
@@ -145,47 +147,47 @@ func Init(
 	product := v1.Group("/products")
 	{
 		// Create
-		product.POST("", middlewares.Auth(j), prh.CreateProduct)
+		product.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:pc", 1*time.Minute, 5), prh.CreateProduct)
 	}
 
 	// USER ENDPOINTS
 	user := v1.Group("/users")
 	{
 		// Create
-		user.POST("", middlewares.Auth(j), uh.CreateUser)
+		user.POST("", middlewares.Auth(j), rlm.LimitByAuthID("user:uc", 1*time.Minute, 5), uh.CreateUser)
 
 		// Me
-		me := user.Group("/me")
+		me := user.Group("/me", middlewares.Auth(j))
 		{
 			// Fetch
-			me.GET("", middlewares.Auth(j), uh.GetMe)
+			me.GET("", rlm.LimitByAuthID("user:me", 1*time.Minute, 50), uh.GetMe)
 
 			// Update
-			me.PATCH("", middlewares.Auth(j), uh.UpdateUser)
+			me.PATCH("", rlm.LimitByAuthID("user:uu", 1*time.Minute, 20), uh.UpdateUser)
 
 			// Update Profile Picture
-			me.PUT("/profile-picture", middlewares.Auth(j), uh.UpdateProfilePicture)
+			me.PUT("/profile-picture", rlm.LimitByAuthID("user:ppu", 1*time.Minute, 10), uh.UpdateProfilePicture)
 
 			// Update Profile Banner
-			me.PUT("/profile-banner", middlewares.Auth(j), uh.UpdateProfileBanner)
+			me.PUT("/profile-banner", rlm.LimitByAuthID("user:pbu", 1*time.Minute, 10), uh.UpdateProfileBanner)
 
 			// Addresses
-			address := me.Group("/addresses")
+			address := me.Group("/addresses", rlm.LimitByAuthID("user:addr", 1*time.Minute, 30))
 			{
 				// Create
-				address.POST("", middlewares.Auth(j), uah.CreateAddress)
+				address.POST("", uah.CreateAddress)
 
 				// Fetch All
-				address.GET("", middlewares.Auth(j), uah.GetAllAddresses)
+				address.GET("", uah.GetAllAddresses)
 
 				// Update
-				address.PATCH("/:address_id", middlewares.Auth(j), uah.UpdateAddress)
+				address.PATCH("/:address_id", uah.UpdateAddress)
 
 				// Set Primary
-				address.PUT("/:address_id/primary", middlewares.Auth(j), uah.SetPrimaryAddress)
+				address.PUT("/:address_id/primary", uah.SetPrimaryAddress)
 
 				// Delete
-				address.DELETE("/:address_id", middlewares.Auth(j), uah.DeleteAddress)
+				address.DELETE("/:address_id", uah.DeleteAddress)
 			}
 		}
 	}

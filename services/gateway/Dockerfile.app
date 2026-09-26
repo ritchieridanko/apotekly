@@ -16,6 +16,7 @@ RUN go mod download
 COPY services/shared/configs ../shared/configs
 COPY services/shared/constants ../shared/constants
 COPY services/shared/contract/apis/v1 ../shared/contract/apis/v1
+COPY services/shared/infra/cache ../shared/infra/cache
 COPY services/shared/infra/logger ../shared/infra/logger
 COPY services/shared/infra/services ../shared/infra/services
 COPY services/shared/infra/tracer ../shared/infra/tracer

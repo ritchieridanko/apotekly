@@ -33,8 +33,21 @@ services:
       - SERVICE_USER_NAME=${USER_SERVICE_HOST}
       - SERVICE_USER_HOST=${USER_SERVICE_HOST}
       - SERVICE_USER_PORT=${USER_SERVICE_PORT}
+      - CACHE_HOST=${GATEWAY_CACHE_HOST}
+      - CACHE_PORT=${GATEWAY_CACHE_PORT}
+      - CACHE_PASS=${GATEWAY_CACHE_PASS}
+      - CACHE_POOL_SIZE=${GATEWAY_CACHE_POOL_SIZE}
+      - CACHE_MIN_IDLE_CONNS=${GATEWAY_CACHE_MIN_IDLE_CONNS}
+      - CACHE_MAX_ACTIVE_CONNS=${GATEWAY_CACHE_MAX_ACTIVE_CONNS}
+      - CACHE_CONN_MAX_LIFETIME=${GATEWAY_CACHE_CONN_MAX_LIFETIME}
+      - CACHE_CONN_MAX_IDLE_TIME=${GATEWAY_CACHE_CONN_MAX_IDLE_TIME}
+      - CACHE_TIMEOUT_DIAL=${GATEWAY_CACHE_TIMEOUT_DIAL}
+      - CACHE_TIMEOUT_READ=${GATEWAY_CACHE_TIMEOUT_READ}
+      - CACHE_TIMEOUT_WRITE=${GATEWAY_CACHE_TIMEOUT_WRITE}
       - JWT_SECRET=${AUTH_JWT_SECRET}
     depends_on:
+      gateway-cache:
+        condition: service_healthy
       jaeger:
         condition: service_started
       auth-service:
@@ -51,6 +64,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  gateway-cache:
+    image: redis:7.4-alpine
+    container_name: ${GATEWAY_CACHE_HOST}
+    networks:
+      - apotekly-net
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: redis-server --requirepass "${GATEWAY_CACHE_PASS}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${GATEWAY_CACHE_PASS}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   # ---------- Auth ----------
   auth-service:
