@@ -27,6 +27,7 @@ func NewUserService(cfg *configs.Service, l *zap.Logger) (*UserService, error) {
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
+		grpc.WithDefaultServiceConfig(defaultConfig),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to user service: %w", err)

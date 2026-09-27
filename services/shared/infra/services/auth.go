@@ -26,6 +26,7 @@ func NewAuthService(cfg *configs.Service, l *zap.Logger) (*AuthService, error) {
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
+		grpc.WithDefaultServiceConfig(defaultConfig),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to auth service: %w", err)

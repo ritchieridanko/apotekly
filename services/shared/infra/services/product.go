@@ -26,6 +26,7 @@ func NewProductService(cfg *configs.Service, l *zap.Logger) (*ProductService, er
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
+		grpc.WithDefaultServiceConfig(defaultConfig),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to product service: %w", err)

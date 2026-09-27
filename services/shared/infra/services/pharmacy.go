@@ -26,6 +26,7 @@ func NewPharmacyService(cfg *configs.Service, l *zap.Logger) (*PharmacyService, 
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
+		grpc.WithDefaultServiceConfig(defaultConfig),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to pharmacy service: %w", err)
