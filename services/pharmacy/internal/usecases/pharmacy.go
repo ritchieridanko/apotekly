@@ -23,6 +23,7 @@ type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	GetStatus(ctx context.Context, authID uint64) (status string, err *ce.Error)
 	GetActiveStatus(ctx context.Context, authID uint64) (active bool, err *ce.Error)
 	GetPharmacyByID(ctx context.Context, pharmacyID uuid.UUID) (p *models.Pharmacy, err *ce.Error)
 	GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) (pss []models.PharmacySummary, total int64, err *ce.Error)
@@ -249,6 +250,10 @@ func (u *pharmacyUsecase) GetMe(ctx context.Context) (*models.Pharmacy, *ce.Erro
 
 func (u *pharmacyUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
 	return u.pr.GetID(ctx, authID)
+}
+
+func (u *pharmacyUsecase) GetStatus(ctx context.Context, authID uint64) (string, *ce.Error) {
+	return u.pr.GetStatus(ctx, authID)
 }
 
 func (u *pharmacyUsecase) GetActiveStatus(ctx context.Context, authID uint64) (bool, *ce.Error) {

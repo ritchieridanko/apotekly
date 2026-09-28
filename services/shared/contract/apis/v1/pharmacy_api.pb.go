@@ -699,6 +699,94 @@ func (x *PharmacyGetIDResponse) GetPharmacyId() string {
 	return ""
 }
 
+type PharmacyGetStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthId        uint64                 `protobuf:"varint,1,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PharmacyGetStatusRequest) Reset() {
+	*x = PharmacyGetStatusRequest{}
+	mi := &file_v1_pharmacy_api_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PharmacyGetStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PharmacyGetStatusRequest) ProtoMessage() {}
+
+func (x *PharmacyGetStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_pharmacy_api_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PharmacyGetStatusRequest.ProtoReflect.Descriptor instead.
+func (*PharmacyGetStatusRequest) Descriptor() ([]byte, []int) {
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *PharmacyGetStatusRequest) GetAuthId() uint64 {
+	if x != nil {
+		return x.AuthId
+	}
+	return 0
+}
+
+type PharmacyGetStatusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PharmacyGetStatusResponse) Reset() {
+	*x = PharmacyGetStatusResponse{}
+	mi := &file_v1_pharmacy_api_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PharmacyGetStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PharmacyGetStatusResponse) ProtoMessage() {}
+
+func (x *PharmacyGetStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_pharmacy_api_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PharmacyGetStatusResponse.ProtoReflect.Descriptor instead.
+func (*PharmacyGetStatusResponse) Descriptor() ([]byte, []int) {
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *PharmacyGetStatusResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
 type PharmacyGetActiveStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AuthId        uint64                 `protobuf:"varint,1,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
@@ -708,7 +796,7 @@ type PharmacyGetActiveStatusRequest struct {
 
 func (x *PharmacyGetActiveStatusRequest) Reset() {
 	*x = PharmacyGetActiveStatusRequest{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[7]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -720,7 +808,7 @@ func (x *PharmacyGetActiveStatusRequest) String() string {
 func (*PharmacyGetActiveStatusRequest) ProtoMessage() {}
 
 func (x *PharmacyGetActiveStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[7]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -733,7 +821,7 @@ func (x *PharmacyGetActiveStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PharmacyGetActiveStatusRequest.ProtoReflect.Descriptor instead.
 func (*PharmacyGetActiveStatusRequest) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{7}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *PharmacyGetActiveStatusRequest) GetAuthId() uint64 {
@@ -752,7 +840,7 @@ type PharmacyGetActiveStatusResponse struct {
 
 func (x *PharmacyGetActiveStatusResponse) Reset() {
 	*x = PharmacyGetActiveStatusResponse{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[8]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -764,7 +852,7 @@ func (x *PharmacyGetActiveStatusResponse) String() string {
 func (*PharmacyGetActiveStatusResponse) ProtoMessage() {}
 
 func (x *PharmacyGetActiveStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[8]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -777,7 +865,7 @@ func (x *PharmacyGetActiveStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PharmacyGetActiveStatusResponse.ProtoReflect.Descriptor instead.
 func (*PharmacyGetActiveStatusResponse) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{8}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PharmacyGetActiveStatusResponse) GetIsActive() bool {
@@ -796,7 +884,7 @@ type GetPharmacyByIDRequest struct {
 
 func (x *GetPharmacyByIDRequest) Reset() {
 	*x = GetPharmacyByIDRequest{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[9]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -808,7 +896,7 @@ func (x *GetPharmacyByIDRequest) String() string {
 func (*GetPharmacyByIDRequest) ProtoMessage() {}
 
 func (x *GetPharmacyByIDRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[9]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -821,7 +909,7 @@ func (x *GetPharmacyByIDRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPharmacyByIDRequest.ProtoReflect.Descriptor instead.
 func (*GetPharmacyByIDRequest) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{9}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetPharmacyByIDRequest) GetPharmacyId() string {
@@ -840,7 +928,7 @@ type GetPharmacyByIDResponse struct {
 
 func (x *GetPharmacyByIDResponse) Reset() {
 	*x = GetPharmacyByIDResponse{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[10]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -852,7 +940,7 @@ func (x *GetPharmacyByIDResponse) String() string {
 func (*GetPharmacyByIDResponse) ProtoMessage() {}
 
 func (x *GetPharmacyByIDResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[10]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -865,7 +953,7 @@ func (x *GetPharmacyByIDResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPharmacyByIDResponse.ProtoReflect.Descriptor instead.
 func (*GetPharmacyByIDResponse) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{10}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPharmacyByIDResponse) GetPharmacy() *Pharmacy {
@@ -895,7 +983,7 @@ type GetAllPharmaciesRequest struct {
 
 func (x *GetAllPharmaciesRequest) Reset() {
 	*x = GetAllPharmaciesRequest{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[11]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -907,7 +995,7 @@ func (x *GetAllPharmaciesRequest) String() string {
 func (*GetAllPharmaciesRequest) ProtoMessage() {}
 
 func (x *GetAllPharmaciesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[11]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -920,7 +1008,7 @@ func (x *GetAllPharmaciesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllPharmaciesRequest.ProtoReflect.Descriptor instead.
 func (*GetAllPharmaciesRequest) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{11}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetAllPharmaciesRequest) GetSearch() string {
@@ -996,7 +1084,7 @@ type GetAllPharmaciesResponse struct {
 
 func (x *GetAllPharmaciesResponse) Reset() {
 	*x = GetAllPharmaciesResponse{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[12]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1008,7 +1096,7 @@ func (x *GetAllPharmaciesResponse) String() string {
 func (*GetAllPharmaciesResponse) ProtoMessage() {}
 
 func (x *GetAllPharmaciesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[12]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1021,7 +1109,7 @@ func (x *GetAllPharmaciesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllPharmaciesResponse.ProtoReflect.Descriptor instead.
 func (*GetAllPharmaciesResponse) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{12}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetAllPharmaciesResponse) GetPharmacies() []*PharmacySummary {
@@ -1063,7 +1151,7 @@ type UpdatePharmacyRequest struct {
 
 func (x *UpdatePharmacyRequest) Reset() {
 	*x = UpdatePharmacyRequest{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[13]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1075,7 +1163,7 @@ func (x *UpdatePharmacyRequest) String() string {
 func (*UpdatePharmacyRequest) ProtoMessage() {}
 
 func (x *UpdatePharmacyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[13]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1088,7 +1176,7 @@ func (x *UpdatePharmacyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePharmacyRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePharmacyRequest) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{13}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdatePharmacyRequest) GetName() string {
@@ -1219,7 +1307,7 @@ type UpdatePharmacyResponse struct {
 
 func (x *UpdatePharmacyResponse) Reset() {
 	*x = UpdatePharmacyResponse{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[14]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1231,7 +1319,7 @@ func (x *UpdatePharmacyResponse) String() string {
 func (*UpdatePharmacyResponse) ProtoMessage() {}
 
 func (x *UpdatePharmacyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[14]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1244,7 +1332,7 @@ func (x *UpdatePharmacyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePharmacyResponse.ProtoReflect.Descriptor instead.
 func (*UpdatePharmacyResponse) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{14}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdatePharmacyResponse) GetPharmacy() *Pharmacy {
@@ -1263,7 +1351,7 @@ type PharmacyUpdateProfilePictureRequest struct {
 
 func (x *PharmacyUpdateProfilePictureRequest) Reset() {
 	*x = PharmacyUpdateProfilePictureRequest{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[15]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1275,7 +1363,7 @@ func (x *PharmacyUpdateProfilePictureRequest) String() string {
 func (*PharmacyUpdateProfilePictureRequest) ProtoMessage() {}
 
 func (x *PharmacyUpdateProfilePictureRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[15]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1288,7 +1376,7 @@ func (x *PharmacyUpdateProfilePictureRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use PharmacyUpdateProfilePictureRequest.ProtoReflect.Descriptor instead.
 func (*PharmacyUpdateProfilePictureRequest) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{15}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PharmacyUpdateProfilePictureRequest) GetProfilePictureUrl() string {
@@ -1307,7 +1395,7 @@ type PharmacyUpdateProfilePictureResponse struct {
 
 func (x *PharmacyUpdateProfilePictureResponse) Reset() {
 	*x = PharmacyUpdateProfilePictureResponse{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[16]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1319,7 +1407,7 @@ func (x *PharmacyUpdateProfilePictureResponse) String() string {
 func (*PharmacyUpdateProfilePictureResponse) ProtoMessage() {}
 
 func (x *PharmacyUpdateProfilePictureResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[16]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1332,7 +1420,7 @@ func (x *PharmacyUpdateProfilePictureResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PharmacyUpdateProfilePictureResponse.ProtoReflect.Descriptor instead.
 func (*PharmacyUpdateProfilePictureResponse) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{16}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *PharmacyUpdateProfilePictureResponse) GetPharmacy() *Pharmacy {
@@ -1351,7 +1439,7 @@ type PharmacyUpdateProfileBannerRequest struct {
 
 func (x *PharmacyUpdateProfileBannerRequest) Reset() {
 	*x = PharmacyUpdateProfileBannerRequest{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[17]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1363,7 +1451,7 @@ func (x *PharmacyUpdateProfileBannerRequest) String() string {
 func (*PharmacyUpdateProfileBannerRequest) ProtoMessage() {}
 
 func (x *PharmacyUpdateProfileBannerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[17]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1376,7 +1464,7 @@ func (x *PharmacyUpdateProfileBannerRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use PharmacyUpdateProfileBannerRequest.ProtoReflect.Descriptor instead.
 func (*PharmacyUpdateProfileBannerRequest) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{17}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *PharmacyUpdateProfileBannerRequest) GetProfileBannerUrl() string {
@@ -1395,7 +1483,7 @@ type PharmacyUpdateProfileBannerResponse struct {
 
 func (x *PharmacyUpdateProfileBannerResponse) Reset() {
 	*x = PharmacyUpdateProfileBannerResponse{}
-	mi := &file_v1_pharmacy_api_proto_msgTypes[18]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1407,7 +1495,7 @@ func (x *PharmacyUpdateProfileBannerResponse) String() string {
 func (*PharmacyUpdateProfileBannerResponse) ProtoMessage() {}
 
 func (x *PharmacyUpdateProfileBannerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_pharmacy_api_proto_msgTypes[18]
+	mi := &file_v1_pharmacy_api_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1420,7 +1508,7 @@ func (x *PharmacyUpdateProfileBannerResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use PharmacyUpdateProfileBannerResponse.ProtoReflect.Descriptor instead.
 func (*PharmacyUpdateProfileBannerResponse) Descriptor() ([]byte, []int) {
-	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{18}
+	return file_v1_pharmacy_api_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *PharmacyUpdateProfileBannerResponse) GetPharmacy() *Pharmacy {
@@ -1540,7 +1628,11 @@ const file_v1_pharmacy_api_proto_rawDesc = "" +
 	"\aauth_id\x18\x01 \x01(\x04R\x06authId\"8\n" +
 	"\x15PharmacyGetIDResponse\x12\x1f\n" +
 	"\vpharmacy_id\x18\x01 \x01(\tR\n" +
-	"pharmacyId\"9\n" +
+	"pharmacyId\"3\n" +
+	"\x18PharmacyGetStatusRequest\x12\x17\n" +
+	"\aauth_id\x18\x01 \x01(\x04R\x06authId\"3\n" +
+	"\x19PharmacyGetStatusResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\"9\n" +
 	"\x1ePharmacyGetActiveStatusRequest\x12\x17\n" +
 	"\aauth_id\x18\x01 \x01(\x04R\x06authId\">\n" +
 	"\x1fPharmacyGetActiveStatusResponse\x12\x1b\n" +
@@ -1622,11 +1714,12 @@ const file_v1_pharmacy_api_proto_rawDesc = "" +
 	"\"PharmacyUpdateProfileBannerRequest\x12,\n" +
 	"\x12profile_banner_url\x18\x01 \x01(\tR\x10profileBannerUrl\"X\n" +
 	"#PharmacyUpdateProfileBannerResponse\x121\n" +
-	"\bpharmacy\x18\x01 \x01(\v2\x15.pharmacy.v1.PharmacyR\bpharmacy2\x80\a\n" +
+	"\bpharmacy\x18\x01 \x01(\v2\x15.pharmacy.v1.PharmacyR\bpharmacy2\xdc\a\n" +
 	"\x0fPharmacyService\x12Y\n" +
 	"\x0eCreatePharmacy\x12\".pharmacy.v1.CreatePharmacyRequest\x1a#.pharmacy.v1.CreatePharmacyResponse\x12C\n" +
 	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\".pharmacy.v1.PharmacyGetMeResponse\x12N\n" +
-	"\x05GetID\x12!.pharmacy.v1.PharmacyGetIDRequest\x1a\".pharmacy.v1.PharmacyGetIDResponse\x12l\n" +
+	"\x05GetID\x12!.pharmacy.v1.PharmacyGetIDRequest\x1a\".pharmacy.v1.PharmacyGetIDResponse\x12Z\n" +
+	"\tGetStatus\x12%.pharmacy.v1.PharmacyGetStatusRequest\x1a&.pharmacy.v1.PharmacyGetStatusResponse\x12l\n" +
 	"\x0fGetActiveStatus\x12+.pharmacy.v1.PharmacyGetActiveStatusRequest\x1a,.pharmacy.v1.PharmacyGetActiveStatusResponse\x12\\\n" +
 	"\x0fGetPharmacyByID\x12#.pharmacy.v1.GetPharmacyByIDRequest\x1a$.pharmacy.v1.GetPharmacyByIDResponse\x12_\n" +
 	"\x10GetAllPharmacies\x12$.pharmacy.v1.GetAllPharmaciesRequest\x1a%.pharmacy.v1.GetAllPharmaciesResponse\x12Y\n" +
@@ -1646,7 +1739,7 @@ func file_v1_pharmacy_api_proto_rawDescGZIP() []byte {
 	return file_v1_pharmacy_api_proto_rawDescData
 }
 
-var file_v1_pharmacy_api_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_v1_pharmacy_api_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_v1_pharmacy_api_proto_goTypes = []any{
 	(*Pharmacy)(nil),                             // 0: pharmacy.v1.Pharmacy
 	(*PharmacySummary)(nil),                      // 1: pharmacy.v1.PharmacySummary
@@ -1655,58 +1748,62 @@ var file_v1_pharmacy_api_proto_goTypes = []any{
 	(*PharmacyGetMeResponse)(nil),                // 4: pharmacy.v1.PharmacyGetMeResponse
 	(*PharmacyGetIDRequest)(nil),                 // 5: pharmacy.v1.PharmacyGetIDRequest
 	(*PharmacyGetIDResponse)(nil),                // 6: pharmacy.v1.PharmacyGetIDResponse
-	(*PharmacyGetActiveStatusRequest)(nil),       // 7: pharmacy.v1.PharmacyGetActiveStatusRequest
-	(*PharmacyGetActiveStatusResponse)(nil),      // 8: pharmacy.v1.PharmacyGetActiveStatusResponse
-	(*GetPharmacyByIDRequest)(nil),               // 9: pharmacy.v1.GetPharmacyByIDRequest
-	(*GetPharmacyByIDResponse)(nil),              // 10: pharmacy.v1.GetPharmacyByIDResponse
-	(*GetAllPharmaciesRequest)(nil),              // 11: pharmacy.v1.GetAllPharmaciesRequest
-	(*GetAllPharmaciesResponse)(nil),             // 12: pharmacy.v1.GetAllPharmaciesResponse
-	(*UpdatePharmacyRequest)(nil),                // 13: pharmacy.v1.UpdatePharmacyRequest
-	(*UpdatePharmacyResponse)(nil),               // 14: pharmacy.v1.UpdatePharmacyResponse
-	(*PharmacyUpdateProfilePictureRequest)(nil),  // 15: pharmacy.v1.PharmacyUpdateProfilePictureRequest
-	(*PharmacyUpdateProfilePictureResponse)(nil), // 16: pharmacy.v1.PharmacyUpdateProfilePictureResponse
-	(*PharmacyUpdateProfileBannerRequest)(nil),   // 17: pharmacy.v1.PharmacyUpdateProfileBannerRequest
-	(*PharmacyUpdateProfileBannerResponse)(nil),  // 18: pharmacy.v1.PharmacyUpdateProfileBannerResponse
-	(*timestamppb.Timestamp)(nil),                // 19: google.protobuf.Timestamp
-	(*Sorter)(nil),                               // 20: sorter.v1.Sorter
-	(*emptypb.Empty)(nil),                        // 21: google.protobuf.Empty
+	(*PharmacyGetStatusRequest)(nil),             // 7: pharmacy.v1.PharmacyGetStatusRequest
+	(*PharmacyGetStatusResponse)(nil),            // 8: pharmacy.v1.PharmacyGetStatusResponse
+	(*PharmacyGetActiveStatusRequest)(nil),       // 9: pharmacy.v1.PharmacyGetActiveStatusRequest
+	(*PharmacyGetActiveStatusResponse)(nil),      // 10: pharmacy.v1.PharmacyGetActiveStatusResponse
+	(*GetPharmacyByIDRequest)(nil),               // 11: pharmacy.v1.GetPharmacyByIDRequest
+	(*GetPharmacyByIDResponse)(nil),              // 12: pharmacy.v1.GetPharmacyByIDResponse
+	(*GetAllPharmaciesRequest)(nil),              // 13: pharmacy.v1.GetAllPharmaciesRequest
+	(*GetAllPharmaciesResponse)(nil),             // 14: pharmacy.v1.GetAllPharmaciesResponse
+	(*UpdatePharmacyRequest)(nil),                // 15: pharmacy.v1.UpdatePharmacyRequest
+	(*UpdatePharmacyResponse)(nil),               // 16: pharmacy.v1.UpdatePharmacyResponse
+	(*PharmacyUpdateProfilePictureRequest)(nil),  // 17: pharmacy.v1.PharmacyUpdateProfilePictureRequest
+	(*PharmacyUpdateProfilePictureResponse)(nil), // 18: pharmacy.v1.PharmacyUpdateProfilePictureResponse
+	(*PharmacyUpdateProfileBannerRequest)(nil),   // 19: pharmacy.v1.PharmacyUpdateProfileBannerRequest
+	(*PharmacyUpdateProfileBannerResponse)(nil),  // 20: pharmacy.v1.PharmacyUpdateProfileBannerResponse
+	(*timestamppb.Timestamp)(nil),                // 21: google.protobuf.Timestamp
+	(*Sorter)(nil),                               // 22: sorter.v1.Sorter
+	(*emptypb.Empty)(nil),                        // 23: google.protobuf.Empty
 }
 var file_v1_pharmacy_api_proto_depIdxs = []int32{
-	19, // 0: pharmacy.v1.Pharmacy.verified_at:type_name -> google.protobuf.Timestamp
-	19, // 1: pharmacy.v1.Pharmacy.created_at:type_name -> google.protobuf.Timestamp
-	19, // 2: pharmacy.v1.Pharmacy.updated_at:type_name -> google.protobuf.Timestamp
-	19, // 3: pharmacy.v1.PharmacySummary.created_at:type_name -> google.protobuf.Timestamp
-	19, // 4: pharmacy.v1.PharmacySummary.updated_at:type_name -> google.protobuf.Timestamp
+	21, // 0: pharmacy.v1.Pharmacy.verified_at:type_name -> google.protobuf.Timestamp
+	21, // 1: pharmacy.v1.Pharmacy.created_at:type_name -> google.protobuf.Timestamp
+	21, // 2: pharmacy.v1.Pharmacy.updated_at:type_name -> google.protobuf.Timestamp
+	21, // 3: pharmacy.v1.PharmacySummary.created_at:type_name -> google.protobuf.Timestamp
+	21, // 4: pharmacy.v1.PharmacySummary.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 5: pharmacy.v1.CreatePharmacyResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
 	0,  // 6: pharmacy.v1.PharmacyGetMeResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
 	0,  // 7: pharmacy.v1.GetPharmacyByIDResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
-	20, // 8: pharmacy.v1.GetAllPharmaciesRequest.by_location:type_name -> sorter.v1.Sorter
-	20, // 9: pharmacy.v1.GetAllPharmaciesRequest.by_created_at:type_name -> sorter.v1.Sorter
-	20, // 10: pharmacy.v1.GetAllPharmaciesRequest.by_updated_at:type_name -> sorter.v1.Sorter
+	22, // 8: pharmacy.v1.GetAllPharmaciesRequest.by_location:type_name -> sorter.v1.Sorter
+	22, // 9: pharmacy.v1.GetAllPharmaciesRequest.by_created_at:type_name -> sorter.v1.Sorter
+	22, // 10: pharmacy.v1.GetAllPharmaciesRequest.by_updated_at:type_name -> sorter.v1.Sorter
 	1,  // 11: pharmacy.v1.GetAllPharmaciesResponse.pharmacies:type_name -> pharmacy.v1.PharmacySummary
 	0,  // 12: pharmacy.v1.UpdatePharmacyResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
 	0,  // 13: pharmacy.v1.PharmacyUpdateProfilePictureResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
 	0,  // 14: pharmacy.v1.PharmacyUpdateProfileBannerResponse.pharmacy:type_name -> pharmacy.v1.Pharmacy
 	2,  // 15: pharmacy.v1.PharmacyService.CreatePharmacy:input_type -> pharmacy.v1.CreatePharmacyRequest
-	21, // 16: pharmacy.v1.PharmacyService.GetMe:input_type -> google.protobuf.Empty
+	23, // 16: pharmacy.v1.PharmacyService.GetMe:input_type -> google.protobuf.Empty
 	5,  // 17: pharmacy.v1.PharmacyService.GetID:input_type -> pharmacy.v1.PharmacyGetIDRequest
-	7,  // 18: pharmacy.v1.PharmacyService.GetActiveStatus:input_type -> pharmacy.v1.PharmacyGetActiveStatusRequest
-	9,  // 19: pharmacy.v1.PharmacyService.GetPharmacyByID:input_type -> pharmacy.v1.GetPharmacyByIDRequest
-	11, // 20: pharmacy.v1.PharmacyService.GetAllPharmacies:input_type -> pharmacy.v1.GetAllPharmaciesRequest
-	13, // 21: pharmacy.v1.PharmacyService.UpdatePharmacy:input_type -> pharmacy.v1.UpdatePharmacyRequest
-	15, // 22: pharmacy.v1.PharmacyService.UpdateProfilePicture:input_type -> pharmacy.v1.PharmacyUpdateProfilePictureRequest
-	17, // 23: pharmacy.v1.PharmacyService.UpdateProfileBanner:input_type -> pharmacy.v1.PharmacyUpdateProfileBannerRequest
-	3,  // 24: pharmacy.v1.PharmacyService.CreatePharmacy:output_type -> pharmacy.v1.CreatePharmacyResponse
-	4,  // 25: pharmacy.v1.PharmacyService.GetMe:output_type -> pharmacy.v1.PharmacyGetMeResponse
-	6,  // 26: pharmacy.v1.PharmacyService.GetID:output_type -> pharmacy.v1.PharmacyGetIDResponse
-	8,  // 27: pharmacy.v1.PharmacyService.GetActiveStatus:output_type -> pharmacy.v1.PharmacyGetActiveStatusResponse
-	10, // 28: pharmacy.v1.PharmacyService.GetPharmacyByID:output_type -> pharmacy.v1.GetPharmacyByIDResponse
-	12, // 29: pharmacy.v1.PharmacyService.GetAllPharmacies:output_type -> pharmacy.v1.GetAllPharmaciesResponse
-	14, // 30: pharmacy.v1.PharmacyService.UpdatePharmacy:output_type -> pharmacy.v1.UpdatePharmacyResponse
-	16, // 31: pharmacy.v1.PharmacyService.UpdateProfilePicture:output_type -> pharmacy.v1.PharmacyUpdateProfilePictureResponse
-	18, // 32: pharmacy.v1.PharmacyService.UpdateProfileBanner:output_type -> pharmacy.v1.PharmacyUpdateProfileBannerResponse
-	24, // [24:33] is the sub-list for method output_type
-	15, // [15:24] is the sub-list for method input_type
+	7,  // 18: pharmacy.v1.PharmacyService.GetStatus:input_type -> pharmacy.v1.PharmacyGetStatusRequest
+	9,  // 19: pharmacy.v1.PharmacyService.GetActiveStatus:input_type -> pharmacy.v1.PharmacyGetActiveStatusRequest
+	11, // 20: pharmacy.v1.PharmacyService.GetPharmacyByID:input_type -> pharmacy.v1.GetPharmacyByIDRequest
+	13, // 21: pharmacy.v1.PharmacyService.GetAllPharmacies:input_type -> pharmacy.v1.GetAllPharmaciesRequest
+	15, // 22: pharmacy.v1.PharmacyService.UpdatePharmacy:input_type -> pharmacy.v1.UpdatePharmacyRequest
+	17, // 23: pharmacy.v1.PharmacyService.UpdateProfilePicture:input_type -> pharmacy.v1.PharmacyUpdateProfilePictureRequest
+	19, // 24: pharmacy.v1.PharmacyService.UpdateProfileBanner:input_type -> pharmacy.v1.PharmacyUpdateProfileBannerRequest
+	3,  // 25: pharmacy.v1.PharmacyService.CreatePharmacy:output_type -> pharmacy.v1.CreatePharmacyResponse
+	4,  // 26: pharmacy.v1.PharmacyService.GetMe:output_type -> pharmacy.v1.PharmacyGetMeResponse
+	6,  // 27: pharmacy.v1.PharmacyService.GetID:output_type -> pharmacy.v1.PharmacyGetIDResponse
+	8,  // 28: pharmacy.v1.PharmacyService.GetStatus:output_type -> pharmacy.v1.PharmacyGetStatusResponse
+	10, // 29: pharmacy.v1.PharmacyService.GetActiveStatus:output_type -> pharmacy.v1.PharmacyGetActiveStatusResponse
+	12, // 30: pharmacy.v1.PharmacyService.GetPharmacyByID:output_type -> pharmacy.v1.GetPharmacyByIDResponse
+	14, // 31: pharmacy.v1.PharmacyService.GetAllPharmacies:output_type -> pharmacy.v1.GetAllPharmaciesResponse
+	16, // 32: pharmacy.v1.PharmacyService.UpdatePharmacy:output_type -> pharmacy.v1.UpdatePharmacyResponse
+	18, // 33: pharmacy.v1.PharmacyService.UpdateProfilePicture:output_type -> pharmacy.v1.PharmacyUpdateProfilePictureResponse
+	20, // 34: pharmacy.v1.PharmacyService.UpdateProfileBanner:output_type -> pharmacy.v1.PharmacyUpdateProfileBannerResponse
+	25, // [25:35] is the sub-list for method output_type
+	15, // [15:25] is the sub-list for method input_type
 	15, // [15:15] is the sub-list for extension type_name
 	15, // [15:15] is the sub-list for extension extendee
 	0,  // [0:15] is the sub-list for field type_name
@@ -1721,15 +1818,15 @@ func file_v1_pharmacy_api_proto_init() {
 	file_v1_pharmacy_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_pharmacy_api_proto_msgTypes[1].OneofWrappers = []any{}
 	file_v1_pharmacy_api_proto_msgTypes[2].OneofWrappers = []any{}
-	file_v1_pharmacy_api_proto_msgTypes[11].OneofWrappers = []any{}
 	file_v1_pharmacy_api_proto_msgTypes[13].OneofWrappers = []any{}
+	file_v1_pharmacy_api_proto_msgTypes[15].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_pharmacy_api_proto_rawDesc), len(file_v1_pharmacy_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

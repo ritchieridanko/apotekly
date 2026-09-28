@@ -12,6 +12,7 @@ import (
 type PharmacyRepository interface {
 	Create(ctx context.Context, data *models.CreatePharmacy) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	GetStatus(ctx context.Context, authID uint64) (status string, err *ce.Error)
 	GetActiveStatus(ctx context.Context, authID uint64) (active bool, err *ce.Error)
 	GetByID(ctx context.Context, pharmacyID uuid.UUID) (p *models.Pharmacy, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
@@ -33,6 +34,10 @@ func (r *pharmacyRepository) Create(ctx context.Context, data *models.CreatePhar
 
 func (r *pharmacyRepository) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
 	return r.database.GetID(ctx, authID)
+}
+
+func (r *pharmacyRepository) GetStatus(ctx context.Context, authID uint64) (string, *ce.Error) {
+	return r.database.GetStatus(ctx, authID)
 }
 
 func (r *pharmacyRepository) GetActiveStatus(ctx context.Context, authID uint64) (bool, *ce.Error) {

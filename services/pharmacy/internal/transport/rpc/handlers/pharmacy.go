@@ -64,6 +64,14 @@ func (h *PharmacyHandler) GetID(ctx context.Context, req *apis.PharmacyGetIDRequ
 	return &apis.PharmacyGetIDResponse{PharmacyId: pharmacyID.String()}, nil
 }
 
+func (h *PharmacyHandler) GetStatus(ctx context.Context, req *apis.PharmacyGetStatusRequest) (*apis.PharmacyGetStatusResponse, error) {
+	status, err := h.pu.GetStatus(ctx, req.GetAuthId())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.PharmacyGetStatusResponse{Status: status}, nil
+}
+
 func (h *PharmacyHandler) GetActiveStatus(ctx context.Context, req *apis.PharmacyGetActiveStatusRequest) (*apis.PharmacyGetActiveStatusResponse, error) {
 	active, err := h.pu.GetActiveStatus(ctx, req.GetAuthId())
 	if err != nil {
