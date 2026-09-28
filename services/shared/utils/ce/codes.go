@@ -108,7 +108,6 @@ const (
 	MsgOAuthPasswordChange    string = "OAuth account cannot change password"
 	MsgOrphanedEventInbox     string = "Orphaned event inbox"
 	MsgPharmacyAlreadyExists  string = "Pharmacy already exists"
-	MsgPharmacyNotActive      string = "Pharmacy not active"
 	MsgPharmacyNotFound       string = "Pharmacy not found"
 	MsgSessionExpired         string = "Session expired"
 	MsgSessionNotFound        string = "Session not found"

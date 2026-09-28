@@ -8,6 +8,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/product/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/product/internal/models"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories"
+	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
@@ -68,8 +69,8 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 		logger.NewField("pharmacy_id", authCtx.PharmacyID.String()),
 	}
 
-	// Pharmacy Active Status Fetching
-	active, err := u.pc.GetActiveStatus(ctx, authCtx.AuthID)
+	// Pharmacy Status Fetching
+	status, err := u.pc.GetStatus(ctx, authCtx.AuthID)
 	if err != nil && err.Code() == ce.CodeNotFound {
 		return nil, ce.NewError(
 			ce.CodeRoleMismatch,
@@ -83,10 +84,10 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 	if err != nil {
 		return nil, err.Append(authFields...)
 	}
-	if !active {
+	if status != constants.PharmacyStatusActive {
 		return nil, ce.NewError(
 			ce.CodePharmacyNotActive,
-			ce.MsgPharmacyNotActive,
+			"Pharmacy account is "+status,
 			nil,
 			authFields...,
 		)

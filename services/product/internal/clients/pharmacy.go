@@ -11,7 +11,7 @@ import (
 var pharmacyServiceField logger.Field = logger.NewField("service", "pharmacy")
 
 type PharmacyClient interface {
-	GetActiveStatus(ctx context.Context, authID uint64) (active bool, err *ce.Error)
+	GetStatus(ctx context.Context, authID uint64) (status string, err *ce.Error)
 }
 
 type pharmacyClient struct {
@@ -22,19 +22,19 @@ func NewPharmacyClient(c apis.PharmacyServiceClient) PharmacyClient {
 	return &pharmacyClient{client: c}
 }
 
-func (c *pharmacyClient) GetActiveStatus(ctx context.Context, authID uint64) (bool, *ce.Error) {
-	resp, err := c.client.GetActiveStatus(
+func (c *pharmacyClient) GetStatus(ctx context.Context, authID uint64) (string, *ce.Error) {
+	resp, err := c.client.GetStatus(
 		ctx,
-		&apis.PharmacyGetActiveStatusRequest{
+		&apis.PharmacyGetStatusRequest{
 			AuthId: authID,
 		},
 	)
 	if err != nil {
-		return false, ce.ToError(
+		return "", ce.ToError(
 			err,
 		).Append(
 			pharmacyServiceField,
 		)
 	}
-	return resp.GetIsActive(), nil
+	return resp.GetStatus(), nil
 }
