@@ -23,6 +23,7 @@ type PharmacyUsecase interface {
 	CreatePharmacy(ctx context.Context, req *models.CreatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	GetMe(ctx context.Context) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	GetActiveStatus(ctx context.Context, authID uint64) (active bool, err *ce.Error)
 	GetPharmacyByID(ctx context.Context, pharmacyID uuid.UUID) (p *models.Pharmacy, err *ce.Error)
 	GetAllPharmacies(ctx context.Context, req *models.GetAllPharmaciesReq) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
@@ -250,6 +251,10 @@ func (u *pharmacyUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, 
 	return u.pr.GetID(ctx, authID)
 }
 
+func (u *pharmacyUsecase) GetActiveStatus(ctx context.Context, authID uint64) (bool, *ce.Error) {
+	return u.pr.GetActiveStatus(ctx, authID)
+}
+
 func (u *pharmacyUsecase) GetPharmacyByID(ctx context.Context, pharmacyID uuid.UUID) (*models.Pharmacy, *ce.Error) {
 	return u.pr.GetByID(ctx, pharmacyID)
 }
@@ -305,7 +310,7 @@ func (u *pharmacyUsecase) GetAllPharmacies(ctx context.Context, req *models.GetA
 
 			// Primary Location Fetching
 			lat, lon, err := u.uac.GetPrimaryLocation(ctx, authCtx.AuthID)
-			if err != nil && err.Code() == ce.CodeAddressNotFound {
+			if err != nil && err.Code() == ce.CodeNotFound {
 				return nil, 0, ce.NewError(
 					ce.CodeLocationNotProvided,
 					ce.MsgLocationNotProvided,

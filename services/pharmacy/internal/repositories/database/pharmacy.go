@@ -17,6 +17,7 @@ import (
 type PharmacyDatabase interface {
 	Create(ctx context.Context, data *models.CreatePharmacy) (p *models.Pharmacy, err *ce.Error)
 	GetID(ctx context.Context, authID uint64) (pharmacyID uuid.UUID, err *ce.Error)
+	GetActiveStatus(ctx context.Context, authID uint64) (active bool, err *ce.Error)
 	GetByID(ctx context.Context, pharmacyID uuid.UUID) (p *models.Pharmacy, err *ce.Error)
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllPharmacies) (pss []models.PharmacySummary, total int64, err *ce.Error)
@@ -149,6 +150,38 @@ func (d *pharmacyDatabase) GetID(ctx context.Context, authID uint64) (uuid.UUID,
 	}
 
 	return pharmacyID, nil
+}
+
+func (d *pharmacyDatabase) GetActiveStatus(ctx context.Context, authID uint64) (bool, *ce.Error) {
+	query := "SELECT is_active FROM pharmacies WHERE auth_id = $1 AND deleted_at IS NULL"
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var active bool
+	err := d.database.Query(
+		ctx, query,
+		authID,
+	).Scan(
+		&active,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get pharmacy active status: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return false, ce.NewError(
+				ce.CodePharmacyNotFound,
+				ce.MsgPharmacyNotFound,
+				wrappedErr,
+			)
+		}
+		return false, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return active, nil
 }
 
 func (d *pharmacyDatabase) GetByID(ctx context.Context, pharmacyID uuid.UUID) (*models.Pharmacy, *ce.Error) {
