@@ -2,6 +2,7 @@ package di
 
 import (
 	"github.com/ritchieridanko/apotekly/services/product/configs"
+	"github.com/ritchieridanko/apotekly/services/product/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/product/internal/infra"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories/database"
@@ -17,6 +18,8 @@ type Container struct {
 	config   *configs.Config
 	database *infdb.Database
 	logger   *logger.Logger
+
+	pc clients.PharmacyClient
 
 	pdb database.ProductDatabase
 
@@ -36,6 +39,9 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	db := infdb.NewDatabase(inf.Database())
 	l := logger.NewLogger(inf.Logger())
 
+	// Clients
+	pc := clients.NewPharmacyClient(inf.PharmacyService().PharmacyClient())
+
 	// Databases
 	pdb := database.NewProductDatabase(db)
 
@@ -46,7 +52,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	pu := usecases.NewProductUsecase(cfg.App.Name, pr, v, l)
+	pu := usecases.NewProductUsecase(cfg.App.Name, pr, pc, v, l)
 
 	// Handlers
 	ph := handlers.NewProductHandler(pu)
@@ -58,6 +64,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		config:    cfg,
 		database:  db,
 		logger:    l,
+		pc:        pc,
 		pdb:       pdb,
 		pr:        pr,
 		validator: v,

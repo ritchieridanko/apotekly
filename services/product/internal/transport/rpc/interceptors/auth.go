@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func Auth() grpc.UnaryServerInterceptor {
+func Auth(l *logger.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req any,
@@ -57,6 +57,25 @@ func Auth() grpc.UnaryServerInterceptor {
 			}
 
 			authID = id
+		}
+
+		// Check if policy accepts optional authentication
+		if policy.IsAuthOptional() {
+			values := md.Get(constants.MDKeyAuthID)
+			if len(values) > 0 {
+				id, err := strconv.ParseUint(values[0], 10, 64)
+				if err != nil {
+					l.Warn(
+						ctx,
+						"auth_id provided. failed to convert to uint64",
+						logger.NewField("auth_id", values[0]),
+						logger.NewField("error_code", ce.CodeTypeConversionFailed),
+						logger.NewField("error", err),
+					)
+				} else {
+					authID = id
+				}
+			}
 		}
 
 		// Check if policy requires verification

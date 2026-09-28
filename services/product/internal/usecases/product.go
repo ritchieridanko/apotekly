@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/ritchieridanko/apotekly/services/product/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/product/internal/models"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
@@ -21,6 +22,7 @@ type ProductUsecase interface {
 type productUsecase struct {
 	appName   string
 	pr        repositories.ProductRepository
+	pc        clients.PharmacyClient
 	validator *validator.Validator
 	logger    *logger.Logger
 }
@@ -28,12 +30,14 @@ type productUsecase struct {
 func NewProductUsecase(
 	appName string,
 	pr repositories.ProductRepository,
+	pc clients.PharmacyClient,
 	v *validator.Validator,
 	l *logger.Logger,
 ) ProductUsecase {
 	return &productUsecase{
 		appName:   appName,
 		pr:        pr,
+		pc:        pc,
 		validator: v,
 		logger:    l,
 	}
@@ -62,6 +66,30 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 	authFields := []logger.Field{
 		logger.NewField("auth_id", authCtx.AuthID),
 		logger.NewField("pharmacy_id", authCtx.PharmacyID.String()),
+	}
+
+	// Pharmacy Active Status Fetching
+	active, err := u.pc.GetActiveStatus(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeNotFound {
+		return nil, ce.NewError(
+			ce.CodeRoleMismatch,
+			ce.MsgInternalServer,
+			err.Unwrap(),
+			err.Append(
+				authFields...,
+			).Fields()...,
+		)
+	}
+	if err != nil {
+		return nil, err.Append(authFields...)
+	}
+	if !active {
+		return nil, ce.NewError(
+			ce.CodePharmacyNotActive,
+			ce.MsgPharmacyNotActive,
+			nil,
+			authFields...,
+		)
 	}
 
 	// Data Normalization
@@ -143,18 +171,18 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 	}
 
 	// Price Parsing
-	productPrice, err := utils.ParseMoney(price, currency)
-	if err != nil {
+	productPrice, parseErr := utils.ParseMoney(price, currency)
+	if parseErr != nil {
 		return nil, ce.NewError(
 			ce.CodeMoneyParsingFailed,
 			ce.MsgInternalServer,
-			err,
+			parseErr,
 			authFields...,
 		)
 	}
 
 	// Product Creation
-	p, createErr := u.pr.Create(
+	p, err := u.pr.Create(
 		ctx,
 		&models.CreateProduct{
 			ID:             utils.MustGenerateUUIDv7(),
@@ -181,8 +209,8 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 			RegIdentifier:  regIdentifier,
 		},
 	)
-	if createErr != nil {
-		return nil, createErr.Append(authFields...)
+	if err != nil {
+		return nil, err.Append(authFields...)
 	}
 
 	return p, nil
