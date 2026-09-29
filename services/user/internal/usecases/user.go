@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/storage"
@@ -19,6 +20,7 @@ import (
 type UserUsecase interface {
 	CreateUser(ctx context.Context, req *models.CreateUserReq) (u *models.User, err *ce.Error)
 	GetMe(ctx context.Context) (u *models.User, err *ce.Error)
+	GetID(ctx context.Context, authID uint64) (userID uuid.UUID, err *ce.Error)
 	UpdateUser(ctx context.Context, req *models.UpdateUserReq) (u *models.User, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (u *models.User, err *ce.Error)
 	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (u *models.User, err *ce.Error)
@@ -128,6 +130,10 @@ func (u *userUsecase) GetMe(ctx context.Context) (*models.User, *ce.Error) {
 		return nil, err.Append(authIDField)
 	}
 	return user, nil
+}
+
+func (u *userUsecase) GetID(ctx context.Context, authID uint64) (uuid.UUID, *ce.Error) {
+	return u.ur.GetID(ctx, authID)
 }
 
 func (u *userUsecase) UpdateUser(ctx context.Context, req *models.UpdateUserReq) (*models.User, *ce.Error) {

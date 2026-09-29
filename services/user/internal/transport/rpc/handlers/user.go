@@ -43,6 +43,14 @@ func (h *UserHandler) GetMe(ctx context.Context, req *emptypb.Empty) (*apis.User
 	return &apis.UserGetMeResponse{User: h.toUser(u)}, nil
 }
 
+func (h *UserHandler) GetID(ctx context.Context, req *apis.UserGetIDRequest) (*apis.UserGetIDResponse, error) {
+	userID, err := h.uu.GetID(ctx, req.GetAuthId())
+	if err != nil {
+		return nil, err
+	}
+	return &apis.UserGetIDResponse{UserId: userID.String()}, nil
+}
+
 func (h *UserHandler) UpdateUser(ctx context.Context, req *apis.UpdateUserRequest) (*apis.UpdateUserResponse, error) {
 	u, err := h.uu.UpdateUser(
 		ctx,

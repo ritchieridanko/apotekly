@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	UserService_CreateUser_FullMethodName           = "/user.v1.UserService/CreateUser"
 	UserService_GetMe_FullMethodName                = "/user.v1.UserService/GetMe"
+	UserService_GetID_FullMethodName                = "/user.v1.UserService/GetID"
 	UserService_UpdateUser_FullMethodName           = "/user.v1.UserService/UpdateUser"
 	UserService_UpdateProfilePicture_FullMethodName = "/user.v1.UserService/UpdateProfilePicture"
 	UserService_UpdateProfileBanner_FullMethodName  = "/user.v1.UserService/UpdateProfileBanner"
@@ -33,6 +34,7 @@ const (
 type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	GetMe(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserGetMeResponse, error)
+	GetID(ctx context.Context, in *UserGetIDRequest, opts ...grpc.CallOption) (*UserGetIDResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	UpdateProfilePicture(ctx context.Context, in *UserUpdateProfilePictureRequest, opts ...grpc.CallOption) (*UserUpdateProfilePictureResponse, error)
 	UpdateProfileBanner(ctx context.Context, in *UserUpdateProfileBannerRequest, opts ...grpc.CallOption) (*UserUpdateProfileBannerResponse, error)
@@ -60,6 +62,16 @@ func (c *userServiceClient) GetMe(ctx context.Context, in *emptypb.Empty, opts .
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserGetMeResponse)
 	err := c.cc.Invoke(ctx, UserService_GetMe_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetID(ctx context.Context, in *UserGetIDRequest, opts ...grpc.CallOption) (*UserGetIDResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserGetIDResponse)
+	err := c.cc.Invoke(ctx, UserService_GetID_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +114,7 @@ func (c *userServiceClient) UpdateProfileBanner(ctx context.Context, in *UserUpd
 type UserServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	GetMe(context.Context, *emptypb.Empty) (*UserGetMeResponse, error)
+	GetID(context.Context, *UserGetIDRequest) (*UserGetIDResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	UpdateProfilePicture(context.Context, *UserUpdateProfilePictureRequest) (*UserUpdateProfilePictureResponse, error)
 	UpdateProfileBanner(context.Context, *UserUpdateProfileBannerRequest) (*UserUpdateProfileBannerResponse, error)
@@ -120,6 +133,9 @@ func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserReq
 }
 func (UnimplementedUserServiceServer) GetMe(context.Context, *emptypb.Empty) (*UserGetMeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMe not implemented")
+}
+func (UnimplementedUserServiceServer) GetID(context.Context, *UserGetIDRequest) (*UserGetIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetID not implemented")
 }
 func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
@@ -183,6 +199,24 @@ func _UserService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetMe(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserGetIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetID(ctx, req.(*UserGetIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -255,6 +289,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMe",
 			Handler:    _UserService_GetMe_Handler,
+		},
+		{
+			MethodName: "GetID",
+			Handler:    _UserService_GetID_Handler,
 		},
 		{
 			MethodName: "UpdateUser",
