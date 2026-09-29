@@ -476,6 +476,45 @@ func (h *PharmacyHandler) UpdateProfileBanner(ctx *gin.Context) {
 	)
 }
 
+func (h *PharmacyHandler) VerifyPharmacy(ctx *gin.Context) {
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	err := h.phc.VerifyPharmacy(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID,
+			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole,
+			authCtx.Role,
+			constants.MDKeyIsVerified,
+			strconv.FormatBool(authCtx.IsEmailVerified),
+		),
+		ctx.Param("pharmacy_id"),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse[any](
+		ctx,
+		http.StatusOK,
+		"Pharmacy verified successfully",
+		nil,
+		nil,
+	)
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *dtos.Pharmacy {
 	if p == nil {
 		return nil

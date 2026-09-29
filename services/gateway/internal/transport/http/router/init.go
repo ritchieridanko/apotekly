@@ -120,9 +120,6 @@ func Init(
 		// Create
 		pharmacy.POST("", middlewares.Auth(j), rlm.LimitByAuthID("phar:pc", 1*time.Minute, 5), phh.CreatePharmacy)
 
-		// Fetch
-		pharmacy.GET("/:pharmacy_id", rlm.LimitByIPAddress("phar:pid", 1*time.Minute, 50), phh.GetPharmacyByID)
-
 		// Fetch All
 		pharmacy.GET("", rlm.LimitByIPAddress("phar:pfa", 1*time.Minute, 50), middlewares.AuthOptional(j), phh.GetAllPharmacies)
 
@@ -140,6 +137,16 @@ func Init(
 
 			// Update Profile Banner
 			me.PUT("/profile-banner", rlm.LimitByAuthID("phar:pbu", 1*time.Minute, 10), phh.UpdateProfileBanner)
+		}
+
+		// Pharmacy ID
+		pharmacyID := pharmacy.Group("/:pharmacy_id")
+		{
+			// Fetch
+			pharmacyID.GET("", rlm.LimitByIPAddress("phar:pid", 1*time.Minute, 50), phh.GetPharmacyByID)
+
+			// Verify
+			pharmacyID.POST("/verify", middlewares.Auth(j), rlm.LimitByAuthID("phar:pv", 1*time.Minute, 5), phh.VerifyPharmacy)
 		}
 	}
 
@@ -180,14 +187,18 @@ func Init(
 				// Fetch All
 				address.GET("", uah.GetAllAddresses)
 
-				// Update
-				address.PATCH("/:address_id", uah.UpdateAddress)
+				// Address ID
+				addressID := address.Group("/:address_id")
+				{
+					// Update
+					addressID.PATCH("", uah.UpdateAddress)
 
-				// Set Primary
-				address.PUT("/:address_id/primary", uah.SetPrimaryAddress)
+					// Set Primary
+					addressID.PUT("/primary", uah.SetPrimaryAddress)
 
-				// Delete
-				address.DELETE("/:address_id", uah.DeleteAddress)
+					// Delete
+					addressID.DELETE("", uah.DeleteAddress)
+				}
 			}
 		}
 	}

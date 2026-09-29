@@ -21,6 +21,7 @@ type PharmacyClient interface {
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (p *models.Pharmacy, err *ce.Error)
+	VerifyPharmacy(ctx context.Context, pharmacyID string) (err *ce.Error)
 }
 
 type pharmacyClient struct {
@@ -194,6 +195,23 @@ func (c *pharmacyClient) UpdateProfileBanner(ctx context.Context, profileBannerU
 		)
 	}
 	return c.toPharmacy(resp.GetPharmacy()), nil
+}
+
+func (c *pharmacyClient) VerifyPharmacy(ctx context.Context, pharmacyID string) *ce.Error {
+	_, err := c.client.VerifyPharmacy(
+		ctx,
+		&apis.VerifyPharmacyRequest{
+			PharmacyId: pharmacyID,
+		},
+	)
+	if err != nil {
+		return ce.ToError(
+			err,
+		).Append(
+			pharmacyServiceField,
+		)
+	}
+	return nil
 }
 
 func (c *pharmacyClient) toPharmacy(p *apis.Pharmacy) *models.Pharmacy {
