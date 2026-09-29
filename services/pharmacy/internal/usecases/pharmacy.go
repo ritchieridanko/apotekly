@@ -30,12 +30,14 @@ type PharmacyUsecase interface {
 	UpdatePharmacy(ctx context.Context, req *models.UpdatePharmacyReq) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfilePicture(ctx context.Context, profilePictureURL string) (p *models.Pharmacy, err *ce.Error)
 	UpdateProfileBanner(ctx context.Context, profileBannerURL string) (p *models.Pharmacy, err *ce.Error)
+	VerifyPharmacy(ctx context.Context, pharmacyID uuid.UUID) (err *ce.Error)
 }
 
 type pharmacyUsecase struct {
 	appName    string
 	pr         repositories.PharmacyRepository
 	ac         clients.AuthClient
+	uc         clients.UserClient
 	uac        clients.AddressClient
 	transactor *database.Transactor
 	storage    *storage.Storage
@@ -47,6 +49,7 @@ func NewPharmacyUsecase(
 	appName string,
 	pr repositories.PharmacyRepository,
 	ac clients.AuthClient,
+	uc clients.UserClient,
 	uac clients.AddressClient,
 	tx *database.Transactor,
 	s *storage.Storage,
@@ -57,6 +60,7 @@ func NewPharmacyUsecase(
 		appName:    appName,
 		pr:         pr,
 		ac:         ac,
+		uc:         uc,
 		uac:        uac,
 		transactor: tx,
 		storage:    s,
@@ -662,4 +666,51 @@ func (u *pharmacyUsecase) UpdateProfileBanner(ctx context.Context, profileBanner
 	}
 
 	return p, nil
+}
+
+func (u *pharmacyUsecase) VerifyPharmacy(ctx context.Context, pharmacyID uuid.UUID) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "pharmacy.usecase.VerifyPharmacy")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+
+	authIDField := logger.NewField("auth_id", authCtx.AuthID)
+
+	// User ID Fetching
+	userID, err := u.uc.GetID(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeNotFound {
+		return ce.NewError(
+			ce.CodeAuthNotRegistered,
+			ce.MsgInvalidCredentials,
+			err.Unwrap(),
+			err.Append(
+				authIDField,
+			).Fields()...,
+		)
+	}
+	if err != nil {
+		return err.Append(authIDField)
+	}
+
+	// Verification Update
+	err = u.pr.SetVerified(
+		ctx,
+		pharmacyID,
+		&models.SetPharmacyVerified{
+			VerifiedBy: userID,
+			Status:     constants.PharmacyStatusActive,
+		},
+	)
+	if err != nil {
+		return err.Append(authIDField)
+	}
+
+	return nil
 }

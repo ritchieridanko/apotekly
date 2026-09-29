@@ -18,6 +18,7 @@ type PharmacyRepository interface {
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllPharmacies) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (p *models.Pharmacy, err *ce.Error)
+	SetVerified(ctx context.Context, pharmacyID uuid.UUID, data *models.SetPharmacyVerified) (err *ce.Error)
 }
 
 type pharmacyRepository struct {
@@ -58,4 +59,8 @@ func (r *pharmacyRepository) GetAll(ctx context.Context, params *models.GetAllPh
 
 func (r *pharmacyRepository) Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (*models.Pharmacy, *ce.Error) {
 	return r.database.Update(ctx, authID, data)
+}
+
+func (r *pharmacyRepository) SetVerified(ctx context.Context, pharmacyID uuid.UUID, data *models.SetPharmacyVerified) *ce.Error {
+	return r.database.SetVerified(ctx, pharmacyID, data)
 }

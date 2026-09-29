@@ -105,6 +105,11 @@ type (
 		ProfilePicture *string
 		ProfileBanner  *string
 	}
+
+	SetPharmacyVerified struct {
+		VerifiedBy uuid.UUID
+		Status     string
+	}
 )
 
 func (p *GetAllPharmacies) RequireLocation() bool {

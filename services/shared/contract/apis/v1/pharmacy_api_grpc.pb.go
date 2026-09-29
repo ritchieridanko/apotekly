@@ -30,6 +30,7 @@ const (
 	PharmacyService_UpdatePharmacy_FullMethodName       = "/pharmacy.v1.PharmacyService/UpdatePharmacy"
 	PharmacyService_UpdateProfilePicture_FullMethodName = "/pharmacy.v1.PharmacyService/UpdateProfilePicture"
 	PharmacyService_UpdateProfileBanner_FullMethodName  = "/pharmacy.v1.PharmacyService/UpdateProfileBanner"
+	PharmacyService_VerifyPharmacy_FullMethodName       = "/pharmacy.v1.PharmacyService/VerifyPharmacy"
 )
 
 // PharmacyServiceClient is the client API for PharmacyService service.
@@ -46,6 +47,7 @@ type PharmacyServiceClient interface {
 	UpdatePharmacy(ctx context.Context, in *UpdatePharmacyRequest, opts ...grpc.CallOption) (*UpdatePharmacyResponse, error)
 	UpdateProfilePicture(ctx context.Context, in *PharmacyUpdateProfilePictureRequest, opts ...grpc.CallOption) (*PharmacyUpdateProfilePictureResponse, error)
 	UpdateProfileBanner(ctx context.Context, in *PharmacyUpdateProfileBannerRequest, opts ...grpc.CallOption) (*PharmacyUpdateProfileBannerResponse, error)
+	VerifyPharmacy(ctx context.Context, in *VerifyPharmacyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type pharmacyServiceClient struct {
@@ -156,6 +158,16 @@ func (c *pharmacyServiceClient) UpdateProfileBanner(ctx context.Context, in *Pha
 	return out, nil
 }
 
+func (c *pharmacyServiceClient) VerifyPharmacy(ctx context.Context, in *VerifyPharmacyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, PharmacyService_VerifyPharmacy_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PharmacyServiceServer is the server API for PharmacyService service.
 // All implementations must embed UnimplementedPharmacyServiceServer
 // for forward compatibility.
@@ -170,6 +182,7 @@ type PharmacyServiceServer interface {
 	UpdatePharmacy(context.Context, *UpdatePharmacyRequest) (*UpdatePharmacyResponse, error)
 	UpdateProfilePicture(context.Context, *PharmacyUpdateProfilePictureRequest) (*PharmacyUpdateProfilePictureResponse, error)
 	UpdateProfileBanner(context.Context, *PharmacyUpdateProfileBannerRequest) (*PharmacyUpdateProfileBannerResponse, error)
+	VerifyPharmacy(context.Context, *VerifyPharmacyRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPharmacyServiceServer()
 }
 
@@ -209,6 +222,9 @@ func (UnimplementedPharmacyServiceServer) UpdateProfilePicture(context.Context, 
 }
 func (UnimplementedPharmacyServiceServer) UpdateProfileBanner(context.Context, *PharmacyUpdateProfileBannerRequest) (*PharmacyUpdateProfileBannerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfileBanner not implemented")
+}
+func (UnimplementedPharmacyServiceServer) VerifyPharmacy(context.Context, *VerifyPharmacyRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPharmacy not implemented")
 }
 func (UnimplementedPharmacyServiceServer) mustEmbedUnimplementedPharmacyServiceServer() {}
 func (UnimplementedPharmacyServiceServer) testEmbeddedByValue()                         {}
@@ -411,6 +427,24 @@ func _PharmacyService_UpdateProfileBanner_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PharmacyService_VerifyPharmacy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPharmacyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PharmacyServiceServer).VerifyPharmacy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PharmacyService_VerifyPharmacy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PharmacyServiceServer).VerifyPharmacy(ctx, req.(*VerifyPharmacyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PharmacyService_ServiceDesc is the grpc.ServiceDesc for PharmacyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -457,6 +491,10 @@ var PharmacyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProfileBanner",
 			Handler:    _PharmacyService_UpdateProfileBanner_Handler,
+		},
+		{
+			MethodName: "VerifyPharmacy",
+			Handler:    _PharmacyService_VerifyPharmacy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

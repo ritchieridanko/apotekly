@@ -168,6 +168,13 @@ func (h *PharmacyHandler) UpdateProfileBanner(ctx context.Context, req *apis.Pha
 	return &apis.PharmacyUpdateProfileBannerResponse{Pharmacy: h.toPharmacy(p)}, nil
 }
 
+func (h *PharmacyHandler) VerifyPharmacy(ctx context.Context, req *apis.VerifyPharmacyRequest) (*emptypb.Empty, error) {
+	if err := h.pu.VerifyPharmacy(ctx, utils.ToUUID(req.GetPharmacyId())); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+
 func (h *PharmacyHandler) toPharmacy(p *models.Pharmacy) *apis.Pharmacy {
 	if p == nil {
 		return nil

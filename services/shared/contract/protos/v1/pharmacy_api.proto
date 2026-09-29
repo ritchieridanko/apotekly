@@ -19,6 +19,7 @@ service PharmacyService {
   rpc UpdatePharmacy (UpdatePharmacyRequest) returns (UpdatePharmacyResponse);
   rpc UpdateProfilePicture (PharmacyUpdateProfilePictureRequest) returns (PharmacyUpdateProfilePictureResponse);
   rpc UpdateProfileBanner (PharmacyUpdateProfileBannerRequest) returns (PharmacyUpdateProfileBannerResponse);
+  rpc VerifyPharmacy (VerifyPharmacyRequest) returns (google.protobuf.Empty);
 }
 
 message Pharmacy {
@@ -179,4 +180,8 @@ message PharmacyUpdateProfileBannerRequest {
 
 message PharmacyUpdateProfileBannerResponse {
   Pharmacy pharmacy = 1;
+}
+
+message VerifyPharmacyRequest {
+  string pharmacy_id = 1;
 }

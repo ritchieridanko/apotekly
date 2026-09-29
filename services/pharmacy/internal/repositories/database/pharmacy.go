@@ -23,6 +23,7 @@ type PharmacyDatabase interface {
 	GetByAuthID(ctx context.Context, authID uint64) (p *models.Pharmacy, err *ce.Error)
 	GetAll(ctx context.Context, params *models.GetAllPharmacies) (pss []models.PharmacySummary, total int64, err *ce.Error)
 	Update(ctx context.Context, authID uint64, data *models.UpdatePharmacy) (p *models.Pharmacy, err *ce.Error)
+	SetVerified(ctx context.Context, pharmacyID uuid.UUID, data *models.SetPharmacyVerified) (err *ce.Error)
 }
 
 type pharmacyDatabase struct {
@@ -686,4 +687,44 @@ func (d *pharmacyDatabase) Update(ctx context.Context, authID uint64, data *mode
 	}
 
 	return &p, nil
+}
+
+func (d *pharmacyDatabase) SetVerified(ctx context.Context, pharmacyID uuid.UUID, data *models.SetPharmacyVerified) *ce.Error {
+	query := `
+		UPDATE
+			pharmacies
+		SET
+			verified_at = NOW(),
+			verified_by = $2,
+			status = $3,
+			is_active = TRUE,
+			updated_at = NOW()
+		WHERE
+			id = $1
+			AND deleted_at IS NULL
+	`
+
+	err := d.database.Execute(
+		ctx, query,
+		pharmacyID,
+		data.VerifiedBy,
+		data.Status,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to set pharmacy verified: %w", err)
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return ce.NewError(
+				ce.CodePharmacyNotFound,
+				ce.MsgPharmacyNotFound,
+				wrappedErr,
+			)
+		}
+		return ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return nil
 }
