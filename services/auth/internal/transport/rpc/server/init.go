@@ -19,9 +19,10 @@ type Server struct {
 	server *grpc.Server
 	logger *logger.Logger
 	ah     *handlers.AuthHandler
+	oah    *handlers.OAuthHandler
 }
 
-func Init(cfg *configs.GRPCServer, l *logger.Logger, ah *handlers.AuthHandler) *Server {
+func Init(cfg *configs.GRPCServer, l *logger.Logger, ah *handlers.AuthHandler, oah *handlers.OAuthHandler) *Server {
 	srv := grpc.NewServer(
 		grpc.StatsHandler(
 			otelgrpc.NewServerHandler(),
@@ -35,12 +36,14 @@ func Init(cfg *configs.GRPCServer, l *logger.Logger, ah *handlers.AuthHandler) *
 	)
 
 	apis.RegisterAuthServiceServer(srv, ah)
+	apis.RegisterOAuthServiceServer(srv, oah)
 
 	return &Server{
 		config: cfg,
 		server: srv,
 		logger: l,
 		ah:     ah,
+		oah:    oah,
 	}
 }
 

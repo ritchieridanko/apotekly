@@ -1,5 +1,6 @@
 package models
 
+// Auth
 type (
 	ChangeEmailReq struct {
 		Password string
@@ -42,5 +43,14 @@ type (
 	VerifyEmailReq struct {
 		RefreshToken      string
 		VerificationToken string
+	}
+)
+
+// OAuth
+type (
+	OAuthCallbackReq struct {
+		Code     string
+		State    string
+		Provider string
 	}
 )

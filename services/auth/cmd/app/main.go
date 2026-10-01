@@ -33,7 +33,13 @@ func main() {
 	}(inf)
 
 	// DI Initialization
-	ctr := di.Init(cfg, inf)
+	diCtx, diCancel := context.WithTimeout(context.Background(), cfg.OAuth.InitTimeout)
+	defer diCancel()
+
+	ctr, err := di.Init(diCtx, cfg, inf)
+	if err != nil {
+		log.Fatalln("[FATAL]:", err)
+	}
 
 	// Server Start
 	srv := ctr.Server()
@@ -50,10 +56,10 @@ func main() {
 	<-quit
 	log.Printf("[%s] is shutting down...", strings.ToUpper(cfg.App.Name))
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Server.Timeout.Shutdown)
-	defer cancel()
+	sdCtx, sdCancel := context.WithTimeout(context.Background(), cfg.Server.Timeout.Shutdown)
+	defer sdCancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(sdCtx); err != nil {
 		log.Println("[WARN]:", err)
 	}
 }

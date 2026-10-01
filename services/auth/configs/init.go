@@ -14,6 +14,7 @@ import (
 type Config struct {
 	App      cfg.App        `mapstructure:"app"`
 	Auth     Auth           `mapstructure:"auth"`
+	OAuth    OAuth          `mapstructure:"oauth"`
 	Server   cfg.GRPCServer `mapstructure:"server"`
 	Service  Service        `mapstructure:"service"`
 	Database cfg.Database   `mapstructure:"database"`
@@ -28,10 +29,16 @@ type Auth struct {
 
 	Duration struct {
 		EmailChange   time.Duration `mapstructure:"email_change"`
+		OAuthState    time.Duration `mapstructure:"oauth_state"`
 		PasswordReset time.Duration `mapstructure:"password_reset"`
 		Session       time.Duration `mapstructure:"session"`
 		Verification  time.Duration `mapstructure:"verification"`
 	} `mapstructure:"duration"`
+}
+
+type OAuth struct {
+	InitTimeout time.Duration `mapstructure:"init_timeout"`
+	Google      cfg.OAuth     `mapstructure:"google"`
 }
 
 type Service struct {

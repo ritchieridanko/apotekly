@@ -10,9 +10,20 @@ auth:
     duration: "10m"
   duration:
     email_change: "24h"
+    oauth_state: "5m"
     password_reset: "24h"
     session: "24h"
     verification: "24h"
+
+oauth:
+  init_timeout: "10s"
+  google:
+    name: "google"
+    client_id: ""
+    secret: ""
+    redirect_url: ""
+    oidc_issuer: "https://accounts.google.com"
+    scopes: "email"
 
 server:
   host: "localhost"

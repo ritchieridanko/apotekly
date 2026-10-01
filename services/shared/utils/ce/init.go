@@ -62,11 +62,14 @@ func (e *Error) Bind(ctx *gin.Context) {
 func (e *Error) ToGRPCErr() error {
 	switch e.code {
 	case
+		CodeInvalidOAuthProvider,
+		CodeInvalidOAuthState,
 		CodeInvalidParams,
 		CodeInvalidPayload,
 		CodeInvalidRequestMetadata,
 		CodeInvalidToken,
 		CodeLocationNotProvided,
+		CodeOAuthProviderMismatch,
 		CodeTokenNotOwned:
 		return status.Error(codes.InvalidArgument, e.message)
 	case
@@ -109,6 +112,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeBCryptHashingFailed,
 		CodeCacheCommandExec,
 		CodeCacheScriptExec,
+		CodeCSRFStateGenerationFailed,
 		CodeDBQueryExec,
 		CodeDBTx,
 		CodeEmailDeliveryFailed,
@@ -125,6 +129,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeMissingMetadata,
 		CodeMoneyParsingFailed,
 		CodeNoPendingEventInbox,
+		CodeOAuthCodeExchangeFailed,
 		CodeOrphanedEventInbox,
 		CodePanicOccurred,
 		CodeProtobufParsingFailed,

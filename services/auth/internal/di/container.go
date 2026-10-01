@@ -1,9 +1,12 @@
 package di
 
 import (
+	"context"
+
 	"github.com/ritchieridanko/apotekly/services/auth/configs"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/infra"
+	"github.com/ritchieridanko/apotekly/services/auth/internal/infra/oauth"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/repositories"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/repositories/cache"
 	"github.com/ritchieridanko/apotekly/services/auth/internal/repositories/database"
@@ -26,6 +29,8 @@ type Container struct {
 	transactor *infdb.Transactor
 	logger     *logger.Logger
 
+	goa *oauth.OAuth
+
 	acp   *publisher.Publisher
 	aecrp *publisher.Publisher
 	aevrp *publisher.Publisher
@@ -33,34 +38,45 @@ type Container struct {
 
 	pc clients.PharmacyClient
 
-	acc cache.AuthCache
-	tcc cache.TokenCache
+	acc  cache.AuthCache
+	oacc cache.OAuthCache
+	tcc  cache.TokenCache
 
-	adb database.AuthDatabase
-	sdb database.SessionDatabase
+	adb  database.AuthDatabase
+	oadb database.OAuthDatabase
+	sdb  database.SessionDatabase
 
-	ar repositories.AuthRepository
-	sr repositories.SessionRepository
-	tr repositories.TokenRepository
+	ar  repositories.AuthRepository
+	oar repositories.OAuthRepository
+	sr  repositories.SessionRepository
+	tr  repositories.TokenRepository
 
 	bcrypt    *bcrypt.BCrypt
 	jwt       *jwt.JWT
 	validator *validator.Validator
 
-	au usecases.AuthUsecase
-	su usecases.SessionUsecase
+	au  usecases.AuthUsecase
+	oau usecases.OAuthUsecase
+	su  usecases.SessionUsecase
 
-	ah *handlers.AuthHandler
+	ah  *handlers.AuthHandler
+	oah *handlers.OAuthHandler
 
 	server *server.Server
 }
 
-func Init(cfg *configs.Config, inf *infra.Infra) *Container {
+func Init(ctx context.Context, cfg *configs.Config, inf *infra.Infra) (*Container, error) {
 	// Infra
 	cc := infcc.NewCache(inf.Cache())
 	db := infdb.NewDatabase(inf.Database())
 	tx := infdb.NewTransactor(inf.Database())
 	l := logger.NewLogger(inf.Logger())
+
+	// OAuth
+	goa, err := oauth.NewOAuth(ctx, &cfg.OAuth.Google, nil, inf.Logger())
+	if err != nil {
+		return nil, err
+	}
 
 	// Publishers
 	acp := publisher.NewPublisher(inf.PublisherAC())
@@ -73,14 +89,17 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Caches
 	acc := cache.NewAuthCache(cc)
+	oacc := cache.NewOAuthCache(cc)
 	tcc := cache.NewTokenCache(cc)
 
 	// Databases
 	adb := database.NewAuthDatabase(db)
+	oadb := database.NewOAuthDatabase(db)
 	sdb := database.NewSessionDatabase(db)
 
 	// Repositories
 	ar := repositories.NewAuthRepository(acc, adb)
+	oar := repositories.NewOAuthRepository(oacc, oadb)
 	sr := repositories.NewSessionRepository(sdb)
 	tr := repositories.NewTokenRepository(tcc)
 
@@ -100,12 +119,14 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		acp, aecrp, aevrp, aprrp,
 		b, v, l,
 	)
+	oau := usecases.NewOAuthUsecase(cfg.App.Name, cfg.Auth.Duration.OAuthState, su, ar, oar, tx, acp, goa, l)
 
 	// Handlers
 	ah := handlers.NewAuthHandler(au)
+	oah := handlers.NewOAuthHandler(oau)
 
 	// Server
-	srv := server.Init(&cfg.Server, l, ah)
+	srv := server.Init(&cfg.Server, l, ah, oah)
 
 	return &Container{
 		config:     cfg,
@@ -113,26 +134,32 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		database:   db,
 		transactor: tx,
 		logger:     l,
+		goa:        goa,
 		acp:        acp,
 		aecrp:      aecrp,
 		aevrp:      aevrp,
 		aprrp:      aprrp,
 		pc:         pc,
 		acc:        acc,
+		oacc:       oacc,
 		tcc:        tcc,
 		adb:        adb,
+		oadb:       oadb,
 		sdb:        sdb,
 		ar:         ar,
+		oar:        oar,
 		sr:         sr,
 		tr:         tr,
 		bcrypt:     b,
 		jwt:        j,
 		validator:  v,
 		au:         au,
+		oau:        oau,
 		su:         su,
 		ah:         ah,
+		oah:        oah,
 		server:     srv,
-	}
+	}, nil
 }
 
 func (c *Container) Server() *server.Server {

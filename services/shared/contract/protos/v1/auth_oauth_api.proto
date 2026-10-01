@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package oauth.v1;
+
+import "v1/auth_api.proto";
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+service OAuthService {
+  rpc GetAuthURL (GetAuthURLRequest) returns (GetAuthURLResponse);
+  rpc Callback (OAuthCallbackRequest) returns (OAuthCallbackResponse);
+}
+
+message GetAuthURLRequest {
+  string provider = 1;
+}
+
+message GetAuthURLResponse {
+  string url = 1;
+}
+
+message OAuthCallbackRequest {
+  string code = 1;
+  string state = 2;
+  string provider = 3;
+}
+
+message OAuthCallbackResponse {
+  auth.v1.AuthToken auth_token = 1;
+}
