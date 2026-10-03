@@ -54,12 +54,9 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 	p, err := h.prc.CreateProduct(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
-			constants.MDKeyPharmacyID,
-			authCtx.PharmacyID.String(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
 		),
 		&models.CreateProductReq{
 			BrandName:      payload.BrandName,

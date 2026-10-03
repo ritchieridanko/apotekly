@@ -22,6 +22,7 @@ type Container struct {
 	logger *logger.Logger
 
 	ac  clients.AuthClient
+	oac clients.OAuthClient
 	phc clients.PharmacyClient
 	prc clients.ProductClient
 	uc  clients.UserClient
@@ -34,6 +35,7 @@ type Container struct {
 	validator *validator.Validator
 
 	ah  *handlers.AuthHandler
+	oah *handlers.OAuthHandler
 	phh *handlers.PharmacyHandler
 	prh *handlers.ProductHandler
 	uh  *handlers.UserHandler
@@ -52,6 +54,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Clients
 	ac := clients.NewAuthClient(inf.AuthService().AuthClient())
+	oac := clients.NewOAuthClient(inf.AuthService().OAuthClient())
 	phc := clients.NewPharmacyClient(inf.PharmacyService().PharmacyClient())
 	prc := clients.NewProductClient(inf.ProductService().ProductClient())
 	uc := clients.NewUserClient(inf.UserService().UserClient())
@@ -67,6 +70,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 
 	// Handlers
 	ah := handlers.NewAuthHandler(ac, v, c)
+	oah := handlers.NewOAuthHandler(cfg.Client.Addr, oac, v, c)
 	phh := handlers.NewPharmacyHandler(phc, ac, v, c, l)
 	prh := handlers.NewProductHandler(prc)
 	uh := handlers.NewUserHandler(uc)
@@ -76,7 +80,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	rlm := middlewares.NewRateLimiterMiddleware(rlcc, l)
 
 	// Router
-	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, rlm, ah, phh, prh, uh, uah)
+	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, rlm, ah, oah, phh, prh, uh, uah)
 
 	// Server
 	srv := server.Init(&cfg.Server, r, l)
@@ -86,6 +90,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		cache:     cc,
 		logger:    l,
 		ac:        ac,
+		oac:       oac,
 		phc:       phc,
 		prc:       prc,
 		uc:        uc,
@@ -95,6 +100,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		jwt:       j,
 		validator: v,
 		ah:        ah,
+		oah:       oah,
 		phh:       phh,
 		prh:       prh,
 		uh:        uh,

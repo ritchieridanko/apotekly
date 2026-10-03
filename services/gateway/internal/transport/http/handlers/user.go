@@ -44,8 +44,7 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 	u, err := h.uc.CreateUser(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.CreateUserReq{
 			Name:      payload.Name,
@@ -84,8 +83,7 @@ func (h *UserHandler) GetMe(ctx *gin.Context) {
 	u, err := h.uc.GetMe(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 	)
 	if err != nil {
@@ -124,8 +122,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 	u, err := h.uc.UpdateUser(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.UpdateUserReq{
 			Name:      payload.Name,
@@ -170,8 +167,7 @@ func (h *UserHandler) UpdateProfilePicture(ctx *gin.Context) {
 	u, err := h.uc.UpdateProfilePicture(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		payload.ProfilePictureURL,
 	)
@@ -211,8 +207,7 @@ func (h *UserHandler) UpdateProfileBanner(ctx *gin.Context) {
 	u, err := h.uc.UpdateProfileBanner(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		payload.ProfileBannerURL,
 	)

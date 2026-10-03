@@ -36,6 +36,13 @@ type (
 		RefreshToken      string
 		VerificationToken string
 	}
+
+	// Auth OAuth Service
+	OAuthCallbackReq struct {
+		Code     string
+		State    string
+		Provider string
+	}
 )
 
 // Pharmacy Service

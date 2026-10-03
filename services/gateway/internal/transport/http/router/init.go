@@ -23,6 +23,7 @@ func Init(
 	l *logger.Logger,
 	rlm *middlewares.RateLimiterMiddleware,
 	ah *handlers.AuthHandler,
+	oah *handlers.OAuthHandler,
 	phh *handlers.PharmacyHandler,
 	prh *handlers.ProductHandler,
 	uh *handlers.UserHandler,
@@ -111,6 +112,16 @@ func Init(
 				// Check Validity
 				reset.GET("/valid", ah.IsPasswordResetTokenValid)
 			}
+		}
+
+		// OAuth
+		oauth := auth.Group("/:provider", rlm.LimitByIPAddress("auth:oauth", 1*time.Minute, 20))
+		{
+			// Sign In
+			oauth.GET("/signin", oah.GetAuthURL)
+
+			// Callback
+			oauth.GET("/callback", oah.Callback)
 		}
 	}
 

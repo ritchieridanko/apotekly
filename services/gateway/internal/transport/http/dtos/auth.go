@@ -52,6 +52,14 @@ type (
 		VerificationToken string `form:"token" binding:"required"`
 		RememberMe        bool   `json:"remember_me"`
 	}
+
+	// OAuth
+	OAuthCallbackRequest struct {
+		Code      string `form:"code"`
+		State     string `form:"state"`
+		Error     string `form:"error"`
+		ErrorDesc string `form:"error_description"`
+	}
 )
 
 // Responses

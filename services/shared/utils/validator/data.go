@@ -1,5 +1,7 @@
 package validator
 
+import "github.com/ritchieridanko/apotekly/services/shared/constants"
+
 var (
 	countries map[string]struct{} = map[string]struct{}{
 		"brunei":      {},
@@ -70,6 +72,10 @@ var (
 		"syrup":          {},
 		"tablet":         {},
 		"others":         {},
+	}
+
+	oauthProviders map[string]struct{} = map[string]struct{}{
+		constants.OAuthProviderGoogle: {},
 	}
 
 	packUnits map[string]struct{} = map[string]struct{}{

@@ -88,7 +88,7 @@ func (m *RateLimiterMiddleware) LimitByAuthID(namespace string, window time.Dura
 			&models.LimitBySlidingWindowRL{
 				AuthID:    authCtx.AuthID,
 				Namespace: namespace,
-				Now:       time.Now(),
+				Now:       time.Now().UTC(),
 				Window:    window,
 				Limit:     limit,
 			},

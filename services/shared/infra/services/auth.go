@@ -13,8 +13,9 @@ import (
 )
 
 type AuthService struct {
-	conn *grpc.ClientConn
-	auth apis.AuthServiceClient
+	conn  *grpc.ClientConn
+	auth  apis.AuthServiceClient
+	oauth apis.OAuthServiceClient
 }
 
 func NewAuthService(cfg *configs.Service, l *zap.Logger) (*AuthService, error) {
@@ -37,13 +38,18 @@ func NewAuthService(cfg *configs.Service, l *zap.Logger) (*AuthService, error) {
 		strings.ToUpper(cfg.Name), cfg.Host, cfg.Port,
 	)
 	return &AuthService{
-		conn: conn,
-		auth: apis.NewAuthServiceClient(conn),
+		conn:  conn,
+		auth:  apis.NewAuthServiceClient(conn),
+		oauth: apis.NewOAuthServiceClient(conn),
 	}, nil
 }
 
 func (s *AuthService) AuthClient() apis.AuthServiceClient {
 	return s.auth
+}
+
+func (s *AuthService) OAuthClient() apis.OAuthServiceClient {
+	return s.oauth
 }
 
 func (s *AuthService) Close() error {

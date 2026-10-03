@@ -65,12 +65,9 @@ func (h *PharmacyHandler) CreatePharmacy(ctx *gin.Context) {
 	p, err := h.phc.CreatePharmacy(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
-			constants.MDKeyIsVerified,
-			strconv.FormatBool(authCtx.IsEmailVerified),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyIsVerified, strconv.FormatBool(authCtx.IsEmailVerified),
 		),
 		&models.CreatePharmacyReq{
 			Name:         payload.Name,
@@ -175,10 +172,8 @@ func (h *PharmacyHandler) GetMe(ctx *gin.Context) {
 	p, err := h.phc.GetMe(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
 		),
 	)
 	if err != nil {
@@ -259,8 +254,7 @@ func (h *PharmacyHandler) GetAllPharmacies(ctx *gin.Context) {
 	if authCtx := utils.CtxAuth(requestCtx); authCtx != nil {
 		requestCtx = utils.CtxWithMetadata(
 			requestCtx,
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		)
 	}
 
@@ -327,10 +321,8 @@ func (h *PharmacyHandler) UpdatePharmacy(ctx *gin.Context) {
 	p, err := h.phc.UpdatePharmacy(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
 		),
 		&models.UpdatePharmacyReq{
 			Name:         payload.Name,
@@ -398,12 +390,9 @@ func (h *PharmacyHandler) UpdateProfilePicture(ctx *gin.Context) {
 	p, err := h.phc.UpdateProfilePicture(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
-			constants.MDKeyPharmacyID,
-			authCtx.PharmacyID.String(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
 		),
 		payload.ProfilePictureURL,
 	)
@@ -453,12 +442,9 @@ func (h *PharmacyHandler) UpdateProfileBanner(ctx *gin.Context) {
 	p, err := h.phc.UpdateProfileBanner(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
-			constants.MDKeyPharmacyID,
-			authCtx.PharmacyID.String(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
 		),
 		payload.ProfileBannerURL,
 	)
@@ -492,12 +478,9 @@ func (h *PharmacyHandler) VerifyPharmacy(ctx *gin.Context) {
 	err := h.phc.VerifyPharmacy(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
-			constants.MDKeyRole,
-			authCtx.Role,
-			constants.MDKeyIsVerified,
-			strconv.FormatBool(authCtx.IsEmailVerified),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyIsVerified, strconv.FormatBool(authCtx.IsEmailVerified),
 		),
 		ctx.Param("pharmacy_id"),
 	)

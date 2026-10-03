@@ -131,6 +131,13 @@ func (v *Validator) Name(value, name string) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) OAuthProvider(value string) (bool, string) {
+	if _, exists := oauthProviders[value]; !exists {
+		return false, "OAuth provider is invalid: " + utils.ToTitlecase(value)
+	}
+	return true, ""
+}
+
 func (v *Validator) OnlineHours(value json.RawMessage) (bool, string) {
 	data, err := utils.FromJSONRawMessage[map[string][]string](value)
 	if err != nil {

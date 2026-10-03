@@ -152,7 +152,8 @@ func (e *Error) ToHTTPErr() int {
 	case
 		CodeInvalidParams,
 		CodeInvalidPayload,
-		CodeInvalidRequestMetadata:
+		CodeInvalidRequestMetadata,
+		CodeOAuthCancelled:
 		return http.StatusBadRequest
 	case
 		CodeRefreshTokenNotFound,

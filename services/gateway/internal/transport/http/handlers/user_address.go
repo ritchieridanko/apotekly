@@ -45,8 +45,7 @@ func (h *AddressHandler) CreateAddress(ctx *gin.Context) {
 	a, err := h.uac.CreateAddress(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.CreateAddressReq{
 			Label:        payload.Label,
@@ -112,8 +111,7 @@ func (h *AddressHandler) GetAllAddresses(ctx *gin.Context) {
 	as, total, err := h.uac.GetAllAddresses(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.GetAllAddressesReq{
 			Page:     int32(params.Page),
@@ -180,8 +178,7 @@ func (h *AddressHandler) UpdateAddress(ctx *gin.Context) {
 	a, updateErr := h.uac.UpdateAddress(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.UpdateAddressReq{
 			AddressID: addressID,
@@ -246,8 +243,7 @@ func (h *AddressHandler) DeleteAddress(ctx *gin.Context) {
 	delErr := h.uac.DeleteAddress(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		addressID,
 	)
@@ -288,8 +284,7 @@ func (h *AddressHandler) SetPrimaryAddress(ctx *gin.Context) {
 	a, setErr := h.uac.SetPrimaryAddress(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		addressID,
 	)

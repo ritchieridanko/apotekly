@@ -51,10 +51,8 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	a, at, err := h.ac.SignUp(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyIPAddress,
-			ip,
-			constants.MDKeyUserAgent,
-			ua,
+			constants.MDKeyIPAddress, ip,
+			constants.MDKeyUserAgent, ua,
 		),
 		&models.SignUpReq{
 			Email:    payload.Email,
@@ -107,10 +105,8 @@ func (h *AuthHandler) SignIn(ctx *gin.Context) {
 	a, at, err := h.ac.SignIn(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyIPAddress,
-			ip,
-			constants.MDKeyUserAgent,
-			ua,
+			constants.MDKeyIPAddress, ip,
+			constants.MDKeyUserAgent, ua,
 		),
 		&models.SignInReq{
 			Email:    payload.Email,
@@ -186,8 +182,7 @@ func (h *AuthHandler) SignOut(ctx *gin.Context) {
 	signOutErr := h.ac.SignOut(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		token,
 	)
@@ -323,8 +318,7 @@ func (h *AuthHandler) ResendVerification(ctx *gin.Context) {
 	email, err := h.ac.ResendVerification(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 	)
 	if err != nil {
@@ -391,8 +385,7 @@ func (h *AuthHandler) VerifyEmail(ctx *gin.Context) {
 	a, at, verifyErr := h.ac.VerifyEmail(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.VerifyEmailReq{
 			RefreshToken:      token,
@@ -460,8 +453,7 @@ func (h *AuthHandler) ChangeEmail(ctx *gin.Context) {
 	email, err := h.ac.ChangeEmail(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.ChangeEmailReq{
 			Password: payload.Password,
@@ -506,8 +498,7 @@ func (h *AuthHandler) ConfirmEmailChange(ctx *gin.Context) {
 	err := h.ac.ConfirmEmailChange(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		params.EmailChangeToken,
 	)
@@ -553,8 +544,7 @@ func (h *AuthHandler) ChangePassword(ctx *gin.Context) {
 	err := h.ac.ChangePassword(
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
-			constants.MDKeyAuthID,
-			strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
 		),
 		&models.ChangePasswordReq{
 			OldPassword: payload.OldPassword,

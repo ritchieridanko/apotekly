@@ -60,6 +60,7 @@ const (
 	CodeMoneyParsingFailed        errCode = "ERR_MONEY_PARSING_FAILED"
 	CodeNoPendingEventInbox       errCode = "ERR_NO_PENDING_EVENT_INBOX"
 	CodeNotFound                  errCode = "ERR_NOT_FOUND"
+	CodeOAuthCancelled            errCode = "ERR_OAUTH_CANCELLED"
 	CodeOAuthCodeExchangeFailed   errCode = "ERR_OAUTH_CODE_EXCHANGE_FAILED"
 	CodeOAuthEmailChange          errCode = "ERR_OAUTH_EMAIL_CHANGE"
 	CodeOAuthPasswordChange       errCode = "ERR_OAUTH_PASSWORD_CHANGE"
