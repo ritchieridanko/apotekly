@@ -92,6 +92,13 @@ func (v *Validator) Email(value string) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) ImageAltText(value string) (bool, string) {
+	if utf8.RuneCountInString(value) > imageAltTextMaxLength {
+		return false, "Alt text must not exceed " + strconv.Itoa(imageAltTextMaxLength) + " characters"
+	}
+	return true, ""
+}
+
 func (v *Validator) IPAddress(value string) (bool, string) {
 	if ip := net.ParseIP(value); ip == nil {
 		return false, "IP address is invalid: " + value

@@ -77,6 +77,8 @@ func (e *Error) ToGRPCErr() error {
 		CodeAuthNotFound,
 		CodeNotFound,
 		CodePharmacyNotFound,
+		CodeProductNotFound,
+		CodeProductPharmacyIDMismatch,
 		CodeSessionNotFound,
 		CodeUserNotFound:
 		return status.Error(codes.NotFound, e.message)
@@ -94,6 +96,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeEmailAlreadyVerified,
 		CodeEmailNotVerified,
 		CodeFailedPrecondition,
+		CodeMaxTotalImagesExceeded,
 		CodeOAuthEmailChange,
 		CodeOAuthPasswordChange,
 		CodePharmacyNotActive:

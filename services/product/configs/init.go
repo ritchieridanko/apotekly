@@ -15,11 +15,19 @@ type Config struct {
 	Server   cfg.GRPCServer `mapstructure:"server"`
 	Service  Service        `mapstructure:"service"`
 	Database cfg.Database   `mapstructure:"database"`
+	Storage  cfg.Storage    `mapstructure:"storage"`
 	Tracer   cfg.Tracer     `mapstructure:"tracer"`
+	Image    Image          `mapstructure:"image"`
 }
 
 type Service struct {
 	Pharmacy cfg.Service `mapstructure:"pharmacy"`
+}
+
+type Image struct {
+	Product struct {
+		MaxTotal int `mapstructure:"max_total"`
+	} `mapstructure:"product"`
 }
 
 func Init(path string) (*Config, error) {

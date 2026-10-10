@@ -1,5 +1,8 @@
 package models
 
+import "github.com/google/uuid"
+
+// Product
 type (
 	CreateProductReq struct {
 		BrandName      string
@@ -22,5 +25,22 @@ type (
 		ManufacturedIn string
 		RegAuthority   string
 		RegIdentifier  string
+	}
+)
+
+// Product Image
+type (
+	UploadProductImageReq struct {
+		Name    string
+		URL     string
+		AltText *string
+	}
+
+	UploadProductImagesReq struct {
+		// Params
+		ProductID uuid.UUID
+
+		// Data
+		Images []UploadProductImageReq
 	}
 )

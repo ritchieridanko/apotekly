@@ -31,7 +31,16 @@ func (p *AuthPolicy) IsRoleAuthorized(role string) bool {
 }
 
 var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
+	// Product
 	"/product.v1.ProductService/CreateProduct": {
+		authenticated: true,
+		roles: map[string]struct{}{
+			constants.RolePharmacy: {},
+		},
+	},
+
+	// Product Image
+	"/product.v1.ProductImageService/UploadProductImages": {
 		authenticated: true,
 		roles: map[string]struct{}{
 			constants.RolePharmacy: {},

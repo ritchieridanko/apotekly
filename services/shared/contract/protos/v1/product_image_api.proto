@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package product.v1;
+
+option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
+
+service ProductImageService {
+  rpc UploadProductImages (UploadProductImagesRequest) returns (UploadProductImagesResponse);
+}
+
+message ProductImage {
+  string id = 1;
+  string product_id = 2;
+  string name = 3;
+  string image = 4;
+  optional string alt_text = 5;
+  int32 sort_order = 6;
+}
+
+message UploadProductImageRequest {
+  string name = 1;
+  string url = 2;
+  optional string alt_text = 3;
+}
+
+message UploadProductImagesRequest {
+  // Params
+	string product_id = 1;
+
+  // Data
+  repeated UploadProductImageRequest images = 2;
+}
+
+message UploadProductImagesResponse {
+  repeated ProductImage product_images = 1;
+}

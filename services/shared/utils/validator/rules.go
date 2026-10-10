@@ -19,6 +19,7 @@ const (
 	bcryptMaxBytes          int = 72
 	descMaxLength           int = 1000
 	dosageStrengthMaxLength int = 20
+	imageAltTextMaxLength   int = 255
 	labelMaxLength          int = 50
 	labelMinLength          int = 3
 	nameMaxLength           int = 255

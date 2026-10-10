@@ -2,8 +2,10 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/product/internal/models"
 	db "github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
@@ -11,6 +13,7 @@ import (
 
 type ProductDatabase interface {
 	Create(ctx context.Context, data *models.CreateProduct) (p *models.Product, err *ce.Error)
+	GetPharmacyID(ctx context.Context, productID uuid.UUID) (pharmacyID uuid.UUID, err *ce.Error)
 }
 
 type productDatabase struct {
@@ -100,4 +103,36 @@ func (d *productDatabase) Create(ctx context.Context, data *models.CreateProduct
 	}
 
 	return &p, nil
+}
+
+func (d *productDatabase) GetPharmacyID(ctx context.Context, productID uuid.UUID) (uuid.UUID, *ce.Error) {
+	query := "SELECT pharmacy_id FROM products WHERE id = $1 AND deleted_at IS NULL"
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var pharmacyID uuid.UUID
+	err := d.database.Query(
+		ctx, query,
+		productID,
+	).Scan(
+		&pharmacyID,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get product pharmacy id: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return uuid.Nil, ce.NewError(
+				ce.CodeProductNotFound,
+				ce.MsgProductNotFound,
+				wrappedErr,
+			)
+		}
+		return uuid.Nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return pharmacyID, nil
 }

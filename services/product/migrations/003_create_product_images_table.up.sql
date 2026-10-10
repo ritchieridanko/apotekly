@@ -2,9 +2,10 @@ CREATE TABLE product_images (
   id UUID PRIMARY KEY,
   product_id UUID NOT NULL,
 
+  name VARCHAR NOT NULL,
   image VARCHAR NOT NULL,
   alt_text VARCHAR,
-  sort_order SMALLINT NOT NULL DEFAULT 0,
+  sort_order SMALLINT NOT NULL,
   
   UNIQUE (product_id, sort_order),
   
