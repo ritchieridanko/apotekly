@@ -13,8 +13,9 @@ import (
 )
 
 type ProductService struct {
-	conn    *grpc.ClientConn
-	product apis.ProductServiceClient
+	conn         *grpc.ClientConn
+	product      apis.ProductServiceClient
+	productImage apis.ProductImageServiceClient
 }
 
 func NewProductService(cfg *configs.Service, l *zap.Logger) (*ProductService, error) {
@@ -37,13 +38,18 @@ func NewProductService(cfg *configs.Service, l *zap.Logger) (*ProductService, er
 		strings.ToUpper(cfg.Name), cfg.Host, cfg.Port,
 	)
 	return &ProductService{
-		conn:    conn,
-		product: apis.NewProductServiceClient(conn),
+		conn:         conn,
+		product:      apis.NewProductServiceClient(conn),
+		productImage: apis.NewProductImageServiceClient(conn),
 	}, nil
 }
 
 func (s *ProductService) ProductClient() apis.ProductServiceClient {
 	return s.product
+}
+
+func (s *ProductService) ProductImageClient() apis.ProductImageServiceClient {
+	return s.productImage
 }
 
 func (s *ProductService) Close() error {

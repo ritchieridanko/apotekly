@@ -31,7 +31,7 @@ func NewOAuthHandler(clientAddr string, oac clients.OAuthClient, v *validator.Va
 }
 
 func (h *OAuthHandler) GetAuthURL(ctx *gin.Context) {
-	provider := ctx.Param("provider")
+	provider := ctx.Param(constants.URLParamProvider)
 	if ok, why := h.validator.OAuthProvider(provider); !ok {
 		ce.NewError(ce.CodeInvalidOAuthProvider, why, nil).Bind(ctx)
 		return
@@ -52,7 +52,7 @@ func (h *OAuthHandler) GetAuthURL(ctx *gin.Context) {
 }
 
 func (h *OAuthHandler) Callback(ctx *gin.Context) {
-	provider := ctx.Param("provider")
+	provider := ctx.Param(constants.URLParamProvider)
 	if ok, why := h.validator.OAuthProvider(provider); !ok {
 		ce.NewError(ce.CodeInvalidOAuthProvider, why, nil).Bind(ctx)
 		return

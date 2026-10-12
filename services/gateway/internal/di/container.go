@@ -25,6 +25,7 @@ type Container struct {
 	oac clients.OAuthClient
 	phc clients.PharmacyClient
 	prc clients.ProductClient
+	pic clients.ProductImageClient
 	uc  clients.UserClient
 	uac clients.AddressClient
 
@@ -38,6 +39,7 @@ type Container struct {
 	oah *handlers.OAuthHandler
 	phh *handlers.PharmacyHandler
 	prh *handlers.ProductHandler
+	pih *handlers.ProductImageHandler
 	uh  *handlers.UserHandler
 	uah *handlers.AddressHandler
 
@@ -57,6 +59,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	oac := clients.NewOAuthClient(inf.AuthService().OAuthClient())
 	phc := clients.NewPharmacyClient(inf.PharmacyService().PharmacyClient())
 	prc := clients.NewProductClient(inf.ProductService().ProductClient())
+	pic := clients.NewProductImageClient(inf.ProductService().ProductImageClient())
 	uc := clients.NewUserClient(inf.UserService().UserClient())
 	uac := clients.NewAddressClient(inf.UserService().AddressClient())
 
@@ -73,6 +76,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	oah := handlers.NewOAuthHandler(cfg.Client.Addr, oac, v, c)
 	phh := handlers.NewPharmacyHandler(phc, ac, v, c, l)
 	prh := handlers.NewProductHandler(prc)
+	pih := handlers.NewProductImageHandler(pic)
 	uh := handlers.NewUserHandler(uc)
 	uah := handlers.NewAddressHandler(uac)
 
@@ -80,7 +84,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	rlm := middlewares.NewRateLimiterMiddleware(rlcc, l)
 
 	// Router
-	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, rlm, ah, oah, phh, prh, uh, uah)
+	r := router.Init(cfg.App.Name, cfg.Client.Addr, j, l, rlm, ah, oah, phh, prh, pih, uh, uah)
 
 	// Server
 	srv := server.Init(&cfg.Server, r, l)
@@ -93,6 +97,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		oac:       oac,
 		phc:       phc,
 		prc:       prc,
+		pic:       pic,
 		uc:        uc,
 		uac:       uac,
 		rlcc:      rlcc,
@@ -103,6 +108,7 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 		oah:       oah,
 		phh:       phh,
 		prh:       prh,
+		pih:       pih,
 		uh:        uh,
 		uah:       uah,
 		rlm:       rlm,

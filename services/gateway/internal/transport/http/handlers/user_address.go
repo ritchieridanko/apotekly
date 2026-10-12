@@ -144,13 +144,13 @@ func (h *AddressHandler) GetAllAddresses(ctx *gin.Context) {
 }
 
 func (h *AddressHandler) UpdateAddress(ctx *gin.Context) {
-	id := ctx.Param("address_id")
+	id := ctx.Param(constants.URLParamAddressID)
 	addressID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		ce.NewError(
 			ce.CodeInvalidParams,
 			"Invalid address id: "+id,
-			fmt.Errorf("failed to convert address_id (%v) to uint64: %w", id, err),
+			fmt.Errorf("failed to convert %s (%v) to uint64: %w", constants.URLParamAddressID, id, err),
 		).Bind(
 			ctx,
 		)
@@ -215,13 +215,13 @@ func (h *AddressHandler) UpdateAddress(ctx *gin.Context) {
 }
 
 func (h *AddressHandler) DeleteAddress(ctx *gin.Context) {
-	id := ctx.Param("address_id")
+	id := ctx.Param(constants.URLParamAddressID)
 	addressID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		ce.NewError(
 			ce.CodeInvalidParams,
 			"Invalid address id: "+id,
-			fmt.Errorf("failed to convert address_id (%v) to uint64: %w", id, err),
+			fmt.Errorf("failed to convert %s (%v) to uint64: %w", constants.URLParamAddressID, id, err),
 		).Bind(
 			ctx,
 		)
@@ -256,13 +256,13 @@ func (h *AddressHandler) DeleteAddress(ctx *gin.Context) {
 }
 
 func (h *AddressHandler) SetPrimaryAddress(ctx *gin.Context) {
-	id := ctx.Param("address_id")
+	id := ctx.Param(constants.URLParamAddressID)
 	addressID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		ce.NewError(
 			ce.CodeInvalidParams,
 			"Invalid address id: "+id,
-			fmt.Errorf("failed to convert address_id (%v) to uint64: %w", id, err),
+			fmt.Errorf("failed to convert %s (%v) to uint64: %w", constants.URLParamAddressID, id, err),
 		).Bind(
 			ctx,
 		)

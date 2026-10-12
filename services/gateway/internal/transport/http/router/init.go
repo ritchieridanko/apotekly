@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/handlers"
 	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/middlewares"
+	"github.com/ritchieridanko/apotekly/services/shared/constants"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/jwt"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
@@ -26,6 +27,7 @@ func Init(
 	oah *handlers.OAuthHandler,
 	phh *handlers.PharmacyHandler,
 	prh *handlers.ProductHandler,
+	pih *handlers.ProductImageHandler,
 	uh *handlers.UserHandler,
 	uah *handlers.AddressHandler,
 ) *Router {
@@ -115,7 +117,7 @@ func Init(
 		}
 
 		// OAuth
-		oauth := auth.Group("/:provider", rlm.LimitByIPAddress("auth:oauth", 1*time.Minute, 20))
+		oauth := auth.Group("/:"+constants.URLParamProvider, rlm.LimitByIPAddress("auth:oauth", 1*time.Minute, 20))
 		{
 			// Sign In
 			oauth.GET("/signin", oah.GetAuthURL)
@@ -151,7 +153,7 @@ func Init(
 		}
 
 		// Pharmacy ID
-		pharmacyID := pharmacy.Group("/:pharmacy_id")
+		pharmacyID := pharmacy.Group("/:" + constants.URLParamPharmacyID)
 		{
 			// Fetch
 			pharmacyID.GET("", rlm.LimitByIPAddress("phar:pid", 1*time.Minute, 50), phh.GetPharmacyByID)
@@ -166,6 +168,17 @@ func Init(
 	{
 		// Create
 		product.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:pc", 1*time.Minute, 5), prh.CreateProduct)
+
+		// Product ID
+		productID := product.Group("/:" + constants.URLParamProductID)
+		{
+			// Images
+			image := productID.Group("/images")
+			{
+				// Upload Product Images
+				image.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:piu", 1*time.Minute, 10), pih.UploadProductImages)
+			}
+		}
 	}
 
 	// USER ENDPOINTS
@@ -199,7 +212,7 @@ func Init(
 				address.GET("", uah.GetAllAddresses)
 
 				// Address ID
-				addressID := address.Group("/:address_id")
+				addressID := address.Group("/:" + constants.URLParamAddressID)
 				{
 					// Update
 					addressID.PATCH("", uah.UpdateAddress)

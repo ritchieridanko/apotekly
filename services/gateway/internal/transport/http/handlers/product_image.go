@@ -1,0 +1,114 @@
+package handlers
+
+import (
+	"errors"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/ritchieridanko/apotekly/services/gateway/internal/clients"
+	"github.com/ritchieridanko/apotekly/services/gateway/internal/models"
+	"github.com/ritchieridanko/apotekly/services/gateway/internal/transport/http/dtos"
+	"github.com/ritchieridanko/apotekly/services/shared/constants"
+	"github.com/ritchieridanko/apotekly/services/shared/utils"
+	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
+)
+
+type ProductImageHandler struct {
+	pic clients.ProductImageClient
+}
+
+func NewProductImageHandler(pic clients.ProductImageClient) *ProductImageHandler {
+	return &ProductImageHandler{pic: pic}
+}
+
+func (h *ProductImageHandler) UploadProductImages(ctx *gin.Context) {
+	var payload dtos.UploadProductImagesRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	images := make([]models.UploadProductImageReq, 0, len(payload.Images))
+	for _, image := range payload.Images {
+		images = append(images, *h.toUploadProductImageReq(&image))
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+	if authCtx.PharmacyID == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	pis, err := h.pic.UploadProductImages(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
+		),
+		&models.UploadProductImagesReq{
+			ProductID: ctx.Param(constants.URLParamProductID),
+
+			Images: images,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	productImages := make([]dtos.ProductImage, 0, len(pis))
+	for _, pi := range pis {
+		productImages = append(productImages, *h.toProductImage(&pi))
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusCreated,
+		"Product images uploaded successfully",
+		dtos.UploadProductImagesResponse{ProductImages: productImages},
+		nil,
+	)
+}
+
+func (h *ProductImageHandler) toProductImage(pi *models.ProductImage) *dtos.ProductImage {
+	if pi == nil {
+		return nil
+	}
+	return &dtos.ProductImage{
+		ID:        pi.ID.String(),
+		ProductID: pi.ProductID.String(),
+		Name:      pi.Name,
+		Image:     pi.Image,
+		AltText:   pi.AltText,
+		SortOrder: pi.SortOrder,
+	}
+}
+
+func (h *ProductImageHandler) toUploadProductImageReq(req *dtos.UploadProductImageRequest) *models.UploadProductImageReq {
+	if req == nil {
+		return nil
+	}
+	return &models.UploadProductImageReq{
+		Name:    req.Name,
+		URL:     req.URL,
+		AltText: req.AltText,
+	}
+}

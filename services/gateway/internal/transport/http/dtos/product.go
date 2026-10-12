@@ -26,6 +26,17 @@ type (
 		RegAuthority   string  `json:"reg_authority" binding:"required"`
 		RegIdentifier  string  `json:"reg_identifier" binding:"required"`
 	}
+
+	// Product Image
+	UploadProductImageRequest struct {
+		Name    string  `json:"name" binding:"required"`
+		URL     string  `json:"url" binding:"required"`
+		AltText *string `json:"alt_text"`
+	}
+
+	UploadProductImagesRequest struct {
+		Images []UploadProductImageRequest `json:"images"`
+	}
 )
 
 // Responses
@@ -59,5 +70,19 @@ type (
 
 	CreateProductResponse struct {
 		Product *Product `json:"product,omitempty"`
+	}
+
+	// Product Image
+	ProductImage struct {
+		ID        string  `json:"id"`
+		ProductID string  `json:"product_id"`
+		Name      string  `json:"name"`
+		Image     string  `json:"image"`
+		AltText   *string `json:"alt_text"`
+		SortOrder int16   `json:"sort_order"`
+	}
+
+	UploadProductImagesResponse struct {
+		ProductImages []ProductImage `json:"product_images"`
 	}
 )

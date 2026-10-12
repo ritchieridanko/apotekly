@@ -33,4 +33,13 @@ type (
 		CreatedAt      *time.Time
 		UpdatedAt      *time.Time
 	}
+
+	ProductImage struct {
+		ID        uuid.UUID
+		ProductID uuid.UUID
+		Name      string
+		Image     string
+		AltText   *string
+		SortOrder int16
+	}
 )

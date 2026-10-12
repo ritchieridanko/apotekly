@@ -195,7 +195,7 @@ func (h *PharmacyHandler) GetPharmacyByID(ctx *gin.Context) {
 		utils.CtxWithMetadata(
 			ctx.Request.Context(),
 		),
-		ctx.Param("pharmacy_id"),
+		ctx.Param(constants.URLParamPharmacyID),
 	)
 	if err != nil {
 		err.Bind(ctx)
@@ -482,7 +482,7 @@ func (h *PharmacyHandler) VerifyPharmacy(ctx *gin.Context) {
 			constants.MDKeyRole, authCtx.Role,
 			constants.MDKeyIsVerified, strconv.FormatBool(authCtx.IsEmailVerified),
 		),
-		ctx.Param("pharmacy_id"),
+		ctx.Param(constants.URLParamPharmacyID),
 	)
 	if err != nil {
 		err.Bind(ctx)

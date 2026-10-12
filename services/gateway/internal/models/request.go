@@ -129,6 +129,21 @@ type (
 		RegAuthority   string
 		RegIdentifier  string
 	}
+
+	// Product Image Service
+	UploadProductImageReq struct {
+		Name    string
+		URL     string
+		AltText *string
+	}
+
+	UploadProductImagesReq struct {
+		// Params
+		ProductID string
+
+		// Data
+		Images []UploadProductImageReq
+	}
 )
 
 // User Service
