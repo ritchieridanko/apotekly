@@ -11,6 +11,7 @@ import (
 
 type ProductImageRepository interface {
 	CreateMany(ctx context.Context, data *models.CreateProductImages) (pis []models.ProductImage, err *ce.Error)
+	GetAll(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (pi *models.ProductImage, err *ce.Error)
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
 }
@@ -25,6 +26,10 @@ func NewProductImageRepository(db database.ProductImageDatabase) ProductImageRep
 
 func (r *productImageRepository) CreateMany(ctx context.Context, data *models.CreateProductImages) ([]models.ProductImage, *ce.Error) {
 	return r.database.CreateMany(ctx, data)
+}
+
+func (r *productImageRepository) GetAll(ctx context.Context, productID uuid.UUID) ([]models.ProductImage, *ce.Error) {
+	return r.database.GetAll(ctx, productID)
 }
 
 func (r *productImageRepository) Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (*models.ProductImage, *ce.Error) {

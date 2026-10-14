@@ -15,6 +15,7 @@ import (
 
 type ProductImageDatabase interface {
 	CreateMany(ctx context.Context, data *models.CreateProductImages) (pis []models.ProductImage, err *ce.Error)
+	GetAll(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (pi *models.ProductImage, err *ce.Error)
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
 }
@@ -109,6 +110,64 @@ func (d *productImageDatabase) CreateMany(ctx context.Context, data *models.Crea
 			ce.CodeDBQueryExec,
 			ce.MsgInternalServer,
 			fmt.Errorf("failed to create product images: %w", err),
+		)
+	}
+
+	return pis, nil
+}
+
+func (d *productImageDatabase) GetAll(ctx context.Context, productID uuid.UUID) ([]models.ProductImage, *ce.Error) {
+	query := `
+		SELECT
+			id, product_id, name, image, alt_text, sort_order
+		FROM
+			product_images
+		WHERE
+			product_id = $1
+		ORDER BY
+			sort_order ASC
+	`
+
+	rows, err := d.database.QueryAll(
+		ctx, query,
+		productID,
+	)
+	if err != nil {
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to get all product images: %w", err),
+		)
+	}
+	defer rows.Close()
+
+	pis := make([]models.ProductImage, 0)
+
+	for rows.Next() {
+		var pi models.ProductImage
+		err := rows.Scan(
+			&pi.ID,
+			&pi.ProductID,
+			&pi.Name,
+			&pi.Image,
+			&pi.AltText,
+			&pi.SortOrder,
+		)
+		if err != nil {
+			return nil, ce.NewError(
+				ce.CodeDBQueryExec,
+				ce.MsgInternalServer,
+				fmt.Errorf("failed to get all product images: %w", err),
+			)
+		}
+
+		pis = append(pis, pi)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			fmt.Errorf("failed to get all product images: %w", err),
 		)
 	}
 

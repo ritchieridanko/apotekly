@@ -45,6 +45,19 @@ func (h *ProductImageHandler) UploadProductImages(ctx context.Context, req *apis
 	return &apis.UploadProductImagesResponse{ProductImages: productImages}, nil
 }
 
+func (h *ProductImageHandler) GetAllProductImages(ctx context.Context, req *apis.GetAllProductImagesRequest) (*apis.GetAllProductImagesResponse, error) {
+	pis, err := h.piu.GetAllProductImages(ctx, utils.ToUUID(req.GetProductId()))
+	if err != nil {
+		return nil, err
+	}
+
+	productImages := make([]*apis.ProductImage, 0, len(pis))
+	for _, pi := range pis {
+		productImages = append(productImages, h.toProductImage(&pi))
+	}
+	return &apis.GetAllProductImagesResponse{ProductImages: productImages}, nil
+}
+
 func (h *ProductImageHandler) UpdateProductImage(ctx context.Context, req *apis.UpdateProductImageRequest) (*apis.UpdateProductImageResponse, error) {
 	pi, err := h.piu.UpdateProductImage(
 		ctx,

@@ -263,6 +263,94 @@ func (x *UploadProductImagesResponse) GetProductImages() []*ProductImage {
 	return nil
 }
 
+type GetAllProductImagesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllProductImagesRequest) Reset() {
+	*x = GetAllProductImagesRequest{}
+	mi := &file_v1_product_image_api_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllProductImagesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllProductImagesRequest) ProtoMessage() {}
+
+func (x *GetAllProductImagesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_product_image_api_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllProductImagesRequest.ProtoReflect.Descriptor instead.
+func (*GetAllProductImagesRequest) Descriptor() ([]byte, []int) {
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetAllProductImagesRequest) GetProductId() string {
+	if x != nil {
+		return x.ProductId
+	}
+	return ""
+}
+
+type GetAllProductImagesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductImages []*ProductImage        `protobuf:"bytes,1,rep,name=product_images,json=productImages,proto3" json:"product_images,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllProductImagesResponse) Reset() {
+	*x = GetAllProductImagesResponse{}
+	mi := &file_v1_product_image_api_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllProductImagesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllProductImagesResponse) ProtoMessage() {}
+
+func (x *GetAllProductImagesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_product_image_api_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllProductImagesResponse.ProtoReflect.Descriptor instead.
+func (*GetAllProductImagesResponse) Descriptor() ([]byte, []int) {
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetAllProductImagesResponse) GetProductImages() []*ProductImage {
+	if x != nil {
+		return x.ProductImages
+	}
+	return nil
+}
+
 type UpdateProductImageRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Params
@@ -277,7 +365,7 @@ type UpdateProductImageRequest struct {
 
 func (x *UpdateProductImageRequest) Reset() {
 	*x = UpdateProductImageRequest{}
-	mi := &file_v1_product_image_api_proto_msgTypes[4]
+	mi := &file_v1_product_image_api_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -289,7 +377,7 @@ func (x *UpdateProductImageRequest) String() string {
 func (*UpdateProductImageRequest) ProtoMessage() {}
 
 func (x *UpdateProductImageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_product_image_api_proto_msgTypes[4]
+	mi := &file_v1_product_image_api_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -302,7 +390,7 @@ func (x *UpdateProductImageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProductImageRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProductImageRequest) Descriptor() ([]byte, []int) {
-	return file_v1_product_image_api_proto_rawDescGZIP(), []int{4}
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateProductImageRequest) GetProductImageId() string {
@@ -342,7 +430,7 @@ type UpdateProductImageResponse struct {
 
 func (x *UpdateProductImageResponse) Reset() {
 	*x = UpdateProductImageResponse{}
-	mi := &file_v1_product_image_api_proto_msgTypes[5]
+	mi := &file_v1_product_image_api_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +442,7 @@ func (x *UpdateProductImageResponse) String() string {
 func (*UpdateProductImageResponse) ProtoMessage() {}
 
 func (x *UpdateProductImageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_product_image_api_proto_msgTypes[5]
+	mi := &file_v1_product_image_api_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +455,7 @@ func (x *UpdateProductImageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProductImageResponse.ProtoReflect.Descriptor instead.
 func (*UpdateProductImageResponse) Descriptor() ([]byte, []int) {
-	return file_v1_product_image_api_proto_rawDescGZIP(), []int{5}
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdateProductImageResponse) GetProductImage() *ProductImage {
@@ -403,6 +491,11 @@ const file_v1_product_image_api_proto_rawDesc = "" +
 	"product_id\x18\x01 \x01(\tR\tproductId\x12=\n" +
 	"\x06images\x18\x02 \x03(\v2%.product.v1.UploadProductImageRequestR\x06images\"^\n" +
 	"\x1bUploadProductImagesResponse\x12?\n" +
+	"\x0eproduct_images\x18\x01 \x03(\v2\x18.product.v1.ProductImageR\rproductImages\";\n" +
+	"\x1aGetAllProductImagesRequest\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\"^\n" +
+	"\x1bGetAllProductImagesResponse\x12?\n" +
 	"\x0eproduct_images\x18\x01 \x03(\v2\x18.product.v1.ProductImageR\rproductImages\"\xb3\x01\n" +
 	"\x19UpdateProductImageRequest\x12(\n" +
 	"\x10product_image_id\x18\x01 \x01(\tR\x0eproductImageId\x12\x1d\n" +
@@ -413,9 +506,10 @@ const file_v1_product_image_api_proto_rawDesc = "" +
 	"\x05_nameB\v\n" +
 	"\t_alt_text\"[\n" +
 	"\x1aUpdateProductImageResponse\x12=\n" +
-	"\rproduct_image\x18\x01 \x01(\v2\x18.product.v1.ProductImageR\fproductImage2\xe2\x01\n" +
+	"\rproduct_image\x18\x01 \x01(\v2\x18.product.v1.ProductImageR\fproductImage2\xca\x02\n" +
 	"\x13ProductImageService\x12f\n" +
-	"\x13UploadProductImages\x12&.product.v1.UploadProductImagesRequest\x1a'.product.v1.UploadProductImagesResponse\x12c\n" +
+	"\x13UploadProductImages\x12&.product.v1.UploadProductImagesRequest\x1a'.product.v1.UploadProductImagesResponse\x12f\n" +
+	"\x13GetAllProductImages\x12&.product.v1.GetAllProductImagesRequest\x1a'.product.v1.GetAllProductImagesResponse\x12c\n" +
 	"\x12UpdateProductImage\x12%.product.v1.UpdateProductImageRequest\x1a&.product.v1.UpdateProductImageResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
@@ -430,28 +524,33 @@ func file_v1_product_image_api_proto_rawDescGZIP() []byte {
 	return file_v1_product_image_api_proto_rawDescData
 }
 
-var file_v1_product_image_api_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_v1_product_image_api_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_v1_product_image_api_proto_goTypes = []any{
 	(*ProductImage)(nil),                // 0: product.v1.ProductImage
 	(*UploadProductImageRequest)(nil),   // 1: product.v1.UploadProductImageRequest
 	(*UploadProductImagesRequest)(nil),  // 2: product.v1.UploadProductImagesRequest
 	(*UploadProductImagesResponse)(nil), // 3: product.v1.UploadProductImagesResponse
-	(*UpdateProductImageRequest)(nil),   // 4: product.v1.UpdateProductImageRequest
-	(*UpdateProductImageResponse)(nil),  // 5: product.v1.UpdateProductImageResponse
+	(*GetAllProductImagesRequest)(nil),  // 4: product.v1.GetAllProductImagesRequest
+	(*GetAllProductImagesResponse)(nil), // 5: product.v1.GetAllProductImagesResponse
+	(*UpdateProductImageRequest)(nil),   // 6: product.v1.UpdateProductImageRequest
+	(*UpdateProductImageResponse)(nil),  // 7: product.v1.UpdateProductImageResponse
 }
 var file_v1_product_image_api_proto_depIdxs = []int32{
 	1, // 0: product.v1.UploadProductImagesRequest.images:type_name -> product.v1.UploadProductImageRequest
 	0, // 1: product.v1.UploadProductImagesResponse.product_images:type_name -> product.v1.ProductImage
-	0, // 2: product.v1.UpdateProductImageResponse.product_image:type_name -> product.v1.ProductImage
-	2, // 3: product.v1.ProductImageService.UploadProductImages:input_type -> product.v1.UploadProductImagesRequest
-	4, // 4: product.v1.ProductImageService.UpdateProductImage:input_type -> product.v1.UpdateProductImageRequest
-	3, // 5: product.v1.ProductImageService.UploadProductImages:output_type -> product.v1.UploadProductImagesResponse
-	5, // 6: product.v1.ProductImageService.UpdateProductImage:output_type -> product.v1.UpdateProductImageResponse
-	5, // [5:7] is the sub-list for method output_type
-	3, // [3:5] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0, // 2: product.v1.GetAllProductImagesResponse.product_images:type_name -> product.v1.ProductImage
+	0, // 3: product.v1.UpdateProductImageResponse.product_image:type_name -> product.v1.ProductImage
+	2, // 4: product.v1.ProductImageService.UploadProductImages:input_type -> product.v1.UploadProductImagesRequest
+	4, // 5: product.v1.ProductImageService.GetAllProductImages:input_type -> product.v1.GetAllProductImagesRequest
+	6, // 6: product.v1.ProductImageService.UpdateProductImage:input_type -> product.v1.UpdateProductImageRequest
+	3, // 7: product.v1.ProductImageService.UploadProductImages:output_type -> product.v1.UploadProductImagesResponse
+	5, // 8: product.v1.ProductImageService.GetAllProductImages:output_type -> product.v1.GetAllProductImagesResponse
+	7, // 9: product.v1.ProductImageService.UpdateProductImage:output_type -> product.v1.UpdateProductImageResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_v1_product_image_api_proto_init() }
@@ -461,14 +560,14 @@ func file_v1_product_image_api_proto_init() {
 	}
 	file_v1_product_image_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_product_image_api_proto_msgTypes[1].OneofWrappers = []any{}
-	file_v1_product_image_api_proto_msgTypes[4].OneofWrappers = []any{}
+	file_v1_product_image_api_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_product_image_api_proto_rawDesc), len(file_v1_product_image_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

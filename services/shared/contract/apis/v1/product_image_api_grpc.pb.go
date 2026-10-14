@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ProductImageService_UploadProductImages_FullMethodName = "/product.v1.ProductImageService/UploadProductImages"
+	ProductImageService_GetAllProductImages_FullMethodName = "/product.v1.ProductImageService/GetAllProductImages"
 	ProductImageService_UpdateProductImage_FullMethodName  = "/product.v1.ProductImageService/UpdateProductImage"
 )
 
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductImageServiceClient interface {
 	UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error)
+	GetAllProductImages(ctx context.Context, in *GetAllProductImagesRequest, opts ...grpc.CallOption) (*GetAllProductImagesResponse, error)
 	UpdateProductImage(ctx context.Context, in *UpdateProductImageRequest, opts ...grpc.CallOption) (*UpdateProductImageResponse, error)
 }
 
@@ -49,6 +51,16 @@ func (c *productImageServiceClient) UploadProductImages(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *productImageServiceClient) GetAllProductImages(ctx context.Context, in *GetAllProductImagesRequest, opts ...grpc.CallOption) (*GetAllProductImagesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllProductImagesResponse)
+	err := c.cc.Invoke(ctx, ProductImageService_GetAllProductImages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *productImageServiceClient) UpdateProductImage(ctx context.Context, in *UpdateProductImageRequest, opts ...grpc.CallOption) (*UpdateProductImageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateProductImageResponse)
@@ -64,6 +76,7 @@ func (c *productImageServiceClient) UpdateProductImage(ctx context.Context, in *
 // for forward compatibility.
 type ProductImageServiceServer interface {
 	UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error)
+	GetAllProductImages(context.Context, *GetAllProductImagesRequest) (*GetAllProductImagesResponse, error)
 	UpdateProductImage(context.Context, *UpdateProductImageRequest) (*UpdateProductImageResponse, error)
 	mustEmbedUnimplementedProductImageServiceServer()
 }
@@ -77,6 +90,9 @@ type UnimplementedProductImageServiceServer struct{}
 
 func (UnimplementedProductImageServiceServer) UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadProductImages not implemented")
+}
+func (UnimplementedProductImageServiceServer) GetAllProductImages(context.Context, *GetAllProductImagesRequest) (*GetAllProductImagesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllProductImages not implemented")
 }
 func (UnimplementedProductImageServiceServer) UpdateProductImage(context.Context, *UpdateProductImageRequest) (*UpdateProductImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProductImage not implemented")
@@ -120,6 +136,24 @@ func _ProductImageService_UploadProductImages_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductImageService_GetAllProductImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllProductImagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductImageServiceServer).GetAllProductImages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductImageService_GetAllProductImages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductImageServiceServer).GetAllProductImages(ctx, req.(*GetAllProductImagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProductImageService_UpdateProductImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateProductImageRequest)
 	if err := dec(in); err != nil {
@@ -148,6 +182,10 @@ var ProductImageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadProductImages",
 			Handler:    _ProductImageService_UploadProductImages_Handler,
+		},
+		{
+			MethodName: "GetAllProductImages",
+			Handler:    _ProductImageService_GetAllProductImages_Handler,
 		},
 		{
 			MethodName: "UpdateProductImage",

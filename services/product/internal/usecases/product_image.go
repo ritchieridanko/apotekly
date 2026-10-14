@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/product/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/product/internal/models"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories"
@@ -20,6 +21,7 @@ import (
 
 type ProductImageUsecase interface {
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
+	GetAllProductImages(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
 }
 
@@ -219,6 +221,10 @@ func (u *productImageUsecase) UploadProductImages(ctx context.Context, req *mode
 	}
 
 	return pis, nil
+}
+
+func (u *productImageUsecase) GetAllProductImages(ctx context.Context, productID uuid.UUID) ([]models.ProductImage, *ce.Error) {
+	return u.pir.GetAll(ctx, productID)
 }
 
 func (u *productImageUsecase) UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (*models.ProductImage, *ce.Error) {
