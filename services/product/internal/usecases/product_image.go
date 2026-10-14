@@ -20,6 +20,7 @@ import (
 
 type ProductImageUsecase interface {
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
+	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
 }
 
 type productImageUsecase struct {
@@ -218,4 +219,105 @@ func (u *productImageUsecase) UploadProductImages(ctx context.Context, req *mode
 	}
 
 	return pis, nil
+}
+
+func (u *productImageUsecase) UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (*models.ProductImage, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "productImage.usecase.UpdateProductImage")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+	if authCtx.PharmacyID == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		)
+	}
+
+	authFields := []logger.Field{
+		logger.NewField("auth_id", authCtx.AuthID),
+		logger.NewField("pharmacy_id", authCtx.PharmacyID.String()),
+	}
+
+	// Pharmacy Status Fetching
+	status, err := u.pc.GetStatus(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeNotFound {
+		return nil, ce.NewError(
+			ce.CodeRoleMismatch,
+			ce.MsgInternalServer,
+			err.Unwrap(),
+			err.Append(
+				authFields...,
+			).Fields()...,
+		)
+	}
+	if err != nil {
+		return nil, err.Append(authFields...)
+	}
+	if status != constants.PharmacyStatusActive {
+		return nil, ce.NewError(
+			ce.CodePharmacyNotActive,
+			"Pharmacy account is "+status,
+			nil,
+			authFields...,
+		)
+	}
+
+	// Pharmacy ID Check
+	pharmacyID, err := u.pr.GetPharmacyID(ctx, req.ProductID)
+	if err != nil {
+		return nil, err.Append(authFields...)
+	}
+	if *authCtx.PharmacyID != pharmacyID {
+		return nil, ce.NewError(
+			ce.CodeProductPharmacyIDMismatch,
+			ce.MsgProductNotFound,
+			nil,
+			append(
+				authFields,
+				logger.NewField("product_pharmacy_id", pharmacyID.String()),
+			)...,
+		)
+	}
+
+	// Data Normalization
+	name := utils.TrimSpacePtr(req.Name)
+	altText := utils.TrimSpacePtr(req.AltText)
+
+	// Data Validation
+	if name != nil {
+		if ok, why := u.validator.Name(*name, "Image name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if altText != nil {
+		if ok, why := u.validator.ImageAltText(*altText); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+
+	// Product Image Update
+	pi, err := u.pir.Update(
+		ctx,
+		&models.UpdateProductImageP{
+			ProductImageID: req.ProductImageID,
+			ProductID:      req.ProductID,
+		},
+		&models.UpdateProductImageD{
+			Name:    name,
+			AltText: altText,
+		},
+	)
+	if err != nil {
+		return nil, err.Append(authFields...)
+	}
+
+	return pi, nil
 }

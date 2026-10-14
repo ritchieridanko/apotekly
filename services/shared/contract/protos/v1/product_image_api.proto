@@ -6,6 +6,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 
 service ProductImageService {
   rpc UploadProductImages (UploadProductImagesRequest) returns (UploadProductImagesResponse);
+  rpc UpdateProductImage (UpdateProductImageRequest) returns (UpdateProductImageResponse);
 }
 
 message ProductImage {
@@ -33,4 +34,18 @@ message UploadProductImagesRequest {
 
 message UploadProductImagesResponse {
   repeated ProductImage product_images = 1;
+}
+
+message UpdateProductImageRequest {
+  // Params
+  string product_image_id = 1;
+  string product_id = 2;
+
+  // Data
+  optional string name = 3;
+  optional string alt_text = 4;
+}
+
+message UpdateProductImageResponse {
+  ProductImage product_image = 1;
 }

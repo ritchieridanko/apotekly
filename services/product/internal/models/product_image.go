@@ -24,4 +24,14 @@ type (
 		ProductID uuid.UUID
 		Images    []CreateProductImage
 	}
+
+	UpdateProductImageP struct {
+		ProductImageID uuid.UUID
+		ProductID      uuid.UUID
+	}
+
+	UpdateProductImageD struct {
+		Name    *string
+		AltText *string
+	}
 )

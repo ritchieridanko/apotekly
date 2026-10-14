@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -14,6 +15,7 @@ import (
 
 type ProductImageDatabase interface {
 	CreateMany(ctx context.Context, data *models.CreateProductImages) (pis []models.ProductImage, err *ce.Error)
+	Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (pi *models.ProductImage, err *ce.Error)
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
 }
 
@@ -111,6 +113,73 @@ func (d *productImageDatabase) CreateMany(ctx context.Context, data *models.Crea
 	}
 
 	return pis, nil
+}
+
+func (d *productImageDatabase) Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (*models.ProductImage, *ce.Error) {
+	setClauses := []string{}
+	args := []any{}
+	argPos := 1
+
+	if data.Name != nil {
+		setClauses = append(setClauses, "name = $"+strconv.Itoa(argPos))
+		args = append(args, *data.Name)
+		argPos++
+	}
+	if data.AltText != nil {
+		setClauses = append(setClauses, "alt_text = $"+strconv.Itoa(argPos))
+		args = append(args, *data.AltText)
+		argPos++
+	}
+	if len(setClauses) == 0 {
+		return nil, ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, nil)
+	}
+
+	setClauses = append(setClauses, "updated_at = NOW()")
+	args = append(args, params.ProductImageID, params.ProductID)
+	query := fmt.Sprintf(
+		`
+			UPDATE
+				product_images
+			SET
+				%s
+			WHERE
+				id = $%d
+				AND product_id = $%d
+			RETURNING
+				id, product_id, name, image, alt_text, sort_order
+		`,
+		strings.Join(setClauses, ", "), argPos, argPos+1,
+	)
+
+	var pi models.ProductImage
+	err := d.database.Query(
+		ctx, query,
+		args...,
+	).Scan(
+		&pi.ID,
+		&pi.ProductID,
+		&pi.Name,
+		&pi.Image,
+		&pi.AltText,
+		&pi.SortOrder,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to update product image: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeProductImageNotFound,
+				ce.MsgProductImageNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &pi, nil
 }
 
 func (d *productImageDatabase) CountAll(ctx context.Context, productID uuid.UUID) (int64, int16, *ce.Error) {

@@ -77,6 +77,7 @@ func (e *Error) ToGRPCErr() error {
 		CodeAuthNotFound,
 		CodeNotFound,
 		CodePharmacyNotFound,
+		CodeProductImageNotFound,
 		CodeProductNotFound,
 		CodeProductPharmacyIDMismatch,
 		CodeSessionNotFound,
