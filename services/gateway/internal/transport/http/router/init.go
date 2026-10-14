@@ -54,7 +54,7 @@ func Init(
 		middlewares.Logging(l),
 	)
 
-	// AUTH ENDPOINTS
+	// Path: /v1/auth
 	auth := v1.Group("/auth")
 	{
 		// Sign Up
@@ -69,13 +69,13 @@ func Init(
 		// Rotate Token
 		auth.POST("/refresh", rlm.LimitByIPAddress("auth:r", 1*time.Minute, 20), ah.RotateAuthToken)
 
-		// Emails
+		// Path: /v1/auth/email
 		email := auth.Group("/email")
 		{
 			// Check Availability
 			email.GET("/available", rlm.LimitByIPAddress("auth:eac", 1*time.Minute, 20), ah.IsEmailAvailable)
 
-			// Verifications
+			// Path: /v1/auth/email/verification
 			verification := email.Group("/verification", middlewares.Auth(j), rlm.LimitByAuthID("auth:ev", 1*time.Minute, 10))
 			{
 				// Resend
@@ -85,7 +85,7 @@ func Init(
 				verification.POST("/confirm", ah.VerifyEmail)
 			}
 
-			// Changes
+			// Path: /v1/auth/email/change
 			change := email.Group("/change", middlewares.Auth(j), rlm.LimitByAuthID("auth:ec", 1*time.Minute, 10))
 			{
 				// Request
@@ -96,13 +96,13 @@ func Init(
 			}
 		}
 
-		// Passwords
+		// Path: /v1/auth/password
 		password := auth.Group("/password")
 		{
 			// Update
 			password.PATCH("", middlewares.Auth(j), rlm.LimitByAuthID("auth:pc", 1*time.Minute, 10), ah.ChangePassword)
 
-			// Resets
+			// Path: /v1/auth/password/reset
 			reset := password.Group("/reset", rlm.LimitByIPAddress("auth:pr", 1*time.Minute, 20))
 			{
 				// Request
@@ -116,7 +116,7 @@ func Init(
 			}
 		}
 
-		// OAuth
+		// Path: /v1/auth/:provider
 		oauth := auth.Group("/:"+constants.URLParamProvider, rlm.LimitByIPAddress("auth:oauth", 1*time.Minute, 20))
 		{
 			// Sign In
@@ -127,7 +127,7 @@ func Init(
 		}
 	}
 
-	// PHARMACY ENDPOINTS
+	// Path: /v1/pharmacies
 	pharmacy := v1.Group("/pharmacies")
 	{
 		// Create
@@ -136,7 +136,7 @@ func Init(
 		// Fetch All
 		pharmacy.GET("", rlm.LimitByIPAddress("phar:pfa", 1*time.Minute, 50), middlewares.AuthOptional(j), phh.GetAllPharmacies)
 
-		// Me
+		// Path: /v1/pharmacies/me
 		me := pharmacy.Group("/me", middlewares.Auth(j))
 		{
 			// Fetch
@@ -152,7 +152,7 @@ func Init(
 			me.PUT("/profile-banner", rlm.LimitByAuthID("phar:pbu", 1*time.Minute, 10), phh.UpdateProfileBanner)
 		}
 
-		// Pharmacy ID
+		// Path: /v1/pharmacies/:pharmacy_id
 		pharmacyID := pharmacy.Group("/:" + constants.URLParamPharmacyID)
 		{
 			// Fetch
@@ -163,31 +163,38 @@ func Init(
 		}
 	}
 
-	// PRODUCT ENDPOINTS
+	// Path: /v1/products
 	product := v1.Group("/products")
 	{
 		// Create
 		product.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:pc", 1*time.Minute, 5), prh.CreateProduct)
 
-		// Product ID
+		// Path: /v1/products/:product_id
 		productID := product.Group("/:" + constants.URLParamProductID)
 		{
-			// Images
+			// Path: /v1/products/:product_id/images
 			image := productID.Group("/images")
 			{
-				// Upload Product Images
-				image.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:piu", 1*time.Minute, 10), pih.UploadProductImages)
+				// Upload
+				image.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:pic", 1*time.Minute, 10), pih.UploadProductImages)
+
+				// Path: /v1/products/:product_id/images/:product_image_id
+				imageID := image.Group("/:" + constants.URLParamProductImageID)
+				{
+					// Update
+					imageID.PATCH("", middlewares.Auth(j), rlm.LimitByAuthID("prod:piu", 1*time.Minute, 20), pih.UpdateProductImage)
+				}
 			}
 		}
 	}
 
-	// USER ENDPOINTS
+	// Path: /v1/users
 	user := v1.Group("/users")
 	{
 		// Create
 		user.POST("", middlewares.Auth(j), rlm.LimitByAuthID("user:uc", 1*time.Minute, 5), uh.CreateUser)
 
-		// Me
+		// Path: /v1/users/me
 		me := user.Group("/me", middlewares.Auth(j))
 		{
 			// Fetch
@@ -202,7 +209,7 @@ func Init(
 			// Update Profile Banner
 			me.PUT("/profile-banner", rlm.LimitByAuthID("user:pbu", 1*time.Minute, 10), uh.UpdateProfileBanner)
 
-			// Addresses
+			// Path: /v1/users/me/addresses
 			address := me.Group("/addresses", rlm.LimitByAuthID("user:addr", 1*time.Minute, 30))
 			{
 				// Create
@@ -211,7 +218,7 @@ func Init(
 				// Fetch All
 				address.GET("", uah.GetAllAddresses)
 
-				// Address ID
+				// Path: /v1/users/me/addresses/:address_id
 				addressID := address.Group("/:" + constants.URLParamAddressID)
 				{
 					// Update

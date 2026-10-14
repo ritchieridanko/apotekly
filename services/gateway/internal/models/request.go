@@ -144,6 +144,16 @@ type (
 		// Data
 		Images []UploadProductImageReq
 	}
+
+	UpdateProductImageReq struct {
+		// Params
+		ProductImageID string
+		ProductID      string
+
+		// Data
+		Name    *string
+		AltText *string
+	}
 )
 
 // User Service

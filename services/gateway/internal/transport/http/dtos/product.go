@@ -37,6 +37,11 @@ type (
 	UploadProductImagesRequest struct {
 		Images []UploadProductImageRequest `json:"images"`
 	}
+
+	UpdateProductImageRequest struct {
+		Name    *string `json:"name"`
+		AltText *string `json:"alt_text"`
+	}
 )
 
 // Responses
@@ -84,5 +89,9 @@ type (
 
 	UploadProductImagesResponse struct {
 		ProductImages []ProductImage `json:"product_images"`
+	}
+
+	UpdateProductImageResponse struct {
+		ProductImage *ProductImage `json:"product_image,omitempty"`
 	}
 )

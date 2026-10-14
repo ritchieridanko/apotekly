@@ -88,6 +88,64 @@ func (h *ProductImageHandler) UploadProductImages(ctx *gin.Context) {
 	)
 }
 
+func (h *ProductImageHandler) UpdateProductImage(ctx *gin.Context) {
+	var payload dtos.UpdateProductImageRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+	if authCtx.PharmacyID == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	pi, err := h.pic.UpdateProductImage(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
+		),
+		&models.UpdateProductImageReq{
+			ProductImageID: ctx.Param(constants.URLParamProductImageID),
+			ProductID:      ctx.Param(constants.URLParamProductID),
+
+			Name:    payload.Name,
+			AltText: payload.AltText,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Product image updated successfully",
+		dtos.UpdateProductImageResponse{ProductImage: h.toProductImage(pi)},
+		nil,
+	)
+}
+
 func (h *ProductImageHandler) toProductImage(pi *models.ProductImage) *dtos.ProductImage {
 	if pi == nil {
 		return nil
