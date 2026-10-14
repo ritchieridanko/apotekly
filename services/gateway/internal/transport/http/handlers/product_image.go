@@ -88,6 +88,32 @@ func (h *ProductImageHandler) UploadProductImages(ctx *gin.Context) {
 	)
 }
 
+func (h *ProductImageHandler) GetAllProductImages(ctx *gin.Context) {
+	pis, err := h.pic.GetAllProductImages(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		ctx.Param(constants.URLParamProductID),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	productImages := make([]dtos.ProductImage, 0, len(pis))
+	for _, pi := range pis {
+		productImages = append(productImages, *h.toProductImage(&pi))
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Product images retrieved successfully",
+		dtos.GetAllProductImagesResponse{ProductImages: productImages},
+		nil,
+	)
+}
+
 func (h *ProductImageHandler) UpdateProductImage(ctx *gin.Context) {
 	var payload dtos.UpdateProductImageRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {

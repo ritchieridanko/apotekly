@@ -91,6 +91,10 @@ type (
 		ProductImages []ProductImage `json:"product_images"`
 	}
 
+	GetAllProductImagesResponse struct {
+		ProductImages []ProductImage `json:"product_images"`
+	}
+
 	UpdateProductImageResponse struct {
 		ProductImage *ProductImage `json:"product_image,omitempty"`
 	}

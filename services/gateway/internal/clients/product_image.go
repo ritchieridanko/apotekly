@@ -14,6 +14,7 @@ var productImageServiceField logger.Field = logger.NewField("service", "product.
 
 type ProductImageClient interface {
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
+	GetAllProductImages(ctx context.Context, productID string) (pis []models.ProductImage, err *ce.Error)
 	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
 }
 
@@ -36,6 +37,32 @@ func (c *productImageClient) UploadProductImages(ctx context.Context, req *model
 		&apis.UploadProductImagesRequest{
 			ProductId: req.ProductID,
 			Images:    images,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			productImageServiceField,
+		)
+	}
+
+	pis := make([]models.ProductImage, 0, len(resp.GetProductImages()))
+	for _, pi := range resp.GetProductImages() {
+		if pi == nil {
+			continue
+		}
+		pis = append(pis, *c.toProductImage(pi))
+	}
+
+	return pis, nil
+}
+
+func (c *productImageClient) GetAllProductImages(ctx context.Context, productID string) ([]models.ProductImage, *ce.Error) {
+	resp, err := c.client.GetAllProductImages(
+		ctx,
+		&apis.GetAllProductImagesRequest{
+			ProductId: productID,
 		},
 	)
 	if err != nil {

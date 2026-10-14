@@ -178,6 +178,9 @@ func Init(
 				// Upload
 				image.POST("", middlewares.Auth(j), rlm.LimitByAuthID("prod:pic", 1*time.Minute, 10), pih.UploadProductImages)
 
+				// Fetch All
+				image.GET("", rlm.LimitByIPAddress("prod:pifa", 1*time.Minute, 50), pih.GetAllProductImages)
+
 				// Path: /v1/products/:product_id/images/:product_image_id
 				imageID := image.Group("/:" + constants.URLParamProductImageID)
 				{
