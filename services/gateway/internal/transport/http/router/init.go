@@ -182,10 +182,13 @@ func Init(
 				image.GET("", rlm.LimitByIPAddress("prod:pifa", 1*time.Minute, 50), pih.GetAllProductImages)
 
 				// Path: /v1/products/:product_id/images/:product_image_id
-				imageID := image.Group("/:" + constants.URLParamProductImageID)
+				imageID := image.Group("/:"+constants.URLParamProductImageID, middlewares.Auth(j))
 				{
 					// Update
-					imageID.PATCH("", middlewares.Auth(j), rlm.LimitByAuthID("prod:piu", 1*time.Minute, 20), pih.UpdateProductImage)
+					imageID.PATCH("", rlm.LimitByAuthID("prod:piu", 1*time.Minute, 20), pih.UpdateProductImage)
+
+					// Reorder
+					imageID.PUT("/reorder", rlm.LimitByAuthID("prod:pir", 1*time.Minute, 20), pih.ReorderProductImage)
 				}
 			}
 		}

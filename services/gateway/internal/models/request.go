@@ -154,6 +154,15 @@ type (
 		Name    *string
 		AltText *string
 	}
+
+	ReorderProductImageReq struct {
+		// Params
+		ProductImageID string
+		ProductID      string
+
+		// Data
+		NewSortOrder int16
+	}
 )
 
 // User Service

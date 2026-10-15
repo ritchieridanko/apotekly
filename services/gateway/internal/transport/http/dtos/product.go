@@ -42,6 +42,10 @@ type (
 		Name    *string `json:"name"`
 		AltText *string `json:"alt_text"`
 	}
+
+	ReorderProductImageRequest struct {
+		NewSortOrder int16 `json:"new_sort_order" binding:"required"`
+	}
 )
 
 // Responses
@@ -96,6 +100,10 @@ type (
 	}
 
 	UpdateProductImageResponse struct {
+		ProductImage *ProductImage `json:"product_image,omitempty"`
+	}
+
+	ReorderProductImageResponse struct {
 		ProductImage *ProductImage `json:"product_image,omitempty"`
 	}
 )

@@ -16,6 +16,7 @@ type ProductImageClient interface {
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
 	GetAllProductImages(ctx context.Context, productID string) (pis []models.ProductImage, err *ce.Error)
 	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
+	ReorderProductImage(ctx context.Context, req *models.ReorderProductImageReq) (pi *models.ProductImage, err *ce.Error)
 }
 
 type productImageClient struct {
@@ -93,6 +94,26 @@ func (c *productImageClient) UpdateProductImage(ctx context.Context, req *models
 
 			Name:    req.Name,
 			AltText: req.AltText,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			productImageServiceField,
+		)
+	}
+	return c.toProductImage(resp.GetProductImage()), nil
+}
+
+func (c *productImageClient) ReorderProductImage(ctx context.Context, req *models.ReorderProductImageReq) (*models.ProductImage, *ce.Error) {
+	resp, err := c.client.ReorderProductImage(
+		ctx,
+		&apis.ReorderProductImageRequest{
+			ProductImageId: req.ProductImageID,
+			ProductId:      req.ProductID,
+
+			NewSortOrder: int32(req.NewSortOrder),
 		},
 	)
 	if err != nil {
