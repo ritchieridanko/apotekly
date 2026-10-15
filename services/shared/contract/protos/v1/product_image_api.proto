@@ -2,12 +2,15 @@ syntax = "proto3";
 
 package product.v1;
 
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
 
 service ProductImageService {
   rpc UploadProductImages (UploadProductImagesRequest) returns (UploadProductImagesResponse);
   rpc GetAllProductImages (GetAllProductImagesRequest) returns (GetAllProductImagesResponse);
   rpc UpdateProductImage (UpdateProductImageRequest) returns (UpdateProductImageResponse);
+  rpc DeleteProductImage (DeleteProductImageRequest) returns (google.protobuf.Empty);
   rpc ReorderProductImage (ReorderProductImageRequest) returns (ReorderProductImageResponse);
 }
 
@@ -58,6 +61,11 @@ message UpdateProductImageRequest {
 
 message UpdateProductImageResponse {
   ProductImage product_image = 1;
+}
+
+message DeleteProductImageRequest {
+  string product_image_id = 1;
+  string product_id = 2;
 }
 
 message ReorderProductImageRequest {

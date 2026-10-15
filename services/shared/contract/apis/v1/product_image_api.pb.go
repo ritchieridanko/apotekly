@@ -9,6 +9,7 @@ package apis
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -465,6 +466,58 @@ func (x *UpdateProductImageResponse) GetProductImage() *ProductImage {
 	return nil
 }
 
+type DeleteProductImageRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ProductImageId string                 `protobuf:"bytes,1,opt,name=product_image_id,json=productImageId,proto3" json:"product_image_id,omitempty"`
+	ProductId      string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DeleteProductImageRequest) Reset() {
+	*x = DeleteProductImageRequest{}
+	mi := &file_v1_product_image_api_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteProductImageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteProductImageRequest) ProtoMessage() {}
+
+func (x *DeleteProductImageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_product_image_api_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteProductImageRequest.ProtoReflect.Descriptor instead.
+func (*DeleteProductImageRequest) Descriptor() ([]byte, []int) {
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DeleteProductImageRequest) GetProductImageId() string {
+	if x != nil {
+		return x.ProductImageId
+	}
+	return ""
+}
+
+func (x *DeleteProductImageRequest) GetProductId() string {
+	if x != nil {
+		return x.ProductId
+	}
+	return ""
+}
+
 type ReorderProductImageRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Params
@@ -478,7 +531,7 @@ type ReorderProductImageRequest struct {
 
 func (x *ReorderProductImageRequest) Reset() {
 	*x = ReorderProductImageRequest{}
-	mi := &file_v1_product_image_api_proto_msgTypes[8]
+	mi := &file_v1_product_image_api_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -490,7 +543,7 @@ func (x *ReorderProductImageRequest) String() string {
 func (*ReorderProductImageRequest) ProtoMessage() {}
 
 func (x *ReorderProductImageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_product_image_api_proto_msgTypes[8]
+	mi := &file_v1_product_image_api_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -503,7 +556,7 @@ func (x *ReorderProductImageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReorderProductImageRequest.ProtoReflect.Descriptor instead.
 func (*ReorderProductImageRequest) Descriptor() ([]byte, []int) {
-	return file_v1_product_image_api_proto_rawDescGZIP(), []int{8}
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ReorderProductImageRequest) GetProductImageId() string {
@@ -536,7 +589,7 @@ type ReorderProductImageResponse struct {
 
 func (x *ReorderProductImageResponse) Reset() {
 	*x = ReorderProductImageResponse{}
-	mi := &file_v1_product_image_api_proto_msgTypes[9]
+	mi := &file_v1_product_image_api_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -548,7 +601,7 @@ func (x *ReorderProductImageResponse) String() string {
 func (*ReorderProductImageResponse) ProtoMessage() {}
 
 func (x *ReorderProductImageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_product_image_api_proto_msgTypes[9]
+	mi := &file_v1_product_image_api_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -561,7 +614,7 @@ func (x *ReorderProductImageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReorderProductImageResponse.ProtoReflect.Descriptor instead.
 func (*ReorderProductImageResponse) Descriptor() ([]byte, []int) {
-	return file_v1_product_image_api_proto_rawDescGZIP(), []int{9}
+	return file_v1_product_image_api_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ReorderProductImageResponse) GetProductImage() *ProductImage {
@@ -576,7 +629,7 @@ var File_v1_product_image_api_proto protoreflect.FileDescriptor
 const file_v1_product_image_api_proto_rawDesc = "" +
 	"\n" +
 	"\x1av1/product_image_api.proto\x12\n" +
-	"product.v1\"\xb3\x01\n" +
+	"product.v1\x1a\x1bgoogle/protobuf/empty.proto\"\xb3\x01\n" +
 	"\fProductImage\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -612,18 +665,23 @@ const file_v1_product_image_api_proto_rawDesc = "" +
 	"\x05_nameB\v\n" +
 	"\t_alt_text\"[\n" +
 	"\x1aUpdateProductImageResponse\x12=\n" +
-	"\rproduct_image\x18\x01 \x01(\v2\x18.product.v1.ProductImageR\fproductImage\"\x8b\x01\n" +
+	"\rproduct_image\x18\x01 \x01(\v2\x18.product.v1.ProductImageR\fproductImage\"d\n" +
+	"\x19DeleteProductImageRequest\x12(\n" +
+	"\x10product_image_id\x18\x01 \x01(\tR\x0eproductImageId\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x02 \x01(\tR\tproductId\"\x8b\x01\n" +
 	"\x1aReorderProductImageRequest\x12(\n" +
 	"\x10product_image_id\x18\x01 \x01(\tR\x0eproductImageId\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x02 \x01(\tR\tproductId\x12$\n" +
 	"\x0enew_sort_order\x18\x03 \x01(\x05R\fnewSortOrder\"\\\n" +
 	"\x1bReorderProductImageResponse\x12=\n" +
-	"\rproduct_image\x18\x01 \x01(\v2\x18.product.v1.ProductImageR\fproductImage2\xb2\x03\n" +
+	"\rproduct_image\x18\x01 \x01(\v2\x18.product.v1.ProductImageR\fproductImage2\x87\x04\n" +
 	"\x13ProductImageService\x12f\n" +
 	"\x13UploadProductImages\x12&.product.v1.UploadProductImagesRequest\x1a'.product.v1.UploadProductImagesResponse\x12f\n" +
 	"\x13GetAllProductImages\x12&.product.v1.GetAllProductImagesRequest\x1a'.product.v1.GetAllProductImagesResponse\x12c\n" +
-	"\x12UpdateProductImage\x12%.product.v1.UpdateProductImageRequest\x1a&.product.v1.UpdateProductImageResponse\x12f\n" +
+	"\x12UpdateProductImage\x12%.product.v1.UpdateProductImageRequest\x1a&.product.v1.UpdateProductImageResponse\x12S\n" +
+	"\x12DeleteProductImage\x12%.product.v1.DeleteProductImageRequest\x1a\x16.google.protobuf.Empty\x12f\n" +
 	"\x13ReorderProductImage\x12&.product.v1.ReorderProductImageRequest\x1a'.product.v1.ReorderProductImageResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
@@ -638,7 +696,7 @@ func file_v1_product_image_api_proto_rawDescGZIP() []byte {
 	return file_v1_product_image_api_proto_rawDescData
 }
 
-var file_v1_product_image_api_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_v1_product_image_api_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_v1_product_image_api_proto_goTypes = []any{
 	(*ProductImage)(nil),                // 0: product.v1.ProductImage
 	(*UploadProductImageRequest)(nil),   // 1: product.v1.UploadProductImageRequest
@@ -648,28 +706,32 @@ var file_v1_product_image_api_proto_goTypes = []any{
 	(*GetAllProductImagesResponse)(nil), // 5: product.v1.GetAllProductImagesResponse
 	(*UpdateProductImageRequest)(nil),   // 6: product.v1.UpdateProductImageRequest
 	(*UpdateProductImageResponse)(nil),  // 7: product.v1.UpdateProductImageResponse
-	(*ReorderProductImageRequest)(nil),  // 8: product.v1.ReorderProductImageRequest
-	(*ReorderProductImageResponse)(nil), // 9: product.v1.ReorderProductImageResponse
+	(*DeleteProductImageRequest)(nil),   // 8: product.v1.DeleteProductImageRequest
+	(*ReorderProductImageRequest)(nil),  // 9: product.v1.ReorderProductImageRequest
+	(*ReorderProductImageResponse)(nil), // 10: product.v1.ReorderProductImageResponse
+	(*emptypb.Empty)(nil),               // 11: google.protobuf.Empty
 }
 var file_v1_product_image_api_proto_depIdxs = []int32{
-	1, // 0: product.v1.UploadProductImagesRequest.images:type_name -> product.v1.UploadProductImageRequest
-	0, // 1: product.v1.UploadProductImagesResponse.product_images:type_name -> product.v1.ProductImage
-	0, // 2: product.v1.GetAllProductImagesResponse.product_images:type_name -> product.v1.ProductImage
-	0, // 3: product.v1.UpdateProductImageResponse.product_image:type_name -> product.v1.ProductImage
-	0, // 4: product.v1.ReorderProductImageResponse.product_image:type_name -> product.v1.ProductImage
-	2, // 5: product.v1.ProductImageService.UploadProductImages:input_type -> product.v1.UploadProductImagesRequest
-	4, // 6: product.v1.ProductImageService.GetAllProductImages:input_type -> product.v1.GetAllProductImagesRequest
-	6, // 7: product.v1.ProductImageService.UpdateProductImage:input_type -> product.v1.UpdateProductImageRequest
-	8, // 8: product.v1.ProductImageService.ReorderProductImage:input_type -> product.v1.ReorderProductImageRequest
-	3, // 9: product.v1.ProductImageService.UploadProductImages:output_type -> product.v1.UploadProductImagesResponse
-	5, // 10: product.v1.ProductImageService.GetAllProductImages:output_type -> product.v1.GetAllProductImagesResponse
-	7, // 11: product.v1.ProductImageService.UpdateProductImage:output_type -> product.v1.UpdateProductImageResponse
-	9, // 12: product.v1.ProductImageService.ReorderProductImage:output_type -> product.v1.ReorderProductImageResponse
-	9, // [9:13] is the sub-list for method output_type
-	5, // [5:9] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	1,  // 0: product.v1.UploadProductImagesRequest.images:type_name -> product.v1.UploadProductImageRequest
+	0,  // 1: product.v1.UploadProductImagesResponse.product_images:type_name -> product.v1.ProductImage
+	0,  // 2: product.v1.GetAllProductImagesResponse.product_images:type_name -> product.v1.ProductImage
+	0,  // 3: product.v1.UpdateProductImageResponse.product_image:type_name -> product.v1.ProductImage
+	0,  // 4: product.v1.ReorderProductImageResponse.product_image:type_name -> product.v1.ProductImage
+	2,  // 5: product.v1.ProductImageService.UploadProductImages:input_type -> product.v1.UploadProductImagesRequest
+	4,  // 6: product.v1.ProductImageService.GetAllProductImages:input_type -> product.v1.GetAllProductImagesRequest
+	6,  // 7: product.v1.ProductImageService.UpdateProductImage:input_type -> product.v1.UpdateProductImageRequest
+	8,  // 8: product.v1.ProductImageService.DeleteProductImage:input_type -> product.v1.DeleteProductImageRequest
+	9,  // 9: product.v1.ProductImageService.ReorderProductImage:input_type -> product.v1.ReorderProductImageRequest
+	3,  // 10: product.v1.ProductImageService.UploadProductImages:output_type -> product.v1.UploadProductImagesResponse
+	5,  // 11: product.v1.ProductImageService.GetAllProductImages:output_type -> product.v1.GetAllProductImagesResponse
+	7,  // 12: product.v1.ProductImageService.UpdateProductImage:output_type -> product.v1.UpdateProductImageResponse
+	11, // 13: product.v1.ProductImageService.DeleteProductImage:output_type -> google.protobuf.Empty
+	10, // 14: product.v1.ProductImageService.ReorderProductImage:output_type -> product.v1.ReorderProductImageResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_v1_product_image_api_proto_init() }
@@ -686,7 +748,7 @@ func file_v1_product_image_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_product_image_api_proto_rawDesc), len(file_v1_product_image_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

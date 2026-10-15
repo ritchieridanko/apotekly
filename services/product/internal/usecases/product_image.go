@@ -23,6 +23,7 @@ type ProductImageUsecase interface {
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
 	GetAllProductImages(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
+	DeleteProductImage(ctx context.Context, req *models.DeleteProductImageReq) (err *ce.Error)
 	ReorderProductImage(ctx context.Context, req *models.ReorderProductImageReq) (pi *models.ProductImage, err *ce.Error)
 }
 
@@ -327,6 +328,89 @@ func (u *productImageUsecase) UpdateProductImage(ctx context.Context, req *model
 	}
 
 	return pi, nil
+}
+
+func (u *productImageUsecase) DeleteProductImage(ctx context.Context, req *models.DeleteProductImageReq) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "productImage.usecase.DeleteProductImage")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+	if authCtx.PharmacyID == nil {
+		return ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		)
+	}
+
+	authFields := []logger.Field{
+		logger.NewField("auth_id", authCtx.AuthID),
+		logger.NewField("pharmacy_id", authCtx.PharmacyID.String()),
+	}
+
+	// Pharmacy Status Fetching
+	status, err := u.pc.GetStatus(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeNotFound {
+		return ce.NewError(
+			ce.CodeRoleMismatch,
+			ce.MsgInternalServer,
+			err.Unwrap(),
+			err.Append(
+				authFields...,
+			).Fields()...,
+		)
+	}
+	if err != nil {
+		return err.Append(authFields...)
+	}
+	if status != constants.PharmacyStatusActive {
+		return ce.NewError(
+			ce.CodePharmacyNotActive,
+			"Pharmacy account is "+status,
+			nil,
+			authFields...,
+		)
+	}
+
+	// Pharmacy ID Check
+	pharmacyID, err := u.pr.GetPharmacyID(ctx, req.ProductID)
+	if err != nil {
+		return err.Append(authFields...)
+	}
+	if *authCtx.PharmacyID != pharmacyID {
+		return ce.NewError(
+			ce.CodeProductPharmacyIDMismatch,
+			ce.MsgProductNotFound,
+			nil,
+			append(
+				authFields,
+				logger.NewField("product_pharmacy_id", pharmacyID.String()),
+			)...,
+		)
+	}
+
+	err = u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Product Image Deletion
+		return u.pir.Delete(
+			ctx,
+			&models.DeleteProductImage{
+				ProductImageID: req.ProductImageID,
+				ProductID:      req.ProductID,
+			},
+		)
+	})
+	if err != nil {
+		return err.Append(authFields...)
+	}
+
+	return nil
 }
 
 func (u *productImageUsecase) ReorderProductImage(ctx context.Context, req *models.ReorderProductImageReq) (*models.ProductImage, *ce.Error) {

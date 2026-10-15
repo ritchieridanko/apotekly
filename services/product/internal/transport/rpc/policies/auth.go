@@ -52,6 +52,12 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 			constants.RolePharmacy: {},
 		},
 	},
+	"/product.v1.ProductImageService/DeleteProductImage": {
+		authenticated: true,
+		roles: map[string]struct{}{
+			constants.RolePharmacy: {},
+		},
+	},
 	"/product.v1.ProductImageService/ReorderProductImage": {
 		authenticated: true,
 		roles: map[string]struct{}{

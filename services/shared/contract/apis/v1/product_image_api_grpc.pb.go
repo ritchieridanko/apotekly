@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,6 +23,7 @@ const (
 	ProductImageService_UploadProductImages_FullMethodName = "/product.v1.ProductImageService/UploadProductImages"
 	ProductImageService_GetAllProductImages_FullMethodName = "/product.v1.ProductImageService/GetAllProductImages"
 	ProductImageService_UpdateProductImage_FullMethodName  = "/product.v1.ProductImageService/UpdateProductImage"
+	ProductImageService_DeleteProductImage_FullMethodName  = "/product.v1.ProductImageService/DeleteProductImage"
 	ProductImageService_ReorderProductImage_FullMethodName = "/product.v1.ProductImageService/ReorderProductImage"
 )
 
@@ -32,6 +34,7 @@ type ProductImageServiceClient interface {
 	UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error)
 	GetAllProductImages(ctx context.Context, in *GetAllProductImagesRequest, opts ...grpc.CallOption) (*GetAllProductImagesResponse, error)
 	UpdateProductImage(ctx context.Context, in *UpdateProductImageRequest, opts ...grpc.CallOption) (*UpdateProductImageResponse, error)
+	DeleteProductImage(ctx context.Context, in *DeleteProductImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ReorderProductImage(ctx context.Context, in *ReorderProductImageRequest, opts ...grpc.CallOption) (*ReorderProductImageResponse, error)
 }
 
@@ -73,6 +76,16 @@ func (c *productImageServiceClient) UpdateProductImage(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *productImageServiceClient) DeleteProductImage(ctx context.Context, in *DeleteProductImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ProductImageService_DeleteProductImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *productImageServiceClient) ReorderProductImage(ctx context.Context, in *ReorderProductImageRequest, opts ...grpc.CallOption) (*ReorderProductImageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ReorderProductImageResponse)
@@ -90,6 +103,7 @@ type ProductImageServiceServer interface {
 	UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error)
 	GetAllProductImages(context.Context, *GetAllProductImagesRequest) (*GetAllProductImagesResponse, error)
 	UpdateProductImage(context.Context, *UpdateProductImageRequest) (*UpdateProductImageResponse, error)
+	DeleteProductImage(context.Context, *DeleteProductImageRequest) (*emptypb.Empty, error)
 	ReorderProductImage(context.Context, *ReorderProductImageRequest) (*ReorderProductImageResponse, error)
 	mustEmbedUnimplementedProductImageServiceServer()
 }
@@ -109,6 +123,9 @@ func (UnimplementedProductImageServiceServer) GetAllProductImages(context.Contex
 }
 func (UnimplementedProductImageServiceServer) UpdateProductImage(context.Context, *UpdateProductImageRequest) (*UpdateProductImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProductImage not implemented")
+}
+func (UnimplementedProductImageServiceServer) DeleteProductImage(context.Context, *DeleteProductImageRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProductImage not implemented")
 }
 func (UnimplementedProductImageServiceServer) ReorderProductImage(context.Context, *ReorderProductImageRequest) (*ReorderProductImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReorderProductImage not implemented")
@@ -188,6 +205,24 @@ func _ProductImageService_UpdateProductImage_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductImageService_DeleteProductImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProductImageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductImageServiceServer).DeleteProductImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductImageService_DeleteProductImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductImageServiceServer).DeleteProductImage(ctx, req.(*DeleteProductImageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProductImageService_ReorderProductImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReorderProductImageRequest)
 	if err := dec(in); err != nil {
@@ -224,6 +259,10 @@ var ProductImageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProductImage",
 			Handler:    _ProductImageService_UpdateProductImage_Handler,
+		},
+		{
+			MethodName: "DeleteProductImage",
+			Handler:    _ProductImageService_DeleteProductImage_Handler,
 		},
 		{
 			MethodName: "ReorderProductImage",

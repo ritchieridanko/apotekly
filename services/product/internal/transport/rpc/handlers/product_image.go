@@ -7,6 +7,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/product/internal/usecases"
 	"github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type ProductImageHandler struct {
@@ -73,6 +74,20 @@ func (h *ProductImageHandler) UpdateProductImage(ctx context.Context, req *apis.
 		return nil, err
 	}
 	return &apis.UpdateProductImageResponse{ProductImage: h.toProductImage(pi)}, nil
+}
+
+func (h *ProductImageHandler) DeleteProductImage(ctx context.Context, req *apis.DeleteProductImageRequest) (*emptypb.Empty, error) {
+	err := h.piu.DeleteProductImage(
+		ctx,
+		&models.DeleteProductImageReq{
+			ProductImageID: utils.ToUUID(req.GetProductImageId()),
+			ProductID:      utils.ToUUID(req.GetProductId()),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (h *ProductImageHandler) ReorderProductImage(ctx context.Context, req *apis.ReorderProductImageRequest) (*apis.ReorderProductImageResponse, error) {

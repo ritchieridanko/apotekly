@@ -20,6 +20,7 @@ type ProductImageDatabase interface {
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
 
 	// NOTE: Shall be placed WITHIN a transaction
+	Delete(ctx context.Context, params *models.DeleteProductImage) (err *ce.Error)
 	Reorder(ctx context.Context, params *models.ReorderProductImage, newSortOrder int16) (pi *models.ProductImage, err *ce.Error)
 }
 
@@ -242,6 +243,52 @@ func (d *productImageDatabase) Update(ctx context.Context, params *models.Update
 	}
 
 	return &pi, nil
+}
+
+func (d *productImageDatabase) Delete(ctx context.Context, params *models.DeleteProductImage) *ce.Error {
+	query := `
+		WITH
+			deleted AS (
+				DELETE FROM
+					product_images
+				WHERE
+					id = $1
+					AND product_id = $2
+				RETURNING
+					sort_order
+			)
+		
+		UPDATE
+			product_images
+		SET
+			sort_order = sort_order - 1
+		WHERE
+			product_id = $2
+			AND sort_order > (SELECT sort_order FROM deleted)
+	`
+
+	err := d.database.Execute(
+		ctx, query,
+		params.ProductImageID,
+		params.ProductID,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to delete product image: %w", err)
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return ce.NewError(
+				ce.CodeProductImageNotFound,
+				ce.MsgProductImageNotFound,
+				wrappedErr,
+			)
+		}
+		return ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return nil
 }
 
 func (d *productImageDatabase) CountAll(ctx context.Context, productID uuid.UUID) (int64, int16, *ce.Error) {

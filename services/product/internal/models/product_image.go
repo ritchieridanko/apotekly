@@ -35,6 +35,11 @@ type (
 		AltText *string
 	}
 
+	DeleteProductImage struct {
+		ProductImageID uuid.UUID
+		ProductID      uuid.UUID
+	}
+
 	ReorderProductImage struct {
 		ProductImageID uuid.UUID
 		ProductID      uuid.UUID
