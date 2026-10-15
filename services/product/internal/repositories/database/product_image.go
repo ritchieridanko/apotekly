@@ -18,6 +18,9 @@ type ProductImageDatabase interface {
 	GetAll(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (pi *models.ProductImage, err *ce.Error)
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
+
+	// NOTE: Shall be placed WITHIN a transaction
+	Reorder(ctx context.Context, params *models.ReorderProductImage, newSortOrder int16) (pi *models.ProductImage, err *ce.Error)
 }
 
 type productImageDatabase struct {
@@ -281,4 +284,87 @@ func (d *productImageDatabase) CountAll(ctx context.Context, productID uuid.UUID
 	}
 
 	return total, sortOrder, nil
+}
+
+func (d *productImageDatabase) Reorder(ctx context.Context, params *models.ReorderProductImage, newSortOrder int16) (*models.ProductImage, *ce.Error) {
+	query := `
+		WITH
+			target AS (
+				SELECT
+					sort_order AS old_sort
+				FROM
+					product_images
+				WHERE
+					id = $1
+					AND product_id = $2
+			),
+			shift_others AS (
+				UPDATE
+					product_images
+				SET
+					sort_order = CASE
+						WHEN
+							(SELECT old_sort FROM target) < $3
+							AND sort_order > (SELECT old_sort FROM target)
+							AND sort_order <= $3
+						THEN
+							sort_order - 1
+						
+						WHEN
+							(SELECT old_sort FROM target) > $3
+							AND sort_order >= $3
+							AND sort_order < (SELECT old_sort FROM target)
+						THEN
+							sort_order + 1
+						
+						ELSE
+							sort_order
+					END
+				WHERE
+					id != $1
+					AND product_id = $2
+			)
+		
+		UPDATE
+			product_images
+		SET
+			sort_order = $3
+		WHERE
+			id = $1
+			AND product_id = $2
+		RETURNING
+			id, product_id, name, image, alt_text, sort_order
+	`
+
+	var pi models.ProductImage
+	err := d.database.Query(
+		ctx, query,
+		params.ProductImageID,
+		params.ProductID,
+		newSortOrder,
+	).Scan(
+		&pi.ID,
+		&pi.ProductID,
+		&pi.Name,
+		&pi.Image,
+		&pi.AltText,
+		&pi.SortOrder,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to reorder product image: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeProductImageNotFound,
+				ce.MsgProductImageNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &pi, nil
 }

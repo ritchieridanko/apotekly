@@ -302,6 +302,13 @@ func (v *Validator) Sorter(value, name string) (bool, string) {
 	return true, ""
 }
 
+func (v *Validator) SortOrder(value, max int16) (bool, string) {
+	if value < 1 || value > max {
+		return false, "Order is invalid: " + strconv.Itoa(int(value))
+	}
+	return true, ""
+}
+
 func (v *Validator) StorageURL(value string) (bool, string) {
 	if !rgxStorageURL.MatchString(value) {
 		return false, "URL is invalid: " + value

@@ -7,7 +7,7 @@ CREATE TABLE product_images (
   alt_text VARCHAR,
   sort_order SMALLINT NOT NULL,
   
-  UNIQUE (product_id, sort_order),
+  UNIQUE (product_id, sort_order) DEFERRABLE INITIALLY DEFERRED,
   
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

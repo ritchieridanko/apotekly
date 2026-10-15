@@ -34,4 +34,9 @@ type (
 		Name    *string
 		AltText *string
 	}
+
+	ReorderProductImage struct {
+		ProductImageID uuid.UUID
+		ProductID      uuid.UUID
+	}
 )

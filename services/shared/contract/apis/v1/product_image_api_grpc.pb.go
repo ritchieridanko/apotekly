@@ -22,6 +22,7 @@ const (
 	ProductImageService_UploadProductImages_FullMethodName = "/product.v1.ProductImageService/UploadProductImages"
 	ProductImageService_GetAllProductImages_FullMethodName = "/product.v1.ProductImageService/GetAllProductImages"
 	ProductImageService_UpdateProductImage_FullMethodName  = "/product.v1.ProductImageService/UpdateProductImage"
+	ProductImageService_ReorderProductImage_FullMethodName = "/product.v1.ProductImageService/ReorderProductImage"
 )
 
 // ProductImageServiceClient is the client API for ProductImageService service.
@@ -31,6 +32,7 @@ type ProductImageServiceClient interface {
 	UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error)
 	GetAllProductImages(ctx context.Context, in *GetAllProductImagesRequest, opts ...grpc.CallOption) (*GetAllProductImagesResponse, error)
 	UpdateProductImage(ctx context.Context, in *UpdateProductImageRequest, opts ...grpc.CallOption) (*UpdateProductImageResponse, error)
+	ReorderProductImage(ctx context.Context, in *ReorderProductImageRequest, opts ...grpc.CallOption) (*ReorderProductImageResponse, error)
 }
 
 type productImageServiceClient struct {
@@ -71,6 +73,16 @@ func (c *productImageServiceClient) UpdateProductImage(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *productImageServiceClient) ReorderProductImage(ctx context.Context, in *ReorderProductImageRequest, opts ...grpc.CallOption) (*ReorderProductImageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReorderProductImageResponse)
+	err := c.cc.Invoke(ctx, ProductImageService_ReorderProductImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductImageServiceServer is the server API for ProductImageService service.
 // All implementations must embed UnimplementedProductImageServiceServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type ProductImageServiceServer interface {
 	UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error)
 	GetAllProductImages(context.Context, *GetAllProductImagesRequest) (*GetAllProductImagesResponse, error)
 	UpdateProductImage(context.Context, *UpdateProductImageRequest) (*UpdateProductImageResponse, error)
+	ReorderProductImage(context.Context, *ReorderProductImageRequest) (*ReorderProductImageResponse, error)
 	mustEmbedUnimplementedProductImageServiceServer()
 }
 
@@ -96,6 +109,9 @@ func (UnimplementedProductImageServiceServer) GetAllProductImages(context.Contex
 }
 func (UnimplementedProductImageServiceServer) UpdateProductImage(context.Context, *UpdateProductImageRequest) (*UpdateProductImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProductImage not implemented")
+}
+func (UnimplementedProductImageServiceServer) ReorderProductImage(context.Context, *ReorderProductImageRequest) (*ReorderProductImageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReorderProductImage not implemented")
 }
 func (UnimplementedProductImageServiceServer) mustEmbedUnimplementedProductImageServiceServer() {}
 func (UnimplementedProductImageServiceServer) testEmbeddedByValue()                             {}
@@ -172,6 +188,24 @@ func _ProductImageService_UpdateProductImage_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductImageService_ReorderProductImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReorderProductImageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductImageServiceServer).ReorderProductImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductImageService_ReorderProductImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductImageServiceServer).ReorderProductImage(ctx, req.(*ReorderProductImageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductImageService_ServiceDesc is the grpc.ServiceDesc for ProductImageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +224,10 @@ var ProductImageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProductImage",
 			Handler:    _ProductImageService_UpdateProductImage_Handler,
+		},
+		{
+			MethodName: "ReorderProductImage",
+			Handler:    _ProductImageService_ReorderProductImage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

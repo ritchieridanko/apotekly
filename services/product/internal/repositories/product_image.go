@@ -14,6 +14,9 @@ type ProductImageRepository interface {
 	GetAll(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	Update(ctx context.Context, params *models.UpdateProductImageP, data *models.UpdateProductImageD) (pi *models.ProductImage, err *ce.Error)
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
+
+	// NOTE: Shall be placed WITHIN a transaction
+	Reorder(ctx context.Context, params *models.ReorderProductImage, newSortOrder int16) (pi *models.ProductImage, err *ce.Error)
 }
 
 type productImageRepository struct {
@@ -38,4 +41,8 @@ func (r *productImageRepository) Update(ctx context.Context, params *models.Upda
 
 func (r *productImageRepository) CountAll(ctx context.Context, productID uuid.UUID) (int64, int16, *ce.Error) {
 	return r.database.CountAll(ctx, productID)
+}
+
+func (r *productImageRepository) Reorder(ctx context.Context, params *models.ReorderProductImage, newSortOrder int16) (*models.ProductImage, *ce.Error) {
+	return r.database.Reorder(ctx, params, newSortOrder)
 }

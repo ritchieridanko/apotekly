@@ -8,6 +8,7 @@ service ProductImageService {
   rpc UploadProductImages (UploadProductImagesRequest) returns (UploadProductImagesResponse);
   rpc GetAllProductImages (GetAllProductImagesRequest) returns (GetAllProductImagesResponse);
   rpc UpdateProductImage (UpdateProductImageRequest) returns (UpdateProductImageResponse);
+  rpc ReorderProductImage (ReorderProductImageRequest) returns (ReorderProductImageResponse);
 }
 
 message ProductImage {
@@ -56,5 +57,18 @@ message UpdateProductImageRequest {
 }
 
 message UpdateProductImageResponse {
+  ProductImage product_image = 1;
+}
+
+message ReorderProductImageRequest {
+  // Params
+  string product_image_id = 1;
+  string product_id = 2;
+
+  // Data
+  int32 new_sort_order = 3;
+}
+
+message ReorderProductImageResponse {
   ProductImage product_image = 1;
 }

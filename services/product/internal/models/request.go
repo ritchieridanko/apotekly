@@ -53,4 +53,13 @@ type (
 		Name    *string
 		AltText *string
 	}
+
+	ReorderProductImageReq struct {
+		// Params
+		ProductImageID uuid.UUID
+		ProductID      uuid.UUID
+
+		// Data
+		NewSortOrder int16
+	}
 )

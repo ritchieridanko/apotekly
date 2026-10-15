@@ -75,6 +75,22 @@ func (h *ProductImageHandler) UpdateProductImage(ctx context.Context, req *apis.
 	return &apis.UpdateProductImageResponse{ProductImage: h.toProductImage(pi)}, nil
 }
 
+func (h *ProductImageHandler) ReorderProductImage(ctx context.Context, req *apis.ReorderProductImageRequest) (*apis.ReorderProductImageResponse, error) {
+	pi, err := h.piu.ReorderProductImage(
+		ctx,
+		&models.ReorderProductImageReq{
+			ProductImageID: utils.ToUUID(req.GetProductImageId()),
+			ProductID:      utils.ToUUID(req.GetProductId()),
+
+			NewSortOrder: int16(req.GetNewSortOrder()),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.ReorderProductImageResponse{ProductImage: h.toProductImage(pi)}, nil
+}
+
 func (h *ProductImageHandler) toProductImage(pi *models.ProductImage) *apis.ProductImage {
 	if pi == nil {
 		return nil
