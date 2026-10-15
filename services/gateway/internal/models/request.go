@@ -155,6 +155,11 @@ type (
 		AltText *string
 	}
 
+	DeleteProductImageReq struct {
+		ProductImageID string
+		ProductID      string
+	}
+
 	ReorderProductImageReq struct {
 		// Params
 		ProductImageID string

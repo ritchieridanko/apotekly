@@ -156,7 +156,7 @@ func Init(
 		pharmacyID := pharmacy.Group("/:" + constants.URLParamPharmacyID)
 		{
 			// Fetch
-			pharmacyID.GET("", rlm.LimitByIPAddress("phar:pid", 1*time.Minute, 50), phh.GetPharmacyByID)
+			pharmacyID.GET("", rlm.LimitByIPAddress("phar:pfid", 1*time.Minute, 50), phh.GetPharmacyByID)
 
 			// Verify
 			pharmacyID.POST("/verify", middlewares.Auth(j), rlm.LimitByAuthID("phar:pv", 1*time.Minute, 5), phh.VerifyPharmacy)
@@ -189,6 +189,9 @@ func Init(
 
 					// Reorder
 					imageID.PUT("/reorder", rlm.LimitByAuthID("prod:pir", 1*time.Minute, 20), pih.ReorderProductImage)
+
+					// Delete
+					imageID.DELETE("", rlm.LimitByAuthID("prod:pid", 1*time.Minute, 20), pih.DeleteProductImage)
 				}
 			}
 		}

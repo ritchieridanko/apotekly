@@ -172,6 +172,49 @@ func (h *ProductImageHandler) UpdateProductImage(ctx *gin.Context) {
 	)
 }
 
+func (h *ProductImageHandler) DeleteProductImage(ctx *gin.Context) {
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+	if authCtx.PharmacyID == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	err := h.pic.DeleteProductImage(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
+		),
+		&models.DeleteProductImageReq{
+			ProductImageID: ctx.Param(constants.URLParamProductImageID),
+			ProductID:      ctx.Param(constants.URLParamProductID),
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse[any](ctx, http.StatusNoContent, "", nil, nil)
+}
+
 func (h *ProductImageHandler) ReorderProductImage(ctx *gin.Context) {
 	var payload dtos.ReorderProductImageRequest
 	if err := ctx.ShouldBindJSON(&payload); err != nil {

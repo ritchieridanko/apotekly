@@ -16,6 +16,7 @@ type ProductImageClient interface {
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
 	GetAllProductImages(ctx context.Context, productID string) (pis []models.ProductImage, err *ce.Error)
 	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
+	DeleteProductImage(ctx context.Context, req *models.DeleteProductImageReq) (err *ce.Error)
 	ReorderProductImage(ctx context.Context, req *models.ReorderProductImageReq) (pi *models.ProductImage, err *ce.Error)
 }
 
@@ -104,6 +105,24 @@ func (c *productImageClient) UpdateProductImage(ctx context.Context, req *models
 		)
 	}
 	return c.toProductImage(resp.GetProductImage()), nil
+}
+
+func (c *productImageClient) DeleteProductImage(ctx context.Context, req *models.DeleteProductImageReq) *ce.Error {
+	_, err := c.client.DeleteProductImage(
+		ctx,
+		&apis.DeleteProductImageRequest{
+			ProductImageId: req.ProductImageID,
+			ProductId:      req.ProductID,
+		},
+	)
+	if err != nil {
+		return ce.ToError(
+			err,
+		).Append(
+			productImageServiceField,
+		)
+	}
+	return nil
 }
 
 func (c *productImageClient) ReorderProductImage(ctx context.Context, req *models.ReorderProductImageReq) (*models.ProductImage, *ce.Error) {
