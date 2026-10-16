@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/ritchieridanko/apotekly/services/product/internal/clients"
 	"github.com/ritchieridanko/apotekly/services/product/internal/models"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories"
@@ -19,6 +20,7 @@ import (
 
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *models.CreateProductReq) (p *models.Product, err *ce.Error)
+	GetProductByID(ctx context.Context, productID uuid.UUID) (p *models.Product, err *ce.Error)
 }
 
 type productUsecase struct {
@@ -245,5 +247,25 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 		return nil, err.Append(authFields...)
 	}
 
+	return p, nil
+}
+
+func (u *productUsecase) GetProductByID(ctx context.Context, productID uuid.UUID) (*models.Product, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "product.usecase.GetProductByID")
+	defer span.End()
+
+	// Product Fetching
+	p, err := u.pr.GetByID(ctx, productID)
+	if err != nil {
+		return nil, err
+	}
+
+	// All Product Images Fetching
+	pis, err := u.piu.GetAllProductImages(ctx, p.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	p.Images = pis
 	return p, nil
 }

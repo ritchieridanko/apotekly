@@ -14,6 +14,7 @@ import (
 type ProductDatabase interface {
 	Create(ctx context.Context, data *models.CreateProduct) (p *models.Product, err *ce.Error)
 	GetPharmacyID(ctx context.Context, productID uuid.UUID) (pharmacyID uuid.UUID, err *ce.Error)
+	GetByID(ctx context.Context, productID uuid.UUID) (p *models.Product, err *ce.Error)
 }
 
 type productDatabase struct {
@@ -135,4 +136,70 @@ func (d *productDatabase) GetPharmacyID(ctx context.Context, productID uuid.UUID
 	}
 
 	return pharmacyID, nil
+}
+
+func (d *productDatabase) GetByID(ctx context.Context, productID uuid.UUID) (*models.Product, *ce.Error) {
+	query := `
+		SELECT
+			id, pharmacy_id, brand_name, generic_name, description, requires_rx,
+			dosage_form, strength, pack_unit, pack_size, height_cm, length_cm,
+			width_cm, weight_g, price, currency, quantity, is_active, manufactured_by,
+			manufactured_in, reg_authority, reg_identifier, created_at, updated_at
+		FROM
+			products
+		WHERE
+			id = $1
+			AND deleted_at IS NULL
+	`
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	var p models.Product
+	err := d.database.Query(
+		ctx, query,
+		productID,
+	).Scan(
+		&p.ID,
+		&p.PharmacyID,
+		&p.BrandName,
+		&p.GenericName,
+		&p.Description,
+		&p.RequiresRX,
+		&p.DosageForm,
+		&p.Strength,
+		&p.PackUnit,
+		&p.PackSize,
+		&p.HeightCM,
+		&p.LengthCM,
+		&p.WidthCM,
+		&p.WeightG,
+		&p.Price,
+		&p.Currency,
+		&p.Quantity,
+		&p.IsActive,
+		&p.ManufacturedBy,
+		&p.ManufacturedIn,
+		&p.RegAuthority,
+		&p.RegIdentifier,
+		&p.CreatedAt,
+		&p.UpdatedAt,
+	)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to get product by id: %w", err)
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(
+				ce.CodeProductNotFound,
+				ce.MsgProductNotFound,
+				wrappedErr,
+			)
+		}
+		return nil, ce.NewError(
+			ce.CodeDBQueryExec,
+			ce.MsgInternalServer,
+			wrappedErr,
+		)
+	}
+
+	return &p, nil
 }

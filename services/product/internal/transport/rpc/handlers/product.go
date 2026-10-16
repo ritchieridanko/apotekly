@@ -60,6 +60,14 @@ func (h *ProductHandler) CreateProduct(ctx context.Context, req *apis.CreateProd
 	return &apis.CreateProductResponse{Product: h.toProduct(p)}, nil
 }
 
+func (h *ProductHandler) GetProductByID(ctx context.Context, req *apis.GetProductByIDRequest) (*apis.GetProductByIDResponse, error) {
+	p, err := h.pu.GetProductByID(ctx, utils.ToUUID(req.GetProductId()))
+	if err != nil {
+		return nil, err
+	}
+	return &apis.GetProductByIDResponse{Product: h.toProduct(p)}, nil
+}
+
 func (h *ProductHandler) toProduct(p *models.Product) *apis.Product {
 	if p == nil {
 		return nil

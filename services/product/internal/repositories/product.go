@@ -12,6 +12,7 @@ import (
 type ProductRepository interface {
 	Create(ctx context.Context, data *models.CreateProduct) (p *models.Product, err *ce.Error)
 	GetPharmacyID(ctx context.Context, productID uuid.UUID) (pharmacyID uuid.UUID, err *ce.Error)
+	GetByID(ctx context.Context, productID uuid.UUID) (p *models.Product, err *ce.Error)
 }
 
 type productRepository struct {
@@ -28,4 +29,8 @@ func (r *productRepository) Create(ctx context.Context, data *models.CreateProdu
 
 func (r *productRepository) GetPharmacyID(ctx context.Context, productID uuid.UUID) (uuid.UUID, *ce.Error) {
 	return r.database.GetPharmacyID(ctx, productID)
+}
+
+func (r *productRepository) GetByID(ctx context.Context, productID uuid.UUID) (*models.Product, *ce.Error) {
+	return r.database.GetByID(ctx, productID)
 }

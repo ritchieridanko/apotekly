@@ -9,6 +9,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 
 service ProductService {
   rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
+  rpc GetProductByID (GetProductByIDRequest) returns (GetProductByIDResponse);
 }
 
 message Product {
@@ -64,5 +65,13 @@ message CreateProductRequest {
 }
 
 message CreateProductResponse {
+  Product product = 1;
+}
+
+message GetProductByIDRequest {
+  string product_id = 1;
+}
+
+message GetProductByIDResponse {
   Product product = 1;
 }
