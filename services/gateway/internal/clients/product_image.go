@@ -29,9 +29,9 @@ func NewProductImageClient(c apis.ProductImageServiceClient) ProductImageClient 
 }
 
 func (c *productImageClient) UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) ([]models.ProductImage, *ce.Error) {
-	images := make([]*apis.UploadProductImageRequest, 0, len(req.Images))
+	images := make([]*apis.ProductImageRequest, 0, len(req.Images))
 	for _, image := range req.Images {
-		images = append(images, c.toUploadProductImageRequest(&image))
+		images = append(images, c.toProductImageRequest(&image))
 	}
 
 	resp, err := c.client.UploadProductImages(
@@ -159,11 +159,11 @@ func (c *productImageClient) toProductImage(pi *apis.ProductImage) *models.Produ
 	}
 }
 
-func (c *productImageClient) toUploadProductImageRequest(req *models.UploadProductImageReq) *apis.UploadProductImageRequest {
+func (c *productImageClient) toProductImageRequest(req *models.ProductImageReq) *apis.ProductImageRequest {
 	if req == nil {
 		return nil
 	}
-	return &apis.UploadProductImageRequest{
+	return &apis.ProductImageRequest{
 		Name:    req.Name,
 		Url:     req.URL,
 		AltText: req.AltText,

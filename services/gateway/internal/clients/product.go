@@ -25,6 +25,11 @@ func NewProductClient(c apis.ProductServiceClient) ProductClient {
 }
 
 func (c *productClient) CreateProduct(ctx context.Context, req *models.CreateProductReq) (*models.Product, *ce.Error) {
+	images := make([]*apis.ProductImageRequest, 0, len(req.Images))
+	for _, image := range req.Images {
+		images = append(images, c.toProductImageRequest(&image))
+	}
+
 	resp, err := c.client.CreateProduct(
 		ctx,
 		&apis.CreateProductRequest{
@@ -48,6 +53,7 @@ func (c *productClient) CreateProduct(ctx context.Context, req *models.CreatePro
 			ManufacturedIn: req.ManufacturedIn,
 			RegAuthority:   req.RegAuthority,
 			RegIdentifier:  req.RegIdentifier,
+			Images:         images,
 		},
 	)
 	if err != nil {
@@ -64,6 +70,15 @@ func (c *productClient) toProduct(p *apis.Product) *models.Product {
 	if p == nil {
 		return nil
 	}
+
+	images := make([]models.ProductImage, 0, len(p.GetImages()))
+	for _, image := range p.GetImages() {
+		if image == nil {
+			continue
+		}
+		images = append(images, *c.toProductImage(image))
+	}
+
 	return &models.Product{
 		ID:             utils.ToUUID(p.GetId()),
 		PharmacyID:     utils.ToUUID(p.GetPharmacyId()),
@@ -87,7 +102,33 @@ func (c *productClient) toProduct(p *apis.Product) *models.Product {
 		ManufacturedIn: p.GetManufacturedIn(),
 		RegAuthority:   p.GetRegAuthority(),
 		RegIdentifier:  p.GetRegIdentifier(),
+		Images:         images,
 		CreatedAt:      utils.ToTime(p.GetCreatedAt()),
 		UpdatedAt:      utils.ToTime(p.GetUpdatedAt()),
+	}
+}
+
+func (c *productClient) toProductImage(pi *apis.ProductImage) *models.ProductImage {
+	if pi == nil {
+		return nil
+	}
+	return &models.ProductImage{
+		ID:        utils.ToUUID(pi.GetId()),
+		ProductID: utils.ToUUID(pi.GetProductId()),
+		Name:      pi.GetName(),
+		Image:     pi.GetImage(),
+		AltText:   pi.AltText,
+		SortOrder: int16(pi.GetSortOrder()),
+	}
+}
+
+func (c *productClient) toProductImageRequest(req *models.ProductImageReq) *apis.ProductImageRequest {
+	if req == nil {
+		return nil
+	}
+	return &apis.ProductImageRequest{
+		Name:    req.Name,
+		Url:     req.URL,
+		AltText: req.AltText,
 	}
 }

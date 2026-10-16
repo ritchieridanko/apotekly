@@ -128,10 +128,11 @@ type (
 		ManufacturedIn string
 		RegAuthority   string
 		RegIdentifier  string
+		Images         []ProductImageReq
 	}
 
 	// Product Image Service
-	UploadProductImageReq struct {
+	ProductImageReq struct {
 		Name    string
 		URL     string
 		AltText *string
@@ -142,7 +143,7 @@ type (
 		ProductID string
 
 		// Data
-		Images []UploadProductImageReq
+		Images []ProductImageReq
 	}
 
 	UpdateProductImageReq struct {

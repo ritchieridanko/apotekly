@@ -29,9 +29,9 @@ func (h *ProductImageHandler) UploadProductImages(ctx *gin.Context) {
 		return
 	}
 
-	images := make([]models.UploadProductImageReq, 0, len(payload.Images))
+	images := make([]models.ProductImageReq, 0, len(payload.Images))
 	for _, image := range payload.Images {
-		images = append(images, *h.toUploadProductImageReq(&image))
+		images = append(images, *h.toProductImageReq(&image))
 	}
 
 	authCtx := utils.CtxAuth(ctx.Request.Context())
@@ -286,11 +286,11 @@ func (h *ProductImageHandler) toProductImage(pi *models.ProductImage) *dtos.Prod
 	}
 }
 
-func (h *ProductImageHandler) toUploadProductImageReq(req *dtos.UploadProductImageRequest) *models.UploadProductImageReq {
+func (h *ProductImageHandler) toProductImageReq(req *dtos.ProductImageRequest) *models.ProductImageReq {
 	if req == nil {
 		return nil
 	}
-	return &models.UploadProductImageReq{
+	return &models.ProductImageReq{
 		Name:    req.Name,
 		URL:     req.URL,
 		AltText: req.AltText,

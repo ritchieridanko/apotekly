@@ -29,6 +29,11 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
+	images := make([]models.ProductImageReq, 0, len(payload.Images))
+	for _, image := range payload.Images {
+		images = append(images, *h.toProductImageReq(&image))
+	}
+
 	authCtx := utils.CtxAuth(ctx.Request.Context())
 	if authCtx == nil {
 		ce.NewError(
@@ -79,6 +84,7 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 			ManufacturedIn: payload.ManufacturedIn,
 			RegAuthority:   payload.RegAuthority,
 			RegIdentifier:  payload.RegIdentifier,
+			Images:         images,
 		},
 	)
 	if err != nil {
@@ -99,6 +105,12 @@ func (h *ProductHandler) toProduct(p *models.Product) *dtos.Product {
 	if p == nil {
 		return nil
 	}
+
+	images := make([]dtos.ProductImage, 0, len(p.Images))
+	for _, image := range p.Images {
+		images = append(images, *h.toProductImage(&image))
+	}
+
 	return &dtos.Product{
 		ID:             p.ID.String(),
 		PharmacyID:     p.PharmacyID.String(),
@@ -122,7 +134,33 @@ func (h *ProductHandler) toProduct(p *models.Product) *dtos.Product {
 		ManufacturedIn: p.ManufacturedIn,
 		RegAuthority:   p.RegAuthority,
 		RegIdentifier:  p.RegIdentifier,
+		Images:         images,
 		CreatedAt:      p.CreatedAt,
 		UpdatedAt:      p.UpdatedAt,
+	}
+}
+
+func (h *ProductHandler) toProductImage(pi *models.ProductImage) *dtos.ProductImage {
+	if pi == nil {
+		return nil
+	}
+	return &dtos.ProductImage{
+		ID:        pi.ID.String(),
+		ProductID: pi.ProductID.String(),
+		Name:      pi.Name,
+		Image:     pi.Image,
+		AltText:   pi.AltText,
+		SortOrder: pi.SortOrder,
+	}
+}
+
+func (h *ProductHandler) toProductImageReq(req *dtos.ProductImageRequest) *models.ProductImageReq {
+	if req == nil {
+		return nil
+	}
+	return &models.ProductImageReq{
+		Name:    req.Name,
+		URL:     req.URL,
+		AltText: req.AltText,
 	}
 }
