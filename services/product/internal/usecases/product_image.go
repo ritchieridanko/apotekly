@@ -20,6 +20,7 @@ import (
 )
 
 type ProductImageUsecase interface {
+	CreateProductImages(ctx context.Context, req *models.CreateProductImagesReq) (pis []models.ProductImage, err *ce.Error)
 	UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) (pis []models.ProductImage, err *ce.Error)
 	GetAllProductImages(ctx context.Context, productID uuid.UUID) (pis []models.ProductImage, err *ce.Error)
 	UpdateProductImage(ctx context.Context, req *models.UpdateProductImageReq) (pi *models.ProductImage, err *ce.Error)
@@ -61,6 +62,83 @@ func NewProductImageUsecase(
 		validator:      v,
 		logger:         l,
 	}
+}
+
+func (u *productImageUsecase) CreateProductImages(ctx context.Context, req *models.CreateProductImagesReq) ([]models.ProductImage, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "productImage.usecase.CreateProductImages")
+	defer span.End()
+
+	// Images Total Length Validation
+	if int64(len(req.Images)) > u.maxTotalImages {
+		return nil, ce.NewError(ce.CodeMaxTotalImagesExceeded, ce.MsgMaxTotalImagesExceeded, nil)
+	}
+
+	for i, image := range req.Images {
+		// Data Normalization
+		name := strings.TrimSpace(image.Name)
+		url := strings.TrimSpace(image.URL)
+		altText := utils.TrimSpacePtr(image.AltText)
+
+		// Data Validation
+		if ok, why := u.validator.Name(name, "Image name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil)
+		}
+		if ok, why := u.validator.StorageURL(url); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil)
+		}
+		if altText != nil {
+			if ok, why := u.validator.ImageAltText(*altText); !ok {
+				return nil, ce.NewError(ce.CodeInvalidPayload, why, nil)
+			}
+		}
+
+		req.Images[i].Name = name
+		req.Images[i].URL = url
+		req.Images[i].AltText = altText
+	}
+
+	sortOrder := int16(0)
+	images := make([]models.CreateProductImage, 0, len(req.Images))
+	for _, image := range req.Images {
+		// URL Public ID Extraction
+		publicID, err := u.storage.ExtractPublicID(image.URL, constants.StorageFilePathTempImages)
+		if err != nil {
+			return nil, ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err)
+		}
+
+		// Image File Renaming
+		productImageID := utils.MustGenerateUUIDv7()
+		res, err := u.storage.Rename(
+			ctx,
+			publicID,
+			"products/"+req.ProductID.String()+"/"+productImageID.String(),
+			true,
+			true,
+		)
+		if err != nil {
+			return nil, ce.NewError(ce.CodeStorageFileRenamingFailed, ce.MsgInternalServer, err)
+		}
+
+		sortOrder++
+		images = append(images,
+			models.CreateProductImage{
+				ID:        productImageID,
+				Name:      image.Name,
+				URL:       res.SecureURL,
+				AltText:   image.AltText,
+				SortOrder: sortOrder,
+			},
+		)
+	}
+
+	// Product Images Creation
+	return u.pir.CreateMany(
+		ctx,
+		&models.CreateProductImages{
+			ProductID: req.ProductID,
+			Images:    images,
+		},
+	)
 }
 
 func (u *productImageUsecase) UploadProductImages(ctx context.Context, req *models.UploadProductImagesReq) ([]models.ProductImage, *ce.Error) {

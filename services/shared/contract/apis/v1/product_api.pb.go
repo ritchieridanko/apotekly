@@ -46,8 +46,9 @@ type Product struct {
 	ManufacturedIn string                 `protobuf:"bytes,20,opt,name=manufactured_in,json=manufacturedIn,proto3" json:"manufactured_in,omitempty"`
 	RegAuthority   string                 `protobuf:"bytes,21,opt,name=reg_authority,json=regAuthority,proto3" json:"reg_authority,omitempty"`
 	RegIdentifier  string                 `protobuf:"bytes,22,opt,name=reg_identifier,json=regIdentifier,proto3" json:"reg_identifier,omitempty"`
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Images         []*ProductImage        `protobuf:"bytes,23,rep,name=images,proto3" json:"images,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,25,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -236,6 +237,13 @@ func (x *Product) GetRegIdentifier() string {
 	return ""
 }
 
+func (x *Product) GetImages() []*ProductImage {
+	if x != nil {
+		return x.Images
+	}
+	return nil
+}
+
 func (x *Product) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -272,6 +280,7 @@ type CreateProductRequest struct {
 	ManufacturedIn string                 `protobuf:"bytes,18,opt,name=manufactured_in,json=manufacturedIn,proto3" json:"manufactured_in,omitempty"`
 	RegAuthority   string                 `protobuf:"bytes,19,opt,name=reg_authority,json=regAuthority,proto3" json:"reg_authority,omitempty"`
 	RegIdentifier  string                 `protobuf:"bytes,20,opt,name=reg_identifier,json=regIdentifier,proto3" json:"reg_identifier,omitempty"`
+	Images         []*ProductImageRequest `protobuf:"bytes,21,rep,name=images,proto3" json:"images,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -446,6 +455,13 @@ func (x *CreateProductRequest) GetRegIdentifier() string {
 	return ""
 }
 
+func (x *CreateProductRequest) GetImages() []*ProductImageRequest {
+	if x != nil {
+		return x.Images
+	}
+	return nil
+}
+
 type CreateProductResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Product       *Product               `protobuf:"bytes,1,opt,name=product,proto3" json:"product,omitempty"`
@@ -495,7 +511,7 @@ var File_v1_product_api_proto protoreflect.FileDescriptor
 const file_v1_product_api_proto_rawDesc = "" +
 	"\n" +
 	"\x14v1/product_api.proto\x12\n" +
-	"product.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x06\n" +
+	"product.v1\x1a\x1av1/product_image_api.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x06\n" +
 	"\aProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
 	"\vpharmacy_id\x18\x02 \x01(\tR\n" +
@@ -523,13 +539,14 @@ const file_v1_product_api_proto_rawDesc = "" +
 	"\x0fmanufactured_by\x18\x13 \x01(\tR\x0emanufacturedBy\x12'\n" +
 	"\x0fmanufactured_in\x18\x14 \x01(\tR\x0emanufacturedIn\x12#\n" +
 	"\rreg_authority\x18\x15 \x01(\tR\fregAuthority\x12%\n" +
-	"\x0ereg_identifier\x18\x16 \x01(\tR\rregIdentifier\x129\n" +
+	"\x0ereg_identifier\x18\x16 \x01(\tR\rregIdentifier\x120\n" +
+	"\x06images\x18\x17 \x03(\v2\x18.product.v1.ProductImageR\x06images\x129\n" +
 	"\n" +
-	"created_at\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x0e\n" +
+	"updated_at\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x0e\n" +
 	"\f_descriptionB\v\n" +
-	"\t_strength\"\xb2\x05\n" +
+	"\t_strength\"\xeb\x05\n" +
 	"\x14CreateProductRequest\x12\x1d\n" +
 	"\n" +
 	"brand_name\x18\x01 \x01(\tR\tbrandName\x12!\n" +
@@ -554,7 +571,8 @@ const file_v1_product_api_proto_rawDesc = "" +
 	"\x0fmanufactured_by\x18\x11 \x01(\tR\x0emanufacturedBy\x12'\n" +
 	"\x0fmanufactured_in\x18\x12 \x01(\tR\x0emanufacturedIn\x12#\n" +
 	"\rreg_authority\x18\x13 \x01(\tR\fregAuthority\x12%\n" +
-	"\x0ereg_identifier\x18\x14 \x01(\tR\rregIdentifierB\x0e\n" +
+	"\x0ereg_identifier\x18\x14 \x01(\tR\rregIdentifier\x127\n" +
+	"\x06images\x18\x15 \x03(\v2\x1f.product.v1.ProductImageRequestR\x06imagesB\x0e\n" +
 	"\f_descriptionB\v\n" +
 	"\t_strength\"F\n" +
 	"\x15CreateProductResponse\x12-\n" +
@@ -579,19 +597,23 @@ var file_v1_product_api_proto_goTypes = []any{
 	(*Product)(nil),               // 0: product.v1.Product
 	(*CreateProductRequest)(nil),  // 1: product.v1.CreateProductRequest
 	(*CreateProductResponse)(nil), // 2: product.v1.CreateProductResponse
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*ProductImage)(nil),          // 3: product.v1.ProductImage
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*ProductImageRequest)(nil),   // 5: product.v1.ProductImageRequest
 }
 var file_v1_product_api_proto_depIdxs = []int32{
-	3, // 0: product.v1.Product.created_at:type_name -> google.protobuf.Timestamp
-	3, // 1: product.v1.Product.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 2: product.v1.CreateProductResponse.product:type_name -> product.v1.Product
-	1, // 3: product.v1.ProductService.CreateProduct:input_type -> product.v1.CreateProductRequest
-	2, // 4: product.v1.ProductService.CreateProduct:output_type -> product.v1.CreateProductResponse
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 0: product.v1.Product.images:type_name -> product.v1.ProductImage
+	4, // 1: product.v1.Product.created_at:type_name -> google.protobuf.Timestamp
+	4, // 2: product.v1.Product.updated_at:type_name -> google.protobuf.Timestamp
+	5, // 3: product.v1.CreateProductRequest.images:type_name -> product.v1.ProductImageRequest
+	0, // 4: product.v1.CreateProductResponse.product:type_name -> product.v1.Product
+	1, // 5: product.v1.ProductService.CreateProduct:input_type -> product.v1.CreateProductRequest
+	2, // 6: product.v1.ProductService.CreateProduct:output_type -> product.v1.CreateProductResponse
+	6, // [6:7] is the sub-list for method output_type
+	5, // [5:6] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_v1_product_api_proto_init() }
@@ -599,6 +621,7 @@ func file_v1_product_api_proto_init() {
 	if File_v1_product_api_proto != nil {
 		return
 	}
+	file_v1_product_image_api_proto_init()
 	file_v1_product_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_product_api_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}

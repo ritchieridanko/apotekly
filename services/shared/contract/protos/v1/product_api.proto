@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package product.v1;
 
+import "v1/product_image_api.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apis";
@@ -33,8 +34,9 @@ message Product {
   string manufactured_in = 20;
   string reg_authority = 21;
   string reg_identifier = 22;
-  google.protobuf.Timestamp created_at = 23;
-  google.protobuf.Timestamp updated_at = 24;
+  repeated product.v1.ProductImage images = 23;
+  google.protobuf.Timestamp created_at = 24;
+  google.protobuf.Timestamp updated_at = 25;
 }
 
 message CreateProductRequest {
@@ -58,6 +60,7 @@ message CreateProductRequest {
   string manufactured_in = 18;
   string reg_authority = 19;
   string reg_identifier = 20;
+  repeated product.v1.ProductImageRequest images = 21;
 }
 
 message CreateProductResponse {

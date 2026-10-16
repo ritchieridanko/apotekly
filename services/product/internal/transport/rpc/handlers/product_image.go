@@ -20,12 +20,12 @@ func NewProductImageHandler(piu usecases.ProductImageUsecase) *ProductImageHandl
 }
 
 func (h *ProductImageHandler) UploadProductImages(ctx context.Context, req *apis.UploadProductImagesRequest) (*apis.UploadProductImagesResponse, error) {
-	images := make([]models.UploadProductImageReq, 0, len(req.GetImages()))
+	images := make([]models.ProductImageReq, 0, len(req.GetImages()))
 	for _, image := range req.GetImages() {
 		if image == nil {
 			continue
 		}
-		images = append(images, *h.toUploadProductImageReq(image))
+		images = append(images, *h.toProductImageReq(image))
 	}
 
 	pis, err := h.piu.UploadProductImages(
@@ -120,11 +120,11 @@ func (h *ProductImageHandler) toProductImage(pi *models.ProductImage) *apis.Prod
 	}
 }
 
-func (h *ProductImageHandler) toUploadProductImageReq(req *apis.UploadProductImageRequest) *models.UploadProductImageReq {
+func (h *ProductImageHandler) toProductImageReq(req *apis.ProductImageRequest) *models.ProductImageReq {
 	if req == nil {
 		return nil
 	}
-	return &models.UploadProductImageReq{
+	return &models.ProductImageReq{
 		Name:    req.GetName(),
 		URL:     req.GetUrl(),
 		AltText: req.AltText,

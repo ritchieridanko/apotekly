@@ -9,6 +9,7 @@ import (
 	"github.com/ritchieridanko/apotekly/services/product/internal/models"
 	"github.com/ritchieridanko/apotekly/services/product/internal/repositories"
 	"github.com/ritchieridanko/apotekly/services/shared/constants"
+	"github.com/ritchieridanko/apotekly/services/shared/infra/database"
 	"github.com/ritchieridanko/apotekly/services/shared/infra/logger"
 	"github.com/ritchieridanko/apotekly/services/shared/utils"
 	"github.com/ritchieridanko/apotekly/services/shared/utils/ce"
@@ -21,26 +22,32 @@ type ProductUsecase interface {
 }
 
 type productUsecase struct {
-	appName   string
-	pr        repositories.ProductRepository
-	pc        clients.PharmacyClient
-	validator *validator.Validator
-	logger    *logger.Logger
+	appName    string
+	piu        ProductImageUsecase
+	pr         repositories.ProductRepository
+	pc         clients.PharmacyClient
+	transactor *database.Transactor
+	validator  *validator.Validator
+	logger     *logger.Logger
 }
 
 func NewProductUsecase(
 	appName string,
+	piu ProductImageUsecase,
 	pr repositories.ProductRepository,
 	pc clients.PharmacyClient,
+	tx *database.Transactor,
 	v *validator.Validator,
 	l *logger.Logger,
 ) ProductUsecase {
 	return &productUsecase{
-		appName:   appName,
-		pr:        pr,
-		pc:        pc,
-		validator: v,
-		logger:    l,
+		appName:    appName,
+		piu:        piu,
+		pr:         pr,
+		pc:         pc,
+		transactor: tx,
+		validator:  v,
+		logger:     l,
 	}
 }
 
@@ -182,34 +189,58 @@ func (u *productUsecase) CreateProduct(ctx context.Context, req *models.CreatePr
 		)
 	}
 
-	// Product Creation
-	p, err := u.pr.Create(
-		ctx,
-		&models.CreateProduct{
-			ID:             utils.MustGenerateUUIDv7(),
-			PharmacyID:     *authCtx.PharmacyID,
-			BrandName:      brandName,
-			GenericName:    genericName,
-			Description:    description,
-			RequiresRX:     req.RequiresRX,
-			DosageForm:     dosageForm,
-			Strength:       strength,
-			PackUnit:       packUnit,
-			PackSize:       req.PackSize,
-			HeightCM:       heightCM,
-			LengthCM:       lengthCM,
-			WidthCM:        widthCM,
-			WeightG:        weightG,
-			Price:          productPrice,
-			Currency:       currency,
-			Quantity:       req.Quantity,
-			IsActive:       req.IsActive,
-			ManufacturedBy: manufacturedBy,
-			ManufacturedIn: manufacturedIn,
-			RegAuthority:   regAuthority,
-			RegIdentifier:  regIdentifier,
-		},
-	)
+	var p *models.Product
+	err = u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		// Product Creation
+		p, err = u.pr.Create(
+			ctx,
+			&models.CreateProduct{
+				ID:             utils.MustGenerateUUIDv7(),
+				PharmacyID:     *authCtx.PharmacyID,
+				BrandName:      brandName,
+				GenericName:    genericName,
+				Description:    description,
+				RequiresRX:     req.RequiresRX,
+				DosageForm:     dosageForm,
+				Strength:       strength,
+				PackUnit:       packUnit,
+				PackSize:       req.PackSize,
+				HeightCM:       heightCM,
+				LengthCM:       lengthCM,
+				WidthCM:        widthCM,
+				WeightG:        weightG,
+				Price:          productPrice,
+				Currency:       currency,
+				Quantity:       req.Quantity,
+				IsActive:       req.IsActive,
+				ManufacturedBy: manufacturedBy,
+				ManufacturedIn: manufacturedIn,
+				RegAuthority:   regAuthority,
+				RegIdentifier:  regIdentifier,
+			},
+		)
+		if err != nil {
+			return err
+		}
+
+		if len(req.Images) > 0 {
+			// Product Images Creation
+			pis, err := u.piu.CreateProductImages(
+				ctx,
+				&models.CreateProductImagesReq{
+					ProductID: p.ID,
+					Images:    req.Images,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			p.Images = pis
+		}
+
+		return nil
+	})
 	if err != nil {
 		return nil, err.Append(authFields...)
 	}

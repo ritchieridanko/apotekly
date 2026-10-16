@@ -63,8 +63,8 @@ func Init(cfg *configs.Config, inf *infra.Infra) *Container {
 	v := validator.Init()
 
 	// Usecases
-	pu := usecases.NewProductUsecase(cfg.App.Name, pr, pc, v, l)
 	piu := usecases.NewProductImageUsecase(cfg.App.Name, int64(cfg.Image.Product.MaxTotal), pr, pir, pc, tx, s, v, l)
+	pu := usecases.NewProductUsecase(cfg.App.Name, piu, pr, pc, tx, v, l)
 
 	// Handlers
 	ph := handlers.NewProductHandler(pu)

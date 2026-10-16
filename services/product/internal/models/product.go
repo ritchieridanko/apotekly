@@ -30,6 +30,7 @@ type (
 		ManufacturedIn string
 		RegAuthority   string
 		RegIdentifier  string
+		Images         []ProductImage
 		CreatedAt      time.Time
 		UpdatedAt      time.Time
 	}

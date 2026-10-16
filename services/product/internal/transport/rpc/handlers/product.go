@@ -20,6 +20,14 @@ func NewProductHandler(pu usecases.ProductUsecase) *ProductHandler {
 }
 
 func (h *ProductHandler) CreateProduct(ctx context.Context, req *apis.CreateProductRequest) (*apis.CreateProductResponse, error) {
+	images := make([]models.ProductImageReq, 0, len(req.GetImages()))
+	for _, image := range req.GetImages() {
+		if image == nil {
+			continue
+		}
+		images = append(images, *h.toProductImageReq(image))
+	}
+
 	p, err := h.pu.CreateProduct(
 		ctx,
 		&models.CreateProductReq{
@@ -43,6 +51,7 @@ func (h *ProductHandler) CreateProduct(ctx context.Context, req *apis.CreateProd
 			ManufacturedIn: req.GetManufacturedIn(),
 			RegAuthority:   req.GetRegAuthority(),
 			RegIdentifier:  req.GetRegIdentifier(),
+			Images:         images,
 		},
 	)
 	if err != nil {
@@ -55,6 +64,12 @@ func (h *ProductHandler) toProduct(p *models.Product) *apis.Product {
 	if p == nil {
 		return nil
 	}
+
+	images := make([]*apis.ProductImage, 0, len(p.Images))
+	for _, image := range p.Images {
+		images = append(images, h.toProductImage(&image))
+	}
+
 	return &apis.Product{
 		Id:             p.ID.String(),
 		PharmacyId:     p.PharmacyID.String(),
@@ -78,7 +93,33 @@ func (h *ProductHandler) toProduct(p *models.Product) *apis.Product {
 		ManufacturedIn: utils.ToTitlecase(p.ManufacturedIn),
 		RegAuthority:   p.RegAuthority,
 		RegIdentifier:  p.RegIdentifier,
+		Images:         images,
 		CreatedAt:      utils.ToTimestamp(&p.CreatedAt),
 		UpdatedAt:      utils.ToTimestamp(&p.UpdatedAt),
+	}
+}
+
+func (h *ProductHandler) toProductImage(pi *models.ProductImage) *apis.ProductImage {
+	if pi == nil {
+		return nil
+	}
+	return &apis.ProductImage{
+		Id:        pi.ID.String(),
+		ProductId: pi.ProductID.String(),
+		Name:      pi.Name,
+		Image:     pi.Image,
+		AltText:   pi.AltText,
+		SortOrder: int32(pi.SortOrder),
+	}
+}
+
+func (h *ProductHandler) toProductImageReq(req *apis.ProductImageRequest) *models.ProductImageReq {
+	if req == nil {
+		return nil
+	}
+	return &models.ProductImageReq{
+		Name:    req.GetName(),
+		URL:     req.GetUrl(),
+		AltText: req.AltText,
 	}
 }

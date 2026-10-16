@@ -106,7 +106,7 @@ func (x *ProductImage) GetSortOrder() int32 {
 	return 0
 }
 
-type UploadProductImageRequest struct {
+type ProductImageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
@@ -115,20 +115,20 @@ type UploadProductImageRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UploadProductImageRequest) Reset() {
-	*x = UploadProductImageRequest{}
+func (x *ProductImageRequest) Reset() {
+	*x = ProductImageRequest{}
 	mi := &file_v1_product_image_api_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UploadProductImageRequest) String() string {
+func (x *ProductImageRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UploadProductImageRequest) ProtoMessage() {}
+func (*ProductImageRequest) ProtoMessage() {}
 
-func (x *UploadProductImageRequest) ProtoReflect() protoreflect.Message {
+func (x *ProductImageRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_product_image_api_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -140,26 +140,26 @@ func (x *UploadProductImageRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UploadProductImageRequest.ProtoReflect.Descriptor instead.
-func (*UploadProductImageRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ProductImageRequest.ProtoReflect.Descriptor instead.
+func (*ProductImageRequest) Descriptor() ([]byte, []int) {
 	return file_v1_product_image_api_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *UploadProductImageRequest) GetName() string {
+func (x *ProductImageRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *UploadProductImageRequest) GetUrl() string {
+func (x *ProductImageRequest) GetUrl() string {
 	if x != nil {
 		return x.Url
 	}
 	return ""
 }
 
-func (x *UploadProductImageRequest) GetAltText() string {
+func (x *ProductImageRequest) GetAltText() string {
 	if x != nil && x.AltText != nil {
 		return *x.AltText
 	}
@@ -171,7 +171,7 @@ type UploadProductImagesRequest struct {
 	// Params
 	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	// Data
-	Images        []*UploadProductImageRequest `protobuf:"bytes,2,rep,name=images,proto3" json:"images,omitempty"`
+	Images        []*ProductImageRequest `protobuf:"bytes,2,rep,name=images,proto3" json:"images,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -213,7 +213,7 @@ func (x *UploadProductImagesRequest) GetProductId() string {
 	return ""
 }
 
-func (x *UploadProductImagesRequest) GetImages() []*UploadProductImageRequest {
+func (x *UploadProductImagesRequest) GetImages() []*ProductImageRequest {
 	if x != nil {
 		return x.Images
 	}
@@ -639,16 +639,16 @@ const file_v1_product_image_api_proto_rawDesc = "" +
 	"\balt_text\x18\x05 \x01(\tH\x00R\aaltText\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"sort_order\x18\x06 \x01(\x05R\tsortOrderB\v\n" +
-	"\t_alt_text\"n\n" +
-	"\x19UploadProductImageRequest\x12\x12\n" +
+	"\t_alt_text\"h\n" +
+	"\x13ProductImageRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x1e\n" +
 	"\balt_text\x18\x03 \x01(\tH\x00R\aaltText\x88\x01\x01B\v\n" +
-	"\t_alt_text\"z\n" +
+	"\t_alt_text\"t\n" +
 	"\x1aUploadProductImagesRequest\x12\x1d\n" +
 	"\n" +
-	"product_id\x18\x01 \x01(\tR\tproductId\x12=\n" +
-	"\x06images\x18\x02 \x03(\v2%.product.v1.UploadProductImageRequestR\x06images\"^\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\x127\n" +
+	"\x06images\x18\x02 \x03(\v2\x1f.product.v1.ProductImageRequestR\x06images\"^\n" +
 	"\x1bUploadProductImagesResponse\x12?\n" +
 	"\x0eproduct_images\x18\x01 \x03(\v2\x18.product.v1.ProductImageR\rproductImages\";\n" +
 	"\x1aGetAllProductImagesRequest\x12\x1d\n" +
@@ -699,7 +699,7 @@ func file_v1_product_image_api_proto_rawDescGZIP() []byte {
 var file_v1_product_image_api_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_v1_product_image_api_proto_goTypes = []any{
 	(*ProductImage)(nil),                // 0: product.v1.ProductImage
-	(*UploadProductImageRequest)(nil),   // 1: product.v1.UploadProductImageRequest
+	(*ProductImageRequest)(nil),         // 1: product.v1.ProductImageRequest
 	(*UploadProductImagesRequest)(nil),  // 2: product.v1.UploadProductImagesRequest
 	(*UploadProductImagesResponse)(nil), // 3: product.v1.UploadProductImagesResponse
 	(*GetAllProductImagesRequest)(nil),  // 4: product.v1.GetAllProductImagesRequest
@@ -712,7 +712,7 @@ var file_v1_product_image_api_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),               // 11: google.protobuf.Empty
 }
 var file_v1_product_image_api_proto_depIdxs = []int32{
-	1,  // 0: product.v1.UploadProductImagesRequest.images:type_name -> product.v1.UploadProductImageRequest
+	1,  // 0: product.v1.UploadProductImagesRequest.images:type_name -> product.v1.ProductImageRequest
 	0,  // 1: product.v1.UploadProductImagesResponse.product_images:type_name -> product.v1.ProductImage
 	0,  // 2: product.v1.GetAllProductImagesResponse.product_images:type_name -> product.v1.ProductImage
 	0,  // 3: product.v1.UpdateProductImageResponse.product_image:type_name -> product.v1.ProductImage
