@@ -83,6 +83,10 @@ type (
 		Product *Product `json:"product,omitempty"`
 	}
 
+	GetProductByIDResponse struct {
+		Product *Product `json:"product,omitempty"`
+	}
+
 	// Product Image
 	ProductImage struct {
 		ID        string  `json:"id"`

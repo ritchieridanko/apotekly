@@ -172,6 +172,9 @@ func Init(
 		// Path: /v1/products/:product_id
 		productID := product.Group("/:" + constants.URLParamProductID)
 		{
+			// Fetch
+			productID.GET("", rlm.LimitByIPAddress("prod:pfid", 1*time.Minute, 50), prh.GetProductByID)
+
 			// Path: /v1/products/:product_id/images
 			image := productID.Group("/images")
 			{

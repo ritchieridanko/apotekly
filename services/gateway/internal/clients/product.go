@@ -14,6 +14,7 @@ var productServiceField logger.Field = logger.NewField("service", "product")
 
 type ProductClient interface {
 	CreateProduct(ctx context.Context, req *models.CreateProductReq) (p *models.Product, err *ce.Error)
+	GetProductByID(ctx context.Context, productID string) (p *models.Product, err *ce.Error)
 }
 
 type productClient struct {
@@ -54,6 +55,23 @@ func (c *productClient) CreateProduct(ctx context.Context, req *models.CreatePro
 			RegAuthority:   req.RegAuthority,
 			RegIdentifier:  req.RegIdentifier,
 			Images:         images,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			productServiceField,
+		)
+	}
+	return c.toProduct(resp.GetProduct()), nil
+}
+
+func (c *productClient) GetProductByID(ctx context.Context, productID string) (*models.Product, *ce.Error) {
+	resp, err := c.client.GetProductByID(
+		ctx,
+		&apis.GetProductByIDRequest{
+			ProductId: productID,
 		},
 	)
 	if err != nil {

@@ -101,6 +101,27 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 	)
 }
 
+func (h *ProductHandler) GetProductByID(ctx *gin.Context) {
+	p, err := h.prc.GetProductByID(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+		),
+		ctx.Param(constants.URLParamProductID),
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Product retrieved successfully",
+		dtos.GetProductByIDResponse{Product: h.toProduct(p)},
+		nil,
+	)
+}
+
 func (h *ProductHandler) toProduct(p *models.Product) *dtos.Product {
 	if p == nil {
 		return nil
