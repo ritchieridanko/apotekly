@@ -20,7 +20,7 @@ type ProductImageDatabase interface {
 	CountAll(ctx context.Context, productID uuid.UUID) (total int64, highestSortOrder int16, err *ce.Error)
 
 	// NOTE: Shall be placed WITHIN a transaction
-	Delete(ctx context.Context, params *models.DeleteProductImage) (err *ce.Error)
+	Delete(ctx context.Context, params *models.DeleteProductImage) (image string, err *ce.Error)
 	Reorder(ctx context.Context, params *models.ReorderProductImage, newSortOrder int16) (pi *models.ProductImage, err *ce.Error)
 }
 
@@ -245,7 +245,7 @@ func (d *productImageDatabase) Update(ctx context.Context, params *models.Update
 	return &pi, nil
 }
 
-func (d *productImageDatabase) Delete(ctx context.Context, params *models.DeleteProductImage) *ce.Error {
+func (d *productImageDatabase) Delete(ctx context.Context, params *models.DeleteProductImage) (string, *ce.Error) {
 	query := `
 		WITH
 			deleted AS (
@@ -255,40 +255,46 @@ func (d *productImageDatabase) Delete(ctx context.Context, params *models.Delete
 					id = $1
 					AND product_id = $2
 				RETURNING
-					sort_order
+					image, sort_order
+			),
+			updated AS (
+				UPDATE
+					product_images
+				SET
+					sort_order = sort_order - 1
+				WHERE
+					product_id = $2
+					AND sort_order > (SELECT sort_order FROM deleted)
 			)
 		
-		UPDATE
-			product_images
-		SET
-			sort_order = sort_order - 1
-		WHERE
-			product_id = $2
-			AND sort_order > (SELECT sort_order FROM deleted)
+		SELECT image FROM deleted
 	`
 
-	err := d.database.Execute(
+	var image string
+	err := d.database.Query(
 		ctx, query,
 		params.ProductImageID,
 		params.ProductID,
+	).Scan(
+		&image,
 	)
 	if err != nil {
 		wrappedErr := fmt.Errorf("failed to delete product image: %w", err)
-		if errors.Is(err, ce.ErrDBAffectNoRows) {
-			return ce.NewError(
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return "", ce.NewError(
 				ce.CodeProductImageNotFound,
 				ce.MsgProductImageNotFound,
 				wrappedErr,
 			)
 		}
-		return ce.NewError(
+		return "", ce.NewError(
 			ce.CodeDBQueryExec,
 			ce.MsgInternalServer,
 			wrappedErr,
 		)
 	}
 
-	return nil
+	return image, nil
 }
 
 func (d *productImageDatabase) CountAll(ctx context.Context, productID uuid.UUID) (int64, int16, *ce.Error) {

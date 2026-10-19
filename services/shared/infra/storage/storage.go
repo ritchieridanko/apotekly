@@ -32,6 +32,16 @@ func (s *Storage) Rename(ctx context.Context, oldName, newName string, overwrite
 	)
 }
 
+func (s *Storage) Delete(ctx context.Context, publicID string, invalidate bool) (*uploader.DestroyResult, error) {
+	return s.cloudinary.Upload.Destroy(
+		ctx,
+		uploader.DestroyParams{
+			PublicID:   publicID,
+			Invalidate: &invalidate,
+		},
+	)
+}
+
 func (s *Storage) ExtractPublicID(rawURL, expectedPrefix string) (string, error) {
 	parsed, err := url.Parse(rawURL)
 	if err != nil {

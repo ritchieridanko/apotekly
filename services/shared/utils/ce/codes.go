@@ -83,6 +83,7 @@ const (
 	CodeSessionExpired            errCode = "ERR_SESSION_EXPIRED"
 	CodeSessionNotFound           errCode = "ERR_SESSION_NOT_FOUND"
 	CodeSessionNotOwned           errCode = "ERR_SESSION_NOT_OWNED"
+	CodeStorageFileDeletionFailed errCode = "ERR_STORAGE_FILE_DELETION_FAILED"
 	CodeStorageFileRenamingFailed errCode = "ERR_STORAGE_FILE_RENAMING_FAILED"
 	CodeTokenNotOwned             errCode = "ERR_TOKEN_NOT_OWNED"
 	CodeTooManyRequests           errCode = "ERR_TOO_MANY_REQUESTS"

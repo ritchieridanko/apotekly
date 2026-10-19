@@ -476,13 +476,24 @@ func (u *productImageUsecase) DeleteProductImage(ctx context.Context, req *model
 
 	err = u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
 		// Product Image Deletion
-		return u.pir.Delete(
+		image, err := u.pir.Delete(
 			ctx,
 			&models.DeleteProductImage{
 				ProductImageID: req.ProductImageID,
 				ProductID:      req.ProductID,
 			},
 		)
+		if err != nil {
+			return err
+		}
+
+		// Image File Deletion
+		_, delErr := u.storage.Delete(ctx, image, true)
+		if delErr != nil {
+			return ce.NewError(ce.CodeStorageFileDeletionFailed, ce.MsgInternalServer, delErr)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return err.Append(authFields...)
