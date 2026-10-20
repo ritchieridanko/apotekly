@@ -594,6 +594,248 @@ func (x *GetProductByIDResponse) GetProduct() *Product {
 	return nil
 }
 
+type UpdateProductRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Params
+	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	// Data
+	BrandName      *string  `protobuf:"bytes,2,opt,name=brand_name,json=brandName,proto3,oneof" json:"brand_name,omitempty"`
+	GenericName    *string  `protobuf:"bytes,3,opt,name=generic_name,json=genericName,proto3,oneof" json:"generic_name,omitempty"`
+	Description    *string  `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	RequiresRx     *bool    `protobuf:"varint,5,opt,name=requires_rx,json=requiresRx,proto3,oneof" json:"requires_rx,omitempty"`
+	DosageForm     *string  `protobuf:"bytes,6,opt,name=dosage_form,json=dosageForm,proto3,oneof" json:"dosage_form,omitempty"`
+	Strength       *string  `protobuf:"bytes,7,opt,name=strength,proto3,oneof" json:"strength,omitempty"`
+	PackUnit       *string  `protobuf:"bytes,8,opt,name=pack_unit,json=packUnit,proto3,oneof" json:"pack_unit,omitempty"`
+	PackSize       *int32   `protobuf:"varint,9,opt,name=pack_size,json=packSize,proto3,oneof" json:"pack_size,omitempty"`
+	HeightCm       *float64 `protobuf:"fixed64,10,opt,name=height_cm,json=heightCm,proto3,oneof" json:"height_cm,omitempty"`
+	LengthCm       *float64 `protobuf:"fixed64,11,opt,name=length_cm,json=lengthCm,proto3,oneof" json:"length_cm,omitempty"`
+	WidthCm        *float64 `protobuf:"fixed64,12,opt,name=width_cm,json=widthCm,proto3,oneof" json:"width_cm,omitempty"`
+	WeightG        *float64 `protobuf:"fixed64,13,opt,name=weight_g,json=weightG,proto3,oneof" json:"weight_g,omitempty"`
+	Price          *string  `protobuf:"bytes,14,opt,name=price,proto3,oneof" json:"price,omitempty"`
+	Currency       *string  `protobuf:"bytes,15,opt,name=currency,proto3,oneof" json:"currency,omitempty"`
+	Quantity       *int32   `protobuf:"varint,16,opt,name=quantity,proto3,oneof" json:"quantity,omitempty"`
+	ManufacturedBy *string  `protobuf:"bytes,17,opt,name=manufactured_by,json=manufacturedBy,proto3,oneof" json:"manufactured_by,omitempty"`
+	ManufacturedIn *string  `protobuf:"bytes,18,opt,name=manufactured_in,json=manufacturedIn,proto3,oneof" json:"manufactured_in,omitempty"`
+	RegAuthority   *string  `protobuf:"bytes,19,opt,name=reg_authority,json=regAuthority,proto3,oneof" json:"reg_authority,omitempty"`
+	RegIdentifier  *string  `protobuf:"bytes,20,opt,name=reg_identifier,json=regIdentifier,proto3,oneof" json:"reg_identifier,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *UpdateProductRequest) Reset() {
+	*x = UpdateProductRequest{}
+	mi := &file_v1_product_api_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProductRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProductRequest) ProtoMessage() {}
+
+func (x *UpdateProductRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_product_api_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProductRequest.ProtoReflect.Descriptor instead.
+func (*UpdateProductRequest) Descriptor() ([]byte, []int) {
+	return file_v1_product_api_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateProductRequest) GetProductId() string {
+	if x != nil {
+		return x.ProductId
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetBrandName() string {
+	if x != nil && x.BrandName != nil {
+		return *x.BrandName
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetGenericName() string {
+	if x != nil && x.GenericName != nil {
+		return *x.GenericName
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetRequiresRx() bool {
+	if x != nil && x.RequiresRx != nil {
+		return *x.RequiresRx
+	}
+	return false
+}
+
+func (x *UpdateProductRequest) GetDosageForm() string {
+	if x != nil && x.DosageForm != nil {
+		return *x.DosageForm
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetStrength() string {
+	if x != nil && x.Strength != nil {
+		return *x.Strength
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetPackUnit() string {
+	if x != nil && x.PackUnit != nil {
+		return *x.PackUnit
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetPackSize() int32 {
+	if x != nil && x.PackSize != nil {
+		return *x.PackSize
+	}
+	return 0
+}
+
+func (x *UpdateProductRequest) GetHeightCm() float64 {
+	if x != nil && x.HeightCm != nil {
+		return *x.HeightCm
+	}
+	return 0
+}
+
+func (x *UpdateProductRequest) GetLengthCm() float64 {
+	if x != nil && x.LengthCm != nil {
+		return *x.LengthCm
+	}
+	return 0
+}
+
+func (x *UpdateProductRequest) GetWidthCm() float64 {
+	if x != nil && x.WidthCm != nil {
+		return *x.WidthCm
+	}
+	return 0
+}
+
+func (x *UpdateProductRequest) GetWeightG() float64 {
+	if x != nil && x.WeightG != nil {
+		return *x.WeightG
+	}
+	return 0
+}
+
+func (x *UpdateProductRequest) GetPrice() string {
+	if x != nil && x.Price != nil {
+		return *x.Price
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetCurrency() string {
+	if x != nil && x.Currency != nil {
+		return *x.Currency
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetQuantity() int32 {
+	if x != nil && x.Quantity != nil {
+		return *x.Quantity
+	}
+	return 0
+}
+
+func (x *UpdateProductRequest) GetManufacturedBy() string {
+	if x != nil && x.ManufacturedBy != nil {
+		return *x.ManufacturedBy
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetManufacturedIn() string {
+	if x != nil && x.ManufacturedIn != nil {
+		return *x.ManufacturedIn
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetRegAuthority() string {
+	if x != nil && x.RegAuthority != nil {
+		return *x.RegAuthority
+	}
+	return ""
+}
+
+func (x *UpdateProductRequest) GetRegIdentifier() string {
+	if x != nil && x.RegIdentifier != nil {
+		return *x.RegIdentifier
+	}
+	return ""
+}
+
+type UpdateProductResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Product       *Product               `protobuf:"bytes,1,opt,name=product,proto3" json:"product,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateProductResponse) Reset() {
+	*x = UpdateProductResponse{}
+	mi := &file_v1_product_api_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProductResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProductResponse) ProtoMessage() {}
+
+func (x *UpdateProductResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_product_api_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProductResponse.ProtoReflect.Descriptor instead.
+func (*UpdateProductResponse) Descriptor() ([]byte, []int) {
+	return file_v1_product_api_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdateProductResponse) GetProduct() *Product {
+	if x != nil {
+		return x.Product
+	}
+	return nil
+}
+
 var File_v1_product_api_proto protoreflect.FileDescriptor
 
 const file_v1_product_api_proto_rawDesc = "" +
@@ -669,10 +911,63 @@ const file_v1_product_api_proto_rawDesc = "" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\"G\n" +
 	"\x16GetProductByIDResponse\x12-\n" +
-	"\aproduct\x18\x01 \x01(\v2\x13.product.v1.ProductR\aproduct2\xbf\x01\n" +
+	"\aproduct\x18\x01 \x01(\v2\x13.product.v1.ProductR\aproduct\"\x8c\b\n" +
+	"\x14UpdateProductRequest\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x01 \x01(\tR\tproductId\x12\"\n" +
+	"\n" +
+	"brand_name\x18\x02 \x01(\tH\x00R\tbrandName\x88\x01\x01\x12&\n" +
+	"\fgeneric_name\x18\x03 \x01(\tH\x01R\vgenericName\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tH\x02R\vdescription\x88\x01\x01\x12$\n" +
+	"\vrequires_rx\x18\x05 \x01(\bH\x03R\n" +
+	"requiresRx\x88\x01\x01\x12$\n" +
+	"\vdosage_form\x18\x06 \x01(\tH\x04R\n" +
+	"dosageForm\x88\x01\x01\x12\x1f\n" +
+	"\bstrength\x18\a \x01(\tH\x05R\bstrength\x88\x01\x01\x12 \n" +
+	"\tpack_unit\x18\b \x01(\tH\x06R\bpackUnit\x88\x01\x01\x12 \n" +
+	"\tpack_size\x18\t \x01(\x05H\aR\bpackSize\x88\x01\x01\x12 \n" +
+	"\theight_cm\x18\n" +
+	" \x01(\x01H\bR\bheightCm\x88\x01\x01\x12 \n" +
+	"\tlength_cm\x18\v \x01(\x01H\tR\blengthCm\x88\x01\x01\x12\x1e\n" +
+	"\bwidth_cm\x18\f \x01(\x01H\n" +
+	"R\awidthCm\x88\x01\x01\x12\x1e\n" +
+	"\bweight_g\x18\r \x01(\x01H\vR\aweightG\x88\x01\x01\x12\x19\n" +
+	"\x05price\x18\x0e \x01(\tH\fR\x05price\x88\x01\x01\x12\x1f\n" +
+	"\bcurrency\x18\x0f \x01(\tH\rR\bcurrency\x88\x01\x01\x12\x1f\n" +
+	"\bquantity\x18\x10 \x01(\x05H\x0eR\bquantity\x88\x01\x01\x12,\n" +
+	"\x0fmanufactured_by\x18\x11 \x01(\tH\x0fR\x0emanufacturedBy\x88\x01\x01\x12,\n" +
+	"\x0fmanufactured_in\x18\x12 \x01(\tH\x10R\x0emanufacturedIn\x88\x01\x01\x12(\n" +
+	"\rreg_authority\x18\x13 \x01(\tH\x11R\fregAuthority\x88\x01\x01\x12*\n" +
+	"\x0ereg_identifier\x18\x14 \x01(\tH\x12R\rregIdentifier\x88\x01\x01B\r\n" +
+	"\v_brand_nameB\x0f\n" +
+	"\r_generic_nameB\x0e\n" +
+	"\f_descriptionB\x0e\n" +
+	"\f_requires_rxB\x0e\n" +
+	"\f_dosage_formB\v\n" +
+	"\t_strengthB\f\n" +
+	"\n" +
+	"_pack_unitB\f\n" +
+	"\n" +
+	"_pack_sizeB\f\n" +
+	"\n" +
+	"_height_cmB\f\n" +
+	"\n" +
+	"_length_cmB\v\n" +
+	"\t_width_cmB\v\n" +
+	"\t_weight_gB\b\n" +
+	"\x06_priceB\v\n" +
+	"\t_currencyB\v\n" +
+	"\t_quantityB\x12\n" +
+	"\x10_manufactured_byB\x12\n" +
+	"\x10_manufactured_inB\x10\n" +
+	"\x0e_reg_authorityB\x11\n" +
+	"\x0f_reg_identifier\"F\n" +
+	"\x15UpdateProductResponse\x12-\n" +
+	"\aproduct\x18\x01 \x01(\v2\x13.product.v1.ProductR\aproduct2\x95\x02\n" +
 	"\x0eProductService\x12T\n" +
 	"\rCreateProduct\x12 .product.v1.CreateProductRequest\x1a!.product.v1.CreateProductResponse\x12W\n" +
-	"\x0eGetProductByID\x12!.product.v1.GetProductByIDRequest\x1a\".product.v1.GetProductByIDResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
+	"\x0eGetProductByID\x12!.product.v1.GetProductByIDRequest\x1a\".product.v1.GetProductByIDResponse\x12T\n" +
+	"\rUpdateProduct\x12 .product.v1.UpdateProductRequest\x1a!.product.v1.UpdateProductResponseBJZHgithub.com/ritchieridanko/apotekly/services/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_product_api_proto_rawDescOnce sync.Once
@@ -686,33 +981,38 @@ func file_v1_product_api_proto_rawDescGZIP() []byte {
 	return file_v1_product_api_proto_rawDescData
 }
 
-var file_v1_product_api_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_v1_product_api_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_v1_product_api_proto_goTypes = []any{
 	(*Product)(nil),                // 0: product.v1.Product
 	(*CreateProductRequest)(nil),   // 1: product.v1.CreateProductRequest
 	(*CreateProductResponse)(nil),  // 2: product.v1.CreateProductResponse
 	(*GetProductByIDRequest)(nil),  // 3: product.v1.GetProductByIDRequest
 	(*GetProductByIDResponse)(nil), // 4: product.v1.GetProductByIDResponse
-	(*ProductImage)(nil),           // 5: product.v1.ProductImage
-	(*timestamppb.Timestamp)(nil),  // 6: google.protobuf.Timestamp
-	(*ProductImageRequest)(nil),    // 7: product.v1.ProductImageRequest
+	(*UpdateProductRequest)(nil),   // 5: product.v1.UpdateProductRequest
+	(*UpdateProductResponse)(nil),  // 6: product.v1.UpdateProductResponse
+	(*ProductImage)(nil),           // 7: product.v1.ProductImage
+	(*timestamppb.Timestamp)(nil),  // 8: google.protobuf.Timestamp
+	(*ProductImageRequest)(nil),    // 9: product.v1.ProductImageRequest
 }
 var file_v1_product_api_proto_depIdxs = []int32{
-	5, // 0: product.v1.Product.images:type_name -> product.v1.ProductImage
-	6, // 1: product.v1.Product.created_at:type_name -> google.protobuf.Timestamp
-	6, // 2: product.v1.Product.updated_at:type_name -> google.protobuf.Timestamp
-	7, // 3: product.v1.CreateProductRequest.images:type_name -> product.v1.ProductImageRequest
-	0, // 4: product.v1.CreateProductResponse.product:type_name -> product.v1.Product
-	0, // 5: product.v1.GetProductByIDResponse.product:type_name -> product.v1.Product
-	1, // 6: product.v1.ProductService.CreateProduct:input_type -> product.v1.CreateProductRequest
-	3, // 7: product.v1.ProductService.GetProductByID:input_type -> product.v1.GetProductByIDRequest
-	2, // 8: product.v1.ProductService.CreateProduct:output_type -> product.v1.CreateProductResponse
-	4, // 9: product.v1.ProductService.GetProductByID:output_type -> product.v1.GetProductByIDResponse
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	7,  // 0: product.v1.Product.images:type_name -> product.v1.ProductImage
+	8,  // 1: product.v1.Product.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 2: product.v1.Product.updated_at:type_name -> google.protobuf.Timestamp
+	9,  // 3: product.v1.CreateProductRequest.images:type_name -> product.v1.ProductImageRequest
+	0,  // 4: product.v1.CreateProductResponse.product:type_name -> product.v1.Product
+	0,  // 5: product.v1.GetProductByIDResponse.product:type_name -> product.v1.Product
+	0,  // 6: product.v1.UpdateProductResponse.product:type_name -> product.v1.Product
+	1,  // 7: product.v1.ProductService.CreateProduct:input_type -> product.v1.CreateProductRequest
+	3,  // 8: product.v1.ProductService.GetProductByID:input_type -> product.v1.GetProductByIDRequest
+	5,  // 9: product.v1.ProductService.UpdateProduct:input_type -> product.v1.UpdateProductRequest
+	2,  // 10: product.v1.ProductService.CreateProduct:output_type -> product.v1.CreateProductResponse
+	4,  // 11: product.v1.ProductService.GetProductByID:output_type -> product.v1.GetProductByIDResponse
+	6,  // 12: product.v1.ProductService.UpdateProduct:output_type -> product.v1.UpdateProductResponse
+	10, // [10:13] is the sub-list for method output_type
+	7,  // [7:10] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_v1_product_api_proto_init() }
@@ -723,13 +1023,14 @@ func file_v1_product_api_proto_init() {
 	file_v1_product_image_api_proto_init()
 	file_v1_product_api_proto_msgTypes[0].OneofWrappers = []any{}
 	file_v1_product_api_proto_msgTypes[1].OneofWrappers = []any{}
+	file_v1_product_api_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_product_api_proto_rawDesc), len(file_v1_product_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

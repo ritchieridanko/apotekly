@@ -631,6 +631,7 @@ func (d *pharmacyDatabase) Update(ctx context.Context, authID uint64, data *mode
 				%s
 			WHERE
 				auth_id = $%d
+				AND deleted_at IS NULL
 			RETURNING
 				id, name, legal_name, description, status, online_hours, country,
 				subdivision_1, subdivision_2, subdivision_3, subdivision_4, street,

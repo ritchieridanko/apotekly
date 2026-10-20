@@ -210,6 +210,7 @@ func (d *userDatabase) Update(ctx context.Context, authID uint64, data *models.U
 				%s
 			WHERE
 				auth_id = $%d
+				AND deleted_at IS NULL
 			RETURNING
 				id, name, sex, birthdate, phone,
 				profile_picture, profile_banner

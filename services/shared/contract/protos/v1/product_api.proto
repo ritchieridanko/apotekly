@@ -10,6 +10,7 @@ option go_package = "github.com/ritchieridanko/apotekly/services/shared/contract
 service ProductService {
   rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
   rpc GetProductByID (GetProductByIDRequest) returns (GetProductByIDResponse);
+  rpc UpdateProduct (UpdateProductRequest) returns (UpdateProductResponse);
 }
 
 message Product {
@@ -73,5 +74,35 @@ message GetProductByIDRequest {
 }
 
 message GetProductByIDResponse {
+  Product product = 1;
+}
+
+message UpdateProductRequest {
+  // Params
+  string product_id = 1;
+
+  // Data
+  optional string brand_name = 2;
+  optional string generic_name = 3;
+  optional string description = 4;
+  optional bool requires_rx = 5;
+  optional string dosage_form = 6;
+  optional string strength = 7;
+  optional string pack_unit = 8;
+  optional int32 pack_size = 9;
+  optional double height_cm = 10;
+  optional double length_cm = 11;
+  optional double width_cm = 12;
+  optional double weight_g = 13;
+  optional string price = 14;
+  optional string currency = 15;
+  optional int32 quantity = 16;
+  optional string manufactured_by = 17;
+  optional string manufactured_in = 18;
+  optional string reg_authority = 19;
+  optional string reg_identifier = 20;
+}
+
+message UpdateProductResponse {
   Product product = 1;
 }

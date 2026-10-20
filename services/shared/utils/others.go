@@ -18,6 +18,26 @@ func Round(value float64, precision int) float64 {
 	return math.Round(value*pow) / pow
 }
 
+// Round value to the specified precision
+// NOTE: Return nil if value is nil
+func RoundPtr(value *float64, precision int) *float64 {
+	if value == nil {
+		return nil
+	}
+	res := Round(*value, precision)
+	return &res
+}
+
+// Convert value to *int
+// NOTE: Return nil if value is nil
+func ToIntPtr(value *int32) *int {
+	if value == nil {
+		return nil
+	}
+	res := int(*value)
+	return &res
+}
+
 // Convert string to all lowercase
 // NOTE: Return nil if s is nil
 func ToLowerPtr(s *string) *string {

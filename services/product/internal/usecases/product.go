@@ -21,6 +21,7 @@ import (
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *models.CreateProductReq) (p *models.Product, err *ce.Error)
 	GetProductByID(ctx context.Context, productID uuid.UUID) (p *models.Product, err *ce.Error)
+	UpdateProduct(ctx context.Context, req *models.UpdateProductReq) (p *models.Product, err *ce.Error)
 }
 
 type productUsecase struct {
@@ -264,6 +265,252 @@ func (u *productUsecase) GetProductByID(ctx context.Context, productID uuid.UUID
 	pis, err := u.piu.GetAllProductImages(ctx, p.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	p.Images = pis
+	return p, nil
+}
+
+func (u *productUsecase) UpdateProduct(ctx context.Context, req *models.UpdateProductReq) (*models.Product, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "product.usecase.UpdateProduct")
+	defer span.End()
+
+	authCtx := utils.CtxAuth(ctx)
+	if authCtx == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		)
+	}
+	if authCtx.PharmacyID == nil {
+		return nil, ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		)
+	}
+
+	authFields := []logger.Field{
+		logger.NewField("auth_id", authCtx.AuthID),
+		logger.NewField("pharmacy_id", authCtx.PharmacyID.String()),
+	}
+
+	// Pharmacy Status Fetching
+	status, err := u.pc.GetStatus(ctx, authCtx.AuthID)
+	if err != nil && err.Code() == ce.CodeNotFound {
+		return nil, ce.NewError(
+			ce.CodeRoleMismatch,
+			ce.MsgInternalServer,
+			err.Unwrap(),
+			err.Append(
+				authFields...,
+			).Fields()...,
+		)
+	}
+	if err != nil {
+		return nil, err.Append(authFields...)
+	}
+	if status != constants.PharmacyStatusActive {
+		return nil, ce.NewError(
+			ce.CodePharmacyNotActive,
+			"Pharmacy account is "+status,
+			nil,
+			authFields...,
+		)
+	}
+
+	// Data Normalization
+	brandName := utils.TrimSpacePtr(req.BrandName)
+	genericName := utils.ToLowerPtr(utils.TrimSpacePtr(req.GenericName))
+	description := utils.TrimSpacePtr(req.Description)
+	dosageForm := utils.ToLowerPtr(utils.TrimSpacePtr(req.DosageForm))
+	strength := utils.TrimSpacePtr(req.Strength)
+	packUnit := utils.ToLowerPtr(utils.TrimSpacePtr(req.PackUnit))
+	heightCM := utils.RoundPtr(req.HeightCM, 2)
+	lengthCM := utils.RoundPtr(req.LengthCM, 2)
+	widthCM := utils.RoundPtr(req.WidthCM, 2)
+	weightG := utils.RoundPtr(req.WeightG, 2)
+	price := utils.TrimSpacePtr(req.Price)
+	currency := utils.ToLowerPtr(utils.TrimSpacePtr(req.Currency))
+	manufacturedBy := utils.TrimSpacePtr(req.ManufacturedBy)
+	manufacturedIn := utils.ToLowerPtr(utils.TrimSpacePtr(req.ManufacturedIn))
+	regAuthority := utils.TrimSpacePtr(req.RegAuthority)
+	regIdentifier := utils.TrimSpacePtr(req.RegIdentifier)
+
+	// Data Validation
+	if brandName != nil {
+		if ok, why := u.validator.Name(*brandName, "Brand name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if genericName != nil {
+		if ok, why := u.validator.Name(*genericName, "Generic name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if description != nil {
+		if ok, why := u.validator.Description(*description); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if dosageForm != nil {
+		if ok, why := u.validator.DosageForm(*dosageForm); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if strength != nil {
+		if ok, why := u.validator.DosageStrength(*strength); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if packUnit != nil {
+		if ok, why := u.validator.PackUnit(*packUnit); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if req.PackSize != nil {
+		if ok, why := u.validator.PackSize(*req.PackSize); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if heightCM != nil {
+		if ok, why := u.validator.Measurement(*heightCM, "Height"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if lengthCM != nil {
+		if ok, why := u.validator.Measurement(*lengthCM, "Length"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if widthCM != nil {
+		if ok, why := u.validator.Measurement(*widthCM, "Width"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if weightG != nil {
+		if ok, why := u.validator.Measurement(*weightG, "Weight"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if currency != nil {
+		if ok, why := u.validator.Currency(*currency); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if req.Quantity != nil {
+		if ok, why := u.validator.Quantity(*req.Quantity); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if manufacturedBy != nil {
+		if ok, why := u.validator.Name(*manufacturedBy, "Manufacturer name"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if manufacturedIn != nil {
+		if ok, why := u.validator.Country(*manufacturedIn, "Country of manufacture"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if regAuthority != nil {
+		if ok, why := u.validator.Name(*regAuthority, "Regulatory authority"); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+	if regIdentifier != nil {
+		if ok, why := u.validator.RegIdentifier(*regIdentifier); !ok {
+			return nil, ce.NewError(ce.CodeInvalidPayload, why, nil, authFields...)
+		}
+	}
+
+	var p *models.Product
+	err = u.transactor.WithTx(ctx, func(ctx context.Context) *ce.Error {
+		var productPrice *int64
+		if price != nil {
+			// Price Validation
+			var c string
+			if currency == nil {
+				curr, err := u.pr.GetCurrency(ctx, req.ProductID)
+				if err != nil {
+					return err
+				}
+				if ok, why := u.validator.Price(*price, curr); !ok {
+					return ce.NewError(ce.CodeInvalidPayload, why, nil)
+				}
+
+				c = curr
+			} else {
+				if ok, why := u.validator.Price(*price, *currency); !ok {
+					return ce.NewError(ce.CodeInvalidPayload, why, nil)
+				}
+
+				c = *currency
+			}
+
+			// Price Parsing
+			money, err := utils.ParseMoney(*price, c)
+			if err != nil {
+				return ce.NewError(ce.CodeMoneyParsingFailed, ce.MsgInternalServer, err)
+			}
+
+			productPrice = &money
+		}
+
+		// Product Update
+		product, err := u.pr.Update(
+			ctx,
+			&models.UpdateProductP{
+				ProductID:  req.ProductID,
+				PharmacyID: *authCtx.PharmacyID,
+			},
+			&models.UpdateProductD{
+				BrandName:      brandName,
+				GenericName:    genericName,
+				Description:    description,
+				RequiresRX:     req.RequiresRX,
+				DosageForm:     dosageForm,
+				Strength:       strength,
+				PackUnit:       packUnit,
+				PackSize:       req.PackSize,
+				HeightCM:       heightCM,
+				LengthCM:       lengthCM,
+				WidthCM:        widthCM,
+				WeightG:        weightG,
+				Price:          productPrice,
+				Currency:       currency,
+				Quantity:       req.Quantity,
+				ManufacturedBy: manufacturedBy,
+				ManufacturedIn: manufacturedIn,
+				RegAuthority:   regAuthority,
+				RegIdentifier:  regIdentifier,
+			},
+		)
+
+		p = product
+		return err
+	})
+	if err != nil {
+		return nil, err.Append(authFields...)
+	}
+
+	// All Product Images Fetching
+	// NOTE: Fail to fetch all product images does not fail UpdateProduct usecase
+	pis, err := u.piu.GetAllProductImages(ctx, p.ID)
+	if err != nil {
+		u.logger.Warn(
+			ctx,
+			"updated product. failed to fetch all product images",
+			err.Append(
+				authFields...,
+			).Append(
+				logger.NewField("error_code", err.Code()),
+				logger.NewField("error", err.Unwrap()),
+			).Fields()...,
+		)
+
+		return p, nil
 	}
 
 	p.Images = pis

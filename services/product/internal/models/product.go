@@ -59,4 +59,31 @@ type (
 		RegAuthority   string
 		RegIdentifier  string
 	}
+
+	UpdateProductP struct {
+		ProductID  uuid.UUID
+		PharmacyID uuid.UUID
+	}
+
+	UpdateProductD struct {
+		BrandName      *string
+		GenericName    *string
+		Description    *string
+		RequiresRX     *bool
+		DosageForm     *string
+		Strength       *string
+		PackUnit       *string
+		PackSize       *int
+		HeightCM       *float64
+		LengthCM       *float64
+		WidthCM        *float64
+		WeightG        *float64
+		Price          *int64
+		Currency       *string
+		Quantity       *int
+		ManufacturedBy *string
+		ManufacturedIn *string
+		RegAuthority   *string
+		RegIdentifier  *string
+	}
 )

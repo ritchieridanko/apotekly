@@ -38,6 +38,12 @@ var AuthPolicies map[string]AuthPolicy = map[string]AuthPolicy{
 			constants.RolePharmacy: {},
 		},
 	},
+	"/product.v1.ProductService/UpdateProduct": {
+		authenticated: true,
+		roles: map[string]struct{}{
+			constants.RolePharmacy: {},
+		},
+	},
 
 	// Product Image
 	"/product.v1.ProductImageService/UploadProductImages": {

@@ -68,6 +68,39 @@ func (h *ProductHandler) GetProductByID(ctx context.Context, req *apis.GetProduc
 	return &apis.GetProductByIDResponse{Product: h.toProduct(p)}, nil
 }
 
+func (h *ProductHandler) UpdateProduct(ctx context.Context, req *apis.UpdateProductRequest) (*apis.UpdateProductResponse, error) {
+	p, err := h.pu.UpdateProduct(
+		ctx,
+		&models.UpdateProductReq{
+			ProductID: utils.ToUUID(req.GetProductId()),
+
+			BrandName:      req.BrandName,
+			GenericName:    req.GenericName,
+			Description:    req.Description,
+			RequiresRX:     req.RequiresRx,
+			DosageForm:     req.DosageForm,
+			Strength:       req.Strength,
+			PackUnit:       req.PackUnit,
+			PackSize:       utils.ToIntPtr(req.PackSize),
+			HeightCM:       req.HeightCm,
+			LengthCM:       req.LengthCm,
+			WidthCM:        req.WidthCm,
+			WeightG:        req.WeightG,
+			Price:          req.Price,
+			Currency:       req.Currency,
+			Quantity:       utils.ToIntPtr(req.Quantity),
+			ManufacturedBy: req.ManufacturedBy,
+			ManufacturedIn: req.ManufacturedIn,
+			RegAuthority:   req.RegAuthority,
+			RegIdentifier:  req.RegIdentifier,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &apis.UpdateProductResponse{Product: h.toProduct(p)}, nil
+}
+
 func (h *ProductHandler) toProduct(p *models.Product) *apis.Product {
 	if p == nil {
 		return nil
