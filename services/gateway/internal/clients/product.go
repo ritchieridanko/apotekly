@@ -15,6 +15,7 @@ var productServiceField logger.Field = logger.NewField("service", "product")
 type ProductClient interface {
 	CreateProduct(ctx context.Context, req *models.CreateProductReq) (p *models.Product, err *ce.Error)
 	GetProductByID(ctx context.Context, productID string) (p *models.Product, err *ce.Error)
+	UpdateProduct(ctx context.Context, req *models.UpdateProductReq) (p *models.Product, err *ce.Error)
 }
 
 type productClient struct {
@@ -72,6 +73,43 @@ func (c *productClient) GetProductByID(ctx context.Context, productID string) (*
 		ctx,
 		&apis.GetProductByIDRequest{
 			ProductId: productID,
+		},
+	)
+	if err != nil {
+		return nil, ce.ToError(
+			err,
+		).Append(
+			productServiceField,
+		)
+	}
+	return c.toProduct(resp.GetProduct()), nil
+}
+
+func (c *productClient) UpdateProduct(ctx context.Context, req *models.UpdateProductReq) (*models.Product, *ce.Error) {
+	resp, err := c.client.UpdateProduct(
+		ctx,
+		&apis.UpdateProductRequest{
+			ProductId: req.ProductID,
+
+			BrandName:      req.BrandName,
+			GenericName:    req.GenericName,
+			Description:    req.Description,
+			RequiresRx:     req.RequiresRX,
+			DosageForm:     req.DosageForm,
+			Strength:       req.Strength,
+			PackUnit:       req.PackUnit,
+			PackSize:       utils.ToInt32Ptr(req.PackSize),
+			HeightCm:       req.HeightCM,
+			LengthCm:       req.LengthCM,
+			WidthCm:        req.WidthCM,
+			WeightG:        req.WeightG,
+			Price:          req.Price,
+			Currency:       req.Currency,
+			Quantity:       utils.ToInt32Ptr(req.Quantity),
+			ManufacturedBy: req.ManufacturedBy,
+			ManufacturedIn: req.ManufacturedIn,
+			RegAuthority:   req.RegAuthority,
+			RegIdentifier:  req.RegIdentifier,
 		},
 	)
 	if err != nil {

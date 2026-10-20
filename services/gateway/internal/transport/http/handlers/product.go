@@ -122,6 +122,80 @@ func (h *ProductHandler) GetProductByID(ctx *gin.Context) {
 	)
 }
 
+func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
+	var payload dtos.UpdateProductRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ce.NewError(ce.CodeInvalidPayload, ce.MsgInvalidPayload, err).Bind(ctx)
+		return
+	}
+
+	authCtx := utils.CtxAuth(ctx.Request.Context())
+	if authCtx == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("auth missing from context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+	if authCtx.PharmacyID == nil {
+		ce.NewError(
+			ce.CodeMissingContextValue,
+			ce.MsgInternalServer,
+			errors.New("pharmacy_id missing from auth context"),
+		).Bind(
+			ctx,
+		)
+		return
+	}
+
+	p, err := h.prc.UpdateProduct(
+		utils.CtxWithMetadata(
+			ctx.Request.Context(),
+			constants.MDKeyAuthID, strconv.FormatUint(authCtx.AuthID, 10),
+			constants.MDKeyRole, authCtx.Role,
+			constants.MDKeyPharmacyID, authCtx.PharmacyID.String(),
+		),
+		&models.UpdateProductReq{
+			ProductID: ctx.Param(constants.URLParamProductID),
+
+			BrandName:      payload.BrandName,
+			GenericName:    payload.GenericName,
+			Description:    payload.Description,
+			RequiresRX:     payload.RequiresRX,
+			DosageForm:     payload.DosageForm,
+			Strength:       payload.Strength,
+			PackUnit:       payload.PackUnit,
+			PackSize:       payload.PackSize,
+			HeightCM:       payload.HeightCM,
+			LengthCM:       payload.LengthCM,
+			WidthCM:        payload.WidthCM,
+			WeightG:        payload.WeightG,
+			Price:          payload.Price,
+			Currency:       payload.Currency,
+			Quantity:       payload.Quantity,
+			ManufacturedBy: payload.ManufacturedBy,
+			ManufacturedIn: payload.ManufacturedIn,
+			RegAuthority:   payload.RegAuthority,
+			RegIdentifier:  payload.RegIdentifier,
+		},
+	)
+	if err != nil {
+		err.Bind(ctx)
+		return
+	}
+
+	utils.SetHTTPResponse(
+		ctx,
+		http.StatusOK,
+		"Product updated successfully",
+		dtos.UpdateProductResponse{Product: h.toProduct(p)},
+		nil,
+	)
+}
+
 func (h *ProductHandler) toProduct(p *models.Product) *dtos.Product {
 	if p == nil {
 		return nil

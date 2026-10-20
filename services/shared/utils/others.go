@@ -38,6 +38,16 @@ func ToIntPtr(value *int32) *int {
 	return &res
 }
 
+// Convert value to *int32
+// NOTE: Return nil if value is nil
+func ToInt32Ptr(value *int) *int32 {
+	if value == nil {
+		return nil
+	}
+	res := int32(*value)
+	return &res
+}
+
 // Convert string to all lowercase
 // NOTE: Return nil if s is nil
 func ToLowerPtr(s *string) *string {

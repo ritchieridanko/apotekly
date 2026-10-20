@@ -175,6 +175,9 @@ func Init(
 			// Fetch
 			productID.GET("", rlm.LimitByIPAddress("prod:pfid", 1*time.Minute, 50), prh.GetProductByID)
 
+			// Update
+			productID.PATCH("", middlewares.Auth(j), rlm.LimitByAuthID("prod:pu", 1*time.Minute, 20), prh.UpdateProduct)
+
 			// Path: /v1/products/:product_id/images
 			image := productID.Group("/images")
 			{

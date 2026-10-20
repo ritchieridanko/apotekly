@@ -28,6 +28,28 @@ type (
 		Images         []ProductImageRequest `json:"images"`
 	}
 
+	UpdateProductRequest struct {
+		BrandName      *string  `json:"brand_name"`
+		GenericName    *string  `json:"generic_name"`
+		Description    *string  `json:"description"`
+		RequiresRX     *bool    `json:"requires_rx"`
+		DosageForm     *string  `json:"dosage_form"`
+		Strength       *string  `json:"strength"`
+		PackUnit       *string  `json:"pack_unit"`
+		PackSize       *int     `json:"pack_size"`
+		HeightCM       *float64 `json:"height_cm"`
+		LengthCM       *float64 `json:"length_cm"`
+		WidthCM        *float64 `json:"width_cm"`
+		WeightG        *float64 `json:"weight_g"`
+		Price          *string  `json:"price"`
+		Currency       *string  `json:"currency"`
+		Quantity       *int     `json:"quantity"`
+		ManufacturedBy *string  `json:"manufactured_by"`
+		ManufacturedIn *string  `json:"manufactured_in"`
+		RegAuthority   *string  `json:"reg_authority"`
+		RegIdentifier  *string  `json:"reg_identifier"`
+	}
+
 	// Product Image
 	ProductImageRequest struct {
 		Name    string  `json:"name" binding:"required"`
@@ -84,6 +106,10 @@ type (
 	}
 
 	GetProductByIDResponse struct {
+		Product *Product `json:"product,omitempty"`
+	}
+
+	UpdateProductResponse struct {
 		Product *Product `json:"product,omitempty"`
 	}
 
